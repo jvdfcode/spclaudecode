@@ -1,0 +1,55 @@
+epic:
+  id: EPIC-03
+  title: "Simulador de Cenários"
+  status: ready
+  priority: 3
+  prd_ref: docs/prd/07-epic-03-04.md
+
+  objective: >
+    Transformar o cálculo financeiro em leitura prática de mercado. O simulador
+    gera automaticamente uma tabela de 10-15 faixas de preço, mostra onde o produto
+    entra no lucro, identifica as zonas visuais (vermelho/amarelo/verde) e sugere
+    um preço equilibrado baseado em margem-alvo configurável pelo usuário.
+
+  acceptance_criteria:
+    - Tabela com 10-15 faixas de preço gerada automaticamente a partir do preço base
+    - Colunas: Preço de Venda, Lucro (R$), Margem (%), ROI (%)
+    - Zonas visuais: vermelho (<0%), amarelo (0-19%), verde (≥20%)
+    - Campo de margem-alvo configurável (default 20%)
+    - Badge "Recomendado" na linha do primeiro preço que atinge a margem-alvo
+    - Tabela atualiza automaticamente quando dados da calculadora mudam
+
+  stories:
+    - id: "3.1"
+      title: "Tabela de Cenários de Preço"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["2.3"]
+
+    - id: "3.2"
+      title: "Zonas Visuais e Preço Recomendado"
+      status: draft
+      agent: "@dev"
+      estimated_effort: S
+      dependencies: ["3.1"]
+
+  execution:
+    wave_1: ["3.1"]
+    wave_2: ["3.2"]
+
+  tech_notes:
+    - "Geração da tabela: função pura generateScenarios(basePrice, costData, steps=15)"
+    - "Incrementos: 5% por step (de -7 a +7 steps ao redor do preço base)"
+    - "Reutiliza engine de cálculo do EPIC-02 (mesmo módulo)"
+    - "UI: shadcn/ui Table com row colorization via className condicional"
+    - "Exportação CSV: nice-to-have, implementar apenas se tempo permitir"
+
+  quality_gates:
+    - "Função generateScenarios com ≥70% cobertura de testes"
+    - "Zona correta identificada para cada faixa de preço"
+    - "Preço recomendado sempre o primeiro a atingir a margem-alvo"
+    - "Tabela atualiza em <500ms ao mudar dados da calculadora"
+
+  created_at: "2026-04-20"
+  created_by: "@pm"

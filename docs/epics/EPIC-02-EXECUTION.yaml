@@ -1,0 +1,65 @@
+epic:
+  id: EPIC-02
+  title: "Base Financeira — Calculadora de Custo"
+  status: ready
+  priority: 2
+  prd_ref: docs/prd/06-epic-01-02.md
+
+  objective: >
+    Entregar o coração do SmartPreço: calculadora de custo real com cálculo automático
+    de taxa ML (por tipo de anúncio), parcelamento, frete e overhead. O vendedor
+    entra com dados do produto e recebe imediatamente custo total, margem real,
+    lucro, ROI, break-even e preço mínimo viável — tudo em tempo real.
+
+  acceptance_criteria:
+    - Formulário com CMV, embalagem, overhead com validação inline
+    - Seletor de tipo de anúncio com taxas ML carregadas do banco (0%, 11-16%, 16-20%)
+    - Seletor de parcelas com custo de parcelamento (0%, 2.5%, 4.5%, 6.5%)
+    - Seletor de frete (Sem frete, Envios, Full) com custo configurável
+    - Painel de resultados em tempo real: Custo Total, Margem %, Lucro R$, ROI %
+    - Preço Mínimo Viável e Break-even calculados e exibidos
+    - Indicador visual de saúde (verde/amarelo/vermelho) baseado na margem
+
+  stories:
+    - id: "2.1"
+      title: "Formulário de Entrada de Custos"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["1.4"]
+
+    - id: "2.2"
+      title: "Configuração de Taxas ML"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["2.1"]
+
+    - id: "2.3"
+      title: "Resultado Financeiro em Tempo Real"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["2.1", "2.2"]
+
+  execution:
+    wave_1: ["2.1"]
+    wave_2: ["2.2"]
+    wave_3: ["2.3"]
+
+  tech_notes:
+    - "Cálculos: client-side com React state (zero latência)"
+    - "Fórmulas: Margem = (Preço - CustoTotal) / Preço * 100"
+    - "Fórmulas: ROI = Lucro / CustoTotal * 100"
+    - "Fórmulas: PreçoMínimo = CustoTotal / (1 - TaxaML - TaxaParcela)"
+    - "Taxas ML: tabela 'ml_fees' no Supabase (listing_type, category, fee_percentage)"
+    - "Schema inicial: supabase/migrations/001_ml_fees.sql"
+
+  quality_gates:
+    - "Funções de cálculo com ≥70% de cobertura de testes unitários (Jest)"
+    - "Resultado atualiza em <500ms após qualquer mudança de campo"
+    - "Todos os edge cases testados: preço zero, overhead vazio, custo negativo"
+    - "Tooltips de fórmula exibindo corretamente"
+
+  created_at: "2026-04-20"
+  created_by: "@pm"

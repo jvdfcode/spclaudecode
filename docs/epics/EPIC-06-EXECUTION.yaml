@@ -1,0 +1,59 @@
+epic:
+  id: EPIC-06
+  title: "Motor de Decisão & Polish"
+  status: ready
+  priority: 6
+  prd_ref: docs/prd/08-epic-05-06.md
+
+  objective: >
+    Unir todos os módulos em uma experiência de decisão fluida. A Tela de Decisão
+    integra outputs do Simulador (preço recomendado) e do Bloco Mercado (posicionamento)
+    para apresentar 3 opções de preço (Econômico/Competitivo/Premium) com margem e
+    posição no mercado para cada uma. O polish garante experiência coesa e produção-ready.
+
+  acceptance_criteria:
+    - Tela de Decisão exibindo as 3 opções (Econômico, Competitivo, Premium)
+    - Cada opção com: preço sugerido, margem resultante, posição no mercado
+    - Botão "Adotar este preço" salva preço escolhido no SKU
+    - Fluxo completo navegável: Calculadora → Simulador → Mercado → Decisão
+    - Carregamento inicial < 2s
+    - Formulários com state persistente (não perdem dados ao navegar entre tabs)
+    - Responsividade validada em 1440px, 1280px e 768px
+
+  stories:
+    - id: "6.1"
+      title: "Tela de Decisão Integrada"
+      status: draft
+      agent: "@dev"
+      estimated_effort: L
+      dependencies: ["3.2", "5.3"]
+
+    - id: "6.2"
+      title: "Refinamentos de UX e Performance"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["6.1"]
+
+  execution:
+    wave_1: ["6.1"]
+    wave_2: ["6.2"]
+
+  tech_notes:
+    - "Estado global: React Context ou Zustand para manter dados entre abas do fluxo"
+    - "Opções de decisão: Econômico = P25 mercado, Competitivo = mediana, Premium = P75"
+    - "Se sem dados de mercado: apresentar apenas opções baseadas no simulador"
+    - "Onboarding: react-joyride ou tooltip nativo na primeira sessão"
+    - "Performance: lazy loading de componentes pesados (tabela de cenários, lista ML)"
+    - "OpenGraph: next/metadata com título e descrição para cada rota"
+
+  quality_gates:
+    - "Fluxo completo testado end-to-end (Playwright ou Cypress)"
+    - "Preço adotado salvo corretamente no SKU"
+    - "Carregamento inicial < 2s medido no Vercel"
+    - "Zero erros de console em produção"
+    - "Responsividade validada nas 3 resoluções alvo"
+    - "Lighthouse Performance ≥ 80"
+
+  created_at: "2026-04-20"
+  created_by: "@pm"

@@ -1,0 +1,69 @@
+epic:
+  id: EPIC-05
+  title: "Bloco Mercado — Integração ML API"
+  status: ready
+  priority: 5
+  prd_ref: docs/prd/08-epic-05-06.md
+
+  objective: >
+    Trazer o mercado real para dentro da análise. O vendedor busca produtos similares
+    no Mercado Livre e vê como seu preço se posiciona frente à concorrência —
+    com base limpa (kits e duplicados removidos), índice de confiança e análise
+    de posicionamento (abaixo/alinhado/premium).
+
+  acceptance_criteria:
+    - Busca de produtos server-side (Next.js API Route → ML API pública)
+    - Exibe até 50 anúncios com: título, preço, frete grátis, Full, reputação, vendidos
+    - Filtro automático de kits/combos (kit, combo, par, 2x, 3x, pacote, caixa com)
+    - Índice de confiança: "Base limpa: X de Y anúncios (Z%)"
+    - Métricas: preço mínimo, máximo, mediana, média da base limpa
+    - Badge de posicionamento: Abaixo, Alinhado, Acima do mercado
+    - Cache no Supabase por 1 hora para a mesma query
+
+  stories:
+    - id: "5.1"
+      title: "Busca de Anúncios ML"
+      status: draft
+      agent: "@dev"
+      estimated_effort: L
+      dependencies: ["1.3"]
+
+    - id: "5.2"
+      title: "Filtros e Limpeza de Base"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["5.1"]
+
+    - id: "5.3"
+      title: "Análise de Posicionamento"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["5.2"]
+
+  execution:
+    wave_1: ["5.1"]
+    wave_2: ["5.2"]
+    wave_3: ["5.3"]
+
+  tech_notes:
+    - "API Endpoint: GET https://api.mercadolibre.com/sites/MLB/search?q={query}&limit=50"
+    - "Chamadas server-side via Next.js Route Handler (evita CORS)"
+    - "Schema Supabase: tabela 'ml_search_cache' (query_hash, results_json, expires_at)"
+    - "Filtros kit: regex case-insensitive contra title do anúncio"
+    - "Deduplicação: comparar price + title normalizado (lowercase, sem acentos)"
+    - "Posicionamento: Abaixo se preço < P25, Alinhado se P25-P75, Acima se > P75"
+    - "Rate limit público ML: 1 req/s — implementar throttle no Route Handler"
+    - "Fallback: se ML API retornar 403/429, exibir mensagem amigável e dados em cache"
+
+  quality_gates:
+    - "Busca retorna resultados em <3s com dados reais da ML API"
+    - "Filtro de kits remove corretamente títulos com palavras-chave"
+    - "Cache funcionando: segunda busca igual usa dados em cache"
+    - "Índice de confiança calculado corretamente"
+    - "Posicionamento calculado corretamente para casos abaixo/alinhado/acima"
+    - "Erro de API ML tratado com mensagem amigável para o usuário"
+
+  created_at: "2026-04-20"
+  created_by: "@pm"
