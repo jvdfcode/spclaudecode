@@ -1,0 +1,21 @@
+# AIOX Project Configuration
+version: 2.1.0
+project:
+  name: smartpreco
+  type: greenfield
+  created: 2026-04-20
+
+environment:
+  bootstrapped: true
+  bootstrap_date: 2026-04-20T20:16:00
+
+workflow:
+  current: greenfield-fullstack
+  phase: 1-spec-pipeline
+
+permissions:
+  mode: ask
+
+settings:
+  auto_update_status: true
+  quality_gates_enabled: true

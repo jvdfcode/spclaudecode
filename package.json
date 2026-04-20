@@ -1,0 +1,15 @@
+{
+  "name": "smartpreco",
+  "version": "0.1.0",
+  "description": "Sistema de apoio à decisão de preço para marketplace",
+  "scripts": {
+    "dev": "echo 'Add your dev script'",
+    "build": "echo 'Add your build script'",
+    "test": "echo 'Add your test script'",
+    "lint": "echo 'Add your lint script'",
+    "typecheck": "echo 'Add your typecheck script'"
+  },
+  "keywords": ["marketplace", "pricing", "mercado-livre"],
+  "author": "jvdfcode",
+  "license": "ISC"
+}
