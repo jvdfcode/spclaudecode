@@ -34,7 +34,8 @@ describe('calculateViability (engine)', () => {
   })
 
   it('produto em atenção (10-19%)', () => {
-    const input: ViabilityInput = { ...viableInput, salePrice: 75.40 }
+    // salePrice entre R$79-82 para margem 10-19% sem incidir custo fixo ML
+    const input: ViabilityInput = { ...viableInput, salePrice: 80 }
     const result = calculateViability(input)
     expect(result.classification).toBe('attention')
   })

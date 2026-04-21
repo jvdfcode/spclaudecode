@@ -14,7 +14,7 @@ export const ML_API = {
 export const ML_FEES = {
   free:    0,
   classic: 11,
-  premium: 16,
+  premium: 17,
 } as const
 
 // Taxas por categoria — Clássico e Premium (verificadas abril 2026)
