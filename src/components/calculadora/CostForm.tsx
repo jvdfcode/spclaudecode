@@ -14,6 +14,7 @@ import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
 import ResultsPanel from './ResultsPanel'
 import ScenarioTable from './ScenarioTable'
+import SaveSkuButton from './SaveSkuButton'
 
 const defaultInput: ViabilityInput = {
   productCost: 0,
@@ -267,9 +268,12 @@ export default function CostForm() {
       </div>
 
       {/* ─── RESULTADO ─── */}
-      <div className="lg:sticky lg:top-6 self-start">
+      <div className="lg:sticky lg:top-6 self-start space-y-4">
         {result ? (
-          <ResultsPanel result={result} />
+          <>
+            <ResultsPanel result={result} />
+            <SaveSkuButton input={input} result={result} />
+          </>
         ) : (
           <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 p-10 text-center gap-3">
             <span className="text-4xl">🧮</span>
