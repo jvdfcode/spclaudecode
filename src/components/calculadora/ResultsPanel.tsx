@@ -48,7 +48,7 @@ export default function ResultsPanel({ result }: Props) {
   // Barra de margem: 0-50% mapeado para 0-100% da barra
   const marginBarPct = Math.max(0, Math.min(100, (metrics.marginPercent / 50) * 100))
   const isNotViable = classification === 'not_viable'
-  const gapToViable = metrics.minimumViablePrice - input.salePrice
+  const gapToViable = metrics.priceGapToViable
 
   return (
     <div className={cn('rounded-xl border-2 overflow-hidden shadow-sm', c.border)}>

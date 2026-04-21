@@ -34,11 +34,11 @@ export function cleanListings(
     result = result.filter(l => !KIT_REGEX.test(l.title))
   }
 
-  // Filtro de condição (MlListing não tem campo condition, filtramos por presença em título)
+  // Filtro de condição — usa campo oficial da ML API
   if (options.condition === 'used') {
-    result = result.filter(l => /\busado\b|\bsemi.?novo\b/i.test(l.title))
+    result = result.filter(l => l.condition === 'used')
   } else if (options.condition === 'new') {
-    result = result.filter(l => !/\busado\b|\bsemi.?novo\b/i.test(l.title))
+    result = result.filter(l => l.condition === 'new')
   }
 
   // Filtro de frete grátis

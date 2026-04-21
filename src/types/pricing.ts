@@ -42,9 +42,10 @@ export interface ProfitabilityMetrics {
   profit: number              // pode ser negativo
   marginPercent: number       // pode ser negativo
   roiPercent: number          // pode ser negativo
-  minimumViablePrice: number  // preço onde lucro = 0 (break-even = margem mínima)
+  minimumViablePrice: number  // preço onde lucro = 0
   recommendedPrice: number    // onde margem = targetMargin
-  breakEvenUnits: number | null // unidades/mês para cobrir custo fixo mensal (null se monthlyFixedCost=0)
+  priceGapToViable: number    // minimumViablePrice - salePrice (negativo = já é viável)
+  breakEvenUnits: number | null
 }
 
 export interface ViabilityResult {

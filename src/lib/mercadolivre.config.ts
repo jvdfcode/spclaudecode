@@ -91,6 +91,8 @@ export function getCategoryFee(categoryId: string | null | undefined, listingTyp
 }
 
 // Custo de parcelamento ADICIONAL à comissão base (em %)
+// Fonte secundária: https://www.mercadolivre.com.br/ajuda/custo-parcelamento_3077
+// Valores verificados abril 2026 via gosmarter.com.br e koncili.com
 export const ML_INSTALLMENT_FEES = {
   free: {
     1: 0,

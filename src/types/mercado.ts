@@ -5,6 +5,7 @@ export interface MlListing {
   title: string
   price: number
   currencyId: string        // 'BRL'
+  condition: 'new' | 'used' | 'not_specified'
   freeShipping: boolean
   isFulfillment: boolean    // Full
   sellerReputation: string | null
@@ -25,6 +26,7 @@ export interface MlRawResponse {
     title: string
     price: number
     currency_id: string
+    condition: 'new' | 'used' | 'not_specified'
     shipping: { free_shipping: boolean; logistic_type: string }
     seller: { seller_reputation?: { level_id: string } }
     sold_quantity: number

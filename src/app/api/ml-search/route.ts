@@ -4,6 +4,21 @@ import type { MlListing, MlRawResponse } from '@/types'
 
 const ML_SEARCH_URL = 'https://api.mercadolibre.com/sites/MLB/search'
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hora
+const RATE_LIMIT_MS = 1100           // ML API: máx ~1 req/s
+
+// Rate limiter simples em memória (por processo Node)
+// Suficiente para ambiente de desenvolvimento e single-instance.
+// Em multi-instance (Vercel), o cache Supabase de 1h já é a proteção principal.
+let lastRequestAt = 0
+
+async function throttle(): Promise<void> {
+  const now = Date.now()
+  const elapsed = now - lastRequestAt
+  if (elapsed < RATE_LIMIT_MS) {
+    await new Promise(r => setTimeout(r, RATE_LIMIT_MS - elapsed))
+  }
+  lastRequestAt = Date.now()
+}
 
 function hashQuery(q: string): string {
   // hash simples e determinístico para o cache key
@@ -20,6 +35,7 @@ function mapListings(raw: MlRawResponse): MlListing[] {
     title: r.title,
     price: r.price,
     currencyId: r.currency_id,
+    condition: r.condition ?? 'not_specified',
     freeShipping: r.shipping?.free_shipping ?? false,
     isFulfillment: r.shipping?.logistic_type === 'fulfillment',
     sellerReputation: r.seller?.seller_reputation?.level_id ?? null,
@@ -51,6 +67,7 @@ export async function GET(req: NextRequest) {
 
   // Buscar na ML API
   try {
+    await throttle()
     const url = `${ML_SEARCH_URL}?q=${encodeURIComponent(q)}&limit=50`
     const res = await fetch(url, {
       headers: { 'Accept': 'application/json' },

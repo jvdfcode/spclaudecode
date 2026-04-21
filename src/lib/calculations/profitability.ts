@@ -19,6 +19,7 @@ export function calculateProfitabilityMetrics(
 
   const minimumViablePrice = findPriceForMargin(input, 0)
   const recommendedPrice = findPriceForMargin(input, targetMargin)
+  const priceGapToViable = minimumViablePrice - salePrice
 
   return {
     totalCost,
@@ -27,6 +28,7 @@ export function calculateProfitabilityMetrics(
     roiPercent,
     minimumViablePrice,
     recommendedPrice,
+    priceGapToViable,
     breakEvenUnits,
   }
 }
