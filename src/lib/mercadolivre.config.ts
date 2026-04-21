@@ -56,15 +56,30 @@ export const ML_CATEGORY_FEES: MlCategoryFee[] = [
 ]
 
 // Custo fixo por item vendido (aplica quando preço de venda < R$79)
-// Fonte: verificado abril 2026
+// Fonte: múltiplas fontes cruzadas, verificado abril 2026
+// ATENÇÃO: Para Envios Full + preço < R$79, a partir de março/2026 o custo passou a
+// ser VARIÁVEL (por peso/dimensão/preço). Nesses casos o usuário deve inserir manualmente.
 export const ML_FIXED_COST = [
-  { minPrice: 10,    maxPrice: 20,    cost: 5.50 },
-  { minPrice: 20.01, maxPrice: 78.99, cost: 6.00 },
+  { minPrice: 0,     maxPrice: 12.49, cost: null as null }, // 50% do valor (variável)
+  { minPrice: 12.50, maxPrice: 28.99, cost: 6.25 },
+  { minPrice: 29.00, maxPrice: 49.99, cost: 6.50 },
+  { minPrice: 50.00, maxPrice: 78.99, cost: 6.75 },
 ] as const
 
 export function getFixedCost(salePrice: number): number {
-  const rule = ML_FIXED_COST.find(r => salePrice >= r.minPrice && salePrice <= r.maxPrice)
+  if (salePrice <= 0 || salePrice >= 79) return 0
+  if (salePrice < 12.50) return salePrice * 0.5  // 50% do valor
+  const rule = (ML_FIXED_COST as readonly { minPrice: number; maxPrice: number; cost: number | null }[])
+    .find(r => r.cost !== null && salePrice >= r.minPrice && salePrice <= r.maxPrice)
   return rule?.cost ?? 0
+}
+
+export function getFixedCostLabel(salePrice: number): string | null {
+  if (salePrice <= 0 || salePrice >= 79) return null
+  if (salePrice < 12.50) return `50% do valor = ${(salePrice * 0.5).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}`
+  if (salePrice < 29) return 'R$ 6,25 por unidade'
+  if (salePrice < 50) return 'R$ 6,50 por unidade'
+  return 'R$ 6,75 por unidade'
 }
 
 export function getCategoryFee(categoryId: string | null | undefined, listingType: 'classic' | 'premium' | 'free'): number {
