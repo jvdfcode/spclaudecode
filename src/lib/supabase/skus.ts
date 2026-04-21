@@ -78,6 +78,26 @@ export async function saveSku(
   return { sku: mapSku(skuRow), calculation: mapCalc(calcRow) }
 }
 
+export async function getSkuById(id: string): Promise<(Sku & { calculations: SkuCalculation[] }) | null> {
+  const supabase = await createServerSupabase()
+
+  const { data, error } = await supabase
+    .from('skus')
+    .select(`*, sku_calculations (*)`)
+    .eq('id', id)
+    .single()
+
+  if (error || !data) return null
+
+  const calcs: DbSkuCalculation[] = (data.sku_calculations as DbSkuCalculation[]) ?? []
+  return {
+    ...mapSku(data as DbSku),
+    calculations: calcs
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .map(mapCalc),
+  }
+}
+
 export async function listSkus(): Promise<SkuWithLatestCalc[]> {
   const supabase = await createServerSupabase()
 

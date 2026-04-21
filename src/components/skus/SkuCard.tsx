@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import type { SkuWithLatestCalc } from '@/types/sku'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
@@ -21,8 +22,8 @@ export default function SkuCard({ sku }: Props) {
   const price  = calc?.salePrice ?? null
 
   return (
-    <div className={cn(
-      'rounded-xl border-2 bg-white p-4 space-y-3 hover:shadow-md transition-shadow',
+    <Link href={`/skus/${sku.id}`} className={cn(
+      'block rounded-xl border-2 bg-white p-4 space-y-3 hover:shadow-md transition-shadow',
       s.border
     )}>
       {/* Header */}
@@ -53,7 +54,7 @@ export default function SkuCard({ sku }: Props) {
       <p className="text-[11px] text-gray-300">
         {new Date(sku.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
       </p>
-    </div>
+    </Link>
   )
 }
 
