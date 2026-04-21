@@ -1,15 +1,47 @@
 {
   "name": "smartpreco",
   "version": "0.1.0",
-  "description": "Sistema de apoio à decisão de preço para marketplace",
+  "private": true,
   "scripts": {
-    "dev": "echo 'Add your dev script'",
-    "build": "echo 'Add your build script'",
-    "test": "echo 'Add your test script'",
-    "lint": "echo 'Add your lint script'",
-    "typecheck": "echo 'Add your typecheck script'"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["marketplace", "pricing", "mercado-livre"],
-  "author": "jvdfcode",
-  "license": "ISC"
+  "dependencies": {
+    "@base-ui/react": "^1.4.1",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.104.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.8.0",
+    "next": "^14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "shadcn": "^4.3.1",
+    "tailwind-merge": "^3.5.0",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.3",
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.4",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
+    "jsdom": "^29.0.2",
+    "postcss": "^8.5.10",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "tailwindcss": "^4.2.3",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.4"
+  }
 }

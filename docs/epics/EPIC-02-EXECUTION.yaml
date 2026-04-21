@@ -21,12 +21,20 @@ epic:
     - Indicador visual de saúde (verde/amarelo/vermelho) baseado na margem
 
   stories:
+    - id: "2.0"
+      title: "Motor de Cálculo Financeiro (Pure TypeScript)"
+      status: draft
+      agent: "@dev"
+      estimated_effort: M
+      dependencies: ["1.5", "1.6"]
+      note: "BASE INVISÍVEL — zero UI, zero banco, zero React. Funções puras + testes Vitest."
+
     - id: "2.1"
       title: "Formulário de Entrada de Custos"
       status: draft
       agent: "@dev"
       estimated_effort: M
-      dependencies: ["1.4"]
+      dependencies: ["1.4", "2.0"]
 
     - id: "2.2"
       title: "Configuração de Taxas ML"
@@ -43,9 +51,11 @@ epic:
       dependencies: ["2.1", "2.2"]
 
   execution:
-    wave_1: ["2.1"]
-    wave_2: ["2.2"]
-    wave_3: ["2.3"]
+    wave_1: ["2.0"]
+    wave_2: ["2.1"]
+    wave_3: ["2.2"]
+    wave_4: ["2.3"]
+    note: "Wave 1 é pure TypeScript. UI começa apenas na Wave 2, após motor testado."
 
   tech_notes:
     - "Cálculos: client-side com React state (zero latência)"

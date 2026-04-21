@@ -1,29 +1,34 @@
+# Dependencies
+node_modules/
+.pnpm-store/
 
+# Next.js
+.next/
+out/
+build/
 
-# Environment & Secrets (AIOX)
-.env
+# Environment — NUNCA commitar
 .env.local
 .env.*.local
-*.key
+
+# Debug
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
 *.pem
 
-# Dependencies (AIOX)
-node_modules/
-node_modules
+# Vercel
+.vercel
 
-# Build & Logs (AIOX)
-dist/
-build/
-*.log
-logs/
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
-# IDE & OS (AIOX)
-.DS_Store
-Thumbs.db
-.idea/
-*.swp
+# Testing
+coverage/
 
-# AIOX Local (AIOX)
-.aiox-core/local/
-.claude/settings.local.json
-.aiox/install-log.txt
+# AIOX
+.aiox/handoffs/
+.aiox/sessions/
