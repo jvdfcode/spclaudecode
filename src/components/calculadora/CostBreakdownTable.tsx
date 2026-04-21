@@ -6,13 +6,14 @@ interface Props {
 }
 
 const rows = [
-  { key: 'acquisition', label: 'Custo do Produto (CMV)' },
-  { key: 'commission', label: 'Comissão ML' },
+  { key: 'acquisition',  label: 'Custo do Produto (CMV)' },
+  { key: 'commission',   label: 'Comissão ML' },
   { key: 'installmentFee', label: 'Custo de Parcelamento' },
-  { key: 'shipping', label: 'Frete' },
-  { key: 'packaging', label: 'Embalagem' },
-  { key: 'tax', label: 'Impostos' },
-  { key: 'overhead', label: 'Overhead' },
+  { key: 'shipping',     label: 'Frete' },
+  { key: 'packaging',    label: 'Embalagem' },
+  { key: 'tax',          label: 'Impostos' },
+  { key: 'overhead',     label: 'Overhead' },
+  { key: 'fixedCost',    label: 'Custo Fixo ML (item < R$79)' },
 ] as const
 
 export default function CostBreakdownTable({ breakdown }: Props) {

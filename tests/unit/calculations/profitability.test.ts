@@ -14,6 +14,8 @@ const base: ViabilityInput = {
   salePrice: 99.90,
   listingType: 'classic',
   installments: 1,
+  categoryId: null,
+  commissionOverride: null,
 }
 
 describe('calculateProfitabilityMetrics', () => {

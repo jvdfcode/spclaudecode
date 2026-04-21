@@ -1,18 +1,25 @@
-import { ML_FEES, ML_INSTALLMENT_FEES } from '@/lib/mercadolivre.config'
+import { ML_INSTALLMENT_FEES, getCategoryFee, getFixedCost } from '@/lib/mercadolivre.config'
 import type { ViabilityInput, CostBreakdown, MlFeesMap } from '@/types'
 
 export function calculateCostBreakdown(input: ViabilityInput, fees?: MlFeesMap): CostBreakdown {
   const { productCost, shippingCost, packagingCost, taxRate, overheadRate,
-          salePrice, listingType, installments } = input
+          salePrice, listingType, installments, categoryId, commissionOverride } = input
 
   if (salePrice < 0) throw new Error('salePrice não pode ser negativo')
   if (installments < 1 || installments > 12)
     throw new Error('installments deve estar entre 1 e 12')
 
-  const baseRate = fees
-    ? (fees.base[listingType] ?? ML_FEES[listingType]) / 100
-    : ML_FEES[listingType] / 100
-  const commission = salePrice * baseRate
+  // Resolução de taxa de comissão: override manual > DB > categoria hardcoded > geral hardcoded
+  let effectiveCommissionPct: number
+  if (commissionOverride !== null && commissionOverride !== undefined) {
+    effectiveCommissionPct = commissionOverride
+  } else if (fees) {
+    effectiveCommissionPct = fees.base[listingType] ?? getCategoryFee(categoryId, listingType)
+  } else {
+    effectiveCommissionPct = getCategoryFee(categoryId, listingType)
+  }
+
+  const commission = salePrice * effectiveCommissionPct / 100
 
   const installmentTable = fees
     ? (fees.installment[listingType] ?? {})
@@ -22,10 +29,11 @@ export function calculateCostBreakdown(input: ViabilityInput, fees?: MlFeesMap):
 
   const tax = salePrice * taxRate
   const overhead = salePrice * overheadRate
+  const fixedCost = getFixedCost(salePrice)
 
   const total =
     productCost + commission + installmentFee +
-    shippingCost + packagingCost + tax + overhead
+    shippingCost + packagingCost + tax + overhead + fixedCost
 
   return {
     acquisition: productCost,
@@ -35,6 +43,8 @@ export function calculateCostBreakdown(input: ViabilityInput, fees?: MlFeesMap):
     packaging: packagingCost,
     tax,
     overhead,
+    fixedCost,
     total,
+    effectiveCommissionPct,
   }
 }

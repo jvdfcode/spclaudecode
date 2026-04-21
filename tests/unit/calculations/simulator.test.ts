@@ -13,6 +13,8 @@ const base: ViabilityInput = {
   salePrice: 100,
   listingType: 'classic',
   installments: 1,
+  categoryId: null,
+  commissionOverride: null,
 }
 
 describe('generateScenarios', () => {
