@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils/cn'
 import ResultsPanel from './ResultsPanel'
+import ScenarioTable from './ScenarioTable'
 
 const defaultInput: ViabilityInput = {
   productCost: 0,
@@ -73,6 +74,7 @@ export default function CostForm() {
     setInput(prev => ({ ...prev, shippingMode: mode, shippingCost: mode === 'none' ? 0 : prev.shippingCost }))
 
   return (
+    <div className="space-y-6">
     <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
 
       {/* ─── FORMULÁRIO ─── */}
@@ -276,6 +278,10 @@ export default function CostForm() {
           </div>
         )}
       </div>
+    </div>
+
+    {/* ─── TABELA DE CENÁRIOS ─── */}
+    <ScenarioTable input={input} fees={fees} targetMargin={input.targetMargin} />
     </div>
   )
 }
