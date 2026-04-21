@@ -5,7 +5,7 @@ import type { ViabilityInput, ListingType } from '@/types'
 import { calculateViability } from '@/lib/calculations'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { cn } from '@/lib/utils/cn'
 import ResultsPanel from './ResultsPanel'
 
 const defaultInput: ViabilityInput = {
@@ -32,14 +32,12 @@ export default function CostForm() {
     }
   }, [input])
 
-  const setNum = (field: keyof ViabilityInput, raw: string) => {
-    const value = parseFloat(raw) || 0
-    setInput(prev => ({ ...prev, [field]: value }))
+  const setNum = (field: keyof ViabilityInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(prev => ({ ...prev, [field]: parseFloat(e.target.value) || 0 }))
   }
 
-  const setPercent = (field: keyof ViabilityInput, raw: string) => {
-    const value = (parseFloat(raw) || 0) / 100
-    setInput(prev => ({ ...prev, [field]: value }))
+  const setPercent = (field: keyof ViabilityInput) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(prev => ({ ...prev, [field]: (parseFloat(e.target.value) || 0) / 100 }))
   }
 
   return (
@@ -51,67 +49,62 @@ export default function CostForm() {
         <div className="grid grid-cols-2 gap-4">
           <Field label="Custo do Produto (CMV)" hint="R$">
             <Input type="number" min={0} step={0.01} placeholder="0,00"
-              onChange={e => setNum('productCost', e.target.value)} />
+              onChange={setNum('productCost')} />
           </Field>
 
           <Field label="Preço de Venda" hint="R$">
             <Input type="number" min={0} step={0.01} placeholder="0,00"
-              onChange={e => setNum('salePrice', e.target.value)} />
+              onChange={setNum('salePrice')} />
           </Field>
 
           <Field label="Embalagem" hint="R$">
             <Input type="number" min={0} step={0.01} placeholder="0,00"
-              onChange={e => setNum('packagingCost', e.target.value)} />
+              onChange={setNum('packagingCost')} />
           </Field>
 
           <Field label="Frete" hint="R$">
             <Input type="number" min={0} step={0.01} placeholder="0,00"
-              onChange={e => setNum('shippingCost', e.target.value)} />
+              onChange={setNum('shippingCost')} />
           </Field>
 
           <Field label="Imposto sobre venda" hint="%">
             <Input type="number" min={0} max={100} step={0.1} defaultValue={6}
-              onChange={e => setPercent('taxRate', e.target.value)} />
+              onChange={setPercent('taxRate')} />
           </Field>
 
           <Field label="Overhead" hint="%">
             <Input type="number" min={0} max={100} step={0.1} defaultValue={5}
-              onChange={e => setPercent('overheadRate', e.target.value)} />
+              onChange={setPercent('overheadRate')} />
           </Field>
 
           <Field label="Margem alvo" hint="%">
             <Input type="number" min={0} max={100} step={0.1} defaultValue={20}
-              onChange={e => setPercent('targetMargin', e.target.value)} />
+              onChange={setPercent('targetMargin')} />
           </Field>
         </div>
 
         <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
           <Field label="Tipo de Anúncio">
-            <Select defaultValue="classic"
-              onValueChange={v => setInput(prev => ({ ...prev, listingType: v as ListingType }))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="free">Gratuito (0%)</SelectItem>
-                <SelectItem value="classic">Clássico (11%)</SelectItem>
-                <SelectItem value="premium">Premium (17%)</SelectItem>
-              </SelectContent>
-            </Select>
+            <NativeSelect
+              defaultValue="classic"
+              onChange={e => setInput(prev => ({ ...prev, listingType: e.target.value as ListingType }))}
+              options={[
+                { value: 'free', label: 'Gratuito (0%)' },
+                { value: 'classic', label: 'Clássico (11%)' },
+                { value: 'premium', label: 'Premium (17%)' },
+              ]}
+            />
           </Field>
 
           <Field label="Parcelas">
-            <Select defaultValue="1"
-              onValueChange={(v) => v && setInput(prev => ({ ...prev, installments: parseInt(v) }))}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 12 }, (_, i) => i + 1).map(n => (
-                  <SelectItem key={n} value={String(n)}>{n}x</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <NativeSelect
+              defaultValue="1"
+              onChange={e => setInput(prev => ({ ...prev, installments: parseInt(e.target.value) }))}
+              options={Array.from({ length: 12 }, (_, i) => ({
+                value: String(i + 1),
+                label: `${i + 1}x`,
+              }))}
+            />
           </Field>
         </div>
       </div>
@@ -121,7 +114,7 @@ export default function CostForm() {
         {result ? (
           <ResultsPanel result={result} />
         ) : (
-          <div className="flex h-full min-h-48 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 text-gray-400">
+          <div className="flex h-full min-h-48 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 p-6 text-center text-gray-400">
             <p className="text-sm">Preencha o custo do produto e o preço de venda para ver o resultado</p>
           </div>
         )}
@@ -138,5 +131,32 @@ function Field({ label, hint, children }: { label: string; hint?: string; childr
       </Label>
       {children}
     </div>
+  )
+}
+
+function NativeSelect({
+  options,
+  defaultValue,
+  onChange,
+}: {
+  options: { value: string; label: string }[]
+  defaultValue?: string
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void
+}) {
+  return (
+    <select
+      defaultValue={defaultValue}
+      onChange={onChange}
+      className={cn(
+        'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1',
+        'text-sm shadow-sm transition-colors',
+        'focus:outline-none focus:ring-1 focus:ring-ring',
+        'disabled:cursor-not-allowed disabled:opacity-50'
+      )}
+    >
+      {options.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
   )
 }
