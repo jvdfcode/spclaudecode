@@ -19,13 +19,15 @@ export default function SaveSkuButton({ input, result }: Props) {
   const [notes, setNotes] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
+  const [savedId, setSavedId] = useState<string | null>(null)
+
   async function handleSave() {
     if (!name.trim()) return
     setState('saving')
     const res = await saveSkuAction(name, notes || undefined, input, result)
     if (res.ok) {
+      setSavedId(res.skuId)
       setState('saved')
-      setTimeout(() => { setState('idle'); setName(''); setNotes('') }, 3000)
     } else {
       setErrorMsg(res.error)
       setState('error')
@@ -34,9 +36,31 @@ export default function SaveSkuButton({ input, result }: Props) {
 
   if (state === 'saved') {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3">
-        <span className="text-green-600 font-bold">✓</span>
-        <span className="text-sm font-medium text-green-700">SKU salvo com sucesso!</span>
+      <div className="rounded-xl border border-green-200 bg-green-50 p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-green-600 font-bold text-lg">✓</span>
+          <span className="text-sm font-semibold text-green-700">SKU salvo com sucesso!</span>
+        </div>
+        <div className="flex gap-2">
+          <a
+            href={`/skus/${savedId}`}
+            className="flex-1 rounded-lg bg-green-600 py-2 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+          >
+            Ver SKU
+          </a>
+          <a
+            href="/skus"
+            className="flex-1 rounded-lg border border-green-300 py-2 text-center text-sm font-medium text-green-700 hover:bg-green-100 transition-colors"
+          >
+            Meus SKUs
+          </a>
+        </div>
+        <button
+          onClick={() => { setState('idle'); setName(''); setNotes(''); setSavedId(null) }}
+          className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          Fazer novo cálculo
+        </button>
       </div>
     )
   }

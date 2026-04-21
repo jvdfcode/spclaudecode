@@ -43,6 +43,11 @@ export async function saveSku(
 ): Promise<{ sku: Sku; calculation: SkuCalculation }> {
   const supabase = await createServerSupabase()
 
+  const { data: { user }, error: authErr } = await supabase.auth.getUser()
+  if (authErr || !user) throw new Error('Usuário não autenticado')
+
+  if (!name.trim()) throw new Error('Nome do SKU é obrigatório')
+
   const status = result.classification === 'viable'
     ? 'viable'
     : result.classification === 'attention'
@@ -51,7 +56,7 @@ export async function saveSku(
 
   const { data: skuRow, error: skuErr } = await supabase
     .from('skus')
-    .insert({ name: name.trim(), notes: notes?.trim() || null, status })
+    .insert({ user_id: user.id, name: name.trim(), notes: notes?.trim() || null, status })
     .select()
     .single()
 

@@ -58,4 +58,25 @@ describe('calculateProfitabilityMetrics', () => {
     const actualMargin = ((metrics.minimumViablePrice - testCosts.total) / metrics.minimumViablePrice) * 100
     expect(Math.abs(actualMargin)).toBeLessThan(1)
   })
+
+  it('breakEvenUnits = null quando monthlyFixedCost = 0', () => {
+    const costs = calculateCostBreakdown(base)
+    const metrics = calculateProfitabilityMetrics(base, costs)
+    expect(metrics.breakEvenUnits).toBeNull()
+  })
+
+  it('breakEvenUnits × profit ≥ monthlyFixedCost', () => {
+    const input = { ...base, monthlyFixedCost: 1000 }
+    const costs = calculateCostBreakdown(input)
+    const metrics = calculateProfitabilityMetrics(input, costs)
+    expect(metrics.breakEvenUnits).not.toBeNull()
+    expect(metrics.breakEvenUnits! * metrics.profit).toBeGreaterThanOrEqual(1000)
+  })
+
+  it('breakEvenUnits = null quando produto tem prejuízo', () => {
+    const input = { ...base, salePrice: 50, productCost: 80, monthlyFixedCost: 500 }
+    const costs = calculateCostBreakdown(input)
+    const metrics = calculateProfitabilityMetrics(input, costs)
+    expect(metrics.breakEvenUnits).toBeNull()
+  })
 })
