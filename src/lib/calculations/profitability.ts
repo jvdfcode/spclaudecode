@@ -5,12 +5,22 @@ export function calculateProfitabilityMetrics(
   input: ViabilityInput,
   costs: CostBreakdown
 ): ProfitabilityMetrics {
-  const { salePrice, targetMargin } = input
+  const { salePrice, targetMargin, monthlyFixedCost } = input
   const { total: totalCost } = costs
 
   const profit = salePrice - totalCost
   const marginPercent = salePrice > 0 ? (profit / salePrice) * 100 : 0
   const roiPercent = totalCost > 0 ? (profit / totalCost) * 100 : 0
+
+  // Margem de contribuição = preço - custos variáveis por unidade
+  // (exclui custos fixos mensais que não entram no cálculo por unidade)
+  const contributionMargin = profit
+
+  // Break-even em unidades: quantas unidades/mês para cobrir o custo fixo mensal
+  const breakEvenUnits =
+    monthlyFixedCost > 0 && contributionMargin > 0
+      ? Math.ceil(monthlyFixedCost / contributionMargin)
+      : null
 
   const breakEvenPrice = findPriceForMargin(input, 0)
   const minimumViablePrice = breakEvenPrice
@@ -25,6 +35,8 @@ export function calculateProfitabilityMetrics(
     breakEvenPrice,
     minimumViablePrice,
     recommendedPrice,
+    contributionMargin,
+    breakEvenUnits,
   }
 }
 

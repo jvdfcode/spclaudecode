@@ -13,8 +13,9 @@ export interface ViabilityInput {
   salePrice: number                // preço de venda a testar
   listingType: ListingType
   installments: number             // 1 a 12
-  categoryId: string | null        // categoria ML para lookup de taxa
-  commissionOverride: number | null // taxa manual em % (substitui lookup quando não-null)
+  categoryId: string | null         // categoria ML para lookup de taxa
+  commissionOverride: number | null  // taxa manual em % (substitui lookup quando não-null)
+  monthlyFixedCost: number           // custos fixos mensais do vendedor (aluguel, pessoal, etc.) em R$
 }
 
 // Mapa de taxas carregado do banco (ou fallback hardcoded)
@@ -39,12 +40,14 @@ export interface CostBreakdown {
 export interface ProfitabilityMetrics {
   grossRevenue: number
   totalCost: number
-  profit: number            // pode ser negativo
-  marginPercent: number     // pode ser negativo
-  roiPercent: number        // pode ser negativo
+  profit: number              // pode ser negativo
+  marginPercent: number       // pode ser negativo
+  roiPercent: number          // pode ser negativo
   breakEvenPrice: number
   minimumViablePrice: number  // onde margem = 0%
   recommendedPrice: number    // onde margem = targetMargin
+  contributionMargin: number  // preço - custos variáveis por unidade
+  breakEvenUnits: number | null // unidades/mês para cobrir custo fixo mensal (null se monthlyFixedCost=0)
 }
 
 export interface ViabilityResult {

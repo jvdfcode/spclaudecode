@@ -15,6 +15,7 @@ const viableInput: ViabilityInput = {
   installments: 1,
   categoryId: null,
   commissionOverride: null,
+  monthlyFixedCost: 0,
 }
 
 describe('calculateViability (engine)', () => {

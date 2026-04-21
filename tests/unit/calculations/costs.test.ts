@@ -15,6 +15,7 @@ const base: ViabilityInput = {
   installments: 1,
   categoryId: null,
   commissionOverride: null,
+  monthlyFixedCost: 0,
 }
 
 describe('calculateCostBreakdown', () => {

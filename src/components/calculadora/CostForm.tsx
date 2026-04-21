@@ -27,6 +27,7 @@ const defaultInput: ViabilityInput = {
   installments: 1,
   categoryId: null,
   commissionOverride: null,
+  monthlyFixedCost: 0,
 }
 
 export default function CostForm() {
@@ -97,6 +98,9 @@ export default function CostForm() {
             </Field>
             <Field label="Margem alvo" hint="% mínima para considerar viável" suffix="%">
               <Input type="number" min={0} max={100} step={0.1} defaultValue={20} onChange={setPercent('targetMargin')} />
+            </Field>
+            <Field label="Custo fixo mensal" hint="Aluguel, funcionários, energia — para calcular quantas unidades/mês você precisa vender" suffix="R$">
+              <Input type="number" min={0} step={1} placeholder="0,00" onChange={setNum('monthlyFixedCost')} />
             </Field>
           </div>
         </Section>
