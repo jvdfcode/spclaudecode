@@ -108,22 +108,16 @@ export default function ResultsPanel({ result }: Props) {
           <MetricCard
             label="Custo Total"
             value={formatBRL(costBreakdown.total)}
-            formula={`CMV + Comissão ML + Parcelamento\n+ Frete + Embalagem + Imposto\n+ Overhead + Custo fixo ML`}
+            formula={`CMV + Comissão ML + Parcelamento\n+ Frete + Embalagem + Imposto + Overhead`}
           />
         </div>
 
         {/* Preços de referência */}
         <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 overflow-hidden">
           <PriceLine
-            label="Break-even"
-            hint="Preço onde lucro = R$0,00"
-            formula={`Custos totais variáveis ÷ (1 − taxas percentuais)\nAbaixo disso você tem prejuízo`}
-            value={formatBRL(metrics.breakEvenPrice)}
-          />
-          <PriceLine
             label="Preço Mínimo Viável"
-            hint="Onde a margem = 0%"
-            formula={`Menor preço que cobre todos os custos.\nAbaixo = prejuízo`}
+            hint="Menor preço que cobre todos os custos (lucro = R$0,00)"
+            formula={`Busca iterativa: menor salePrice onde profit ≥ 0\nAbaixo disso você tem prejuízo`}
             value={formatBRL(metrics.minimumViablePrice)}
           />
           <PriceLine

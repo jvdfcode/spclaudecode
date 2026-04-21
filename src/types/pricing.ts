@@ -38,15 +38,12 @@ export interface CostBreakdown {
 }
 
 export interface ProfitabilityMetrics {
-  grossRevenue: number
   totalCost: number
   profit: number              // pode ser negativo
   marginPercent: number       // pode ser negativo
   roiPercent: number          // pode ser negativo
-  breakEvenPrice: number
-  minimumViablePrice: number  // onde margem = 0%
+  minimumViablePrice: number  // preço onde lucro = 0 (break-even = margem mínima)
   recommendedPrice: number    // onde margem = targetMargin
-  contributionMargin: number  // preço - custos variáveis por unidade
   breakEvenUnits: number | null // unidades/mês para cobrir custo fixo mensal (null se monthlyFixedCost=0)
 }
 
