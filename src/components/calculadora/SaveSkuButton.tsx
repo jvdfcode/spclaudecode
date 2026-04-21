@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import { saveSkuAction } from '@/app/(app)/calculadora/actions'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 interface Props {
   input: ViabilityInput

@@ -1,6 +1,6 @@
 import type { MlListing } from '@/types'
 import { formatBRL } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 const reputationCfg: Record<string, { label: string; color: string }> = {
   '5_green':  { label: 'Excelente', color: 'text-green-600' },

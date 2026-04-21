@@ -1,6 +1,6 @@
 import type { MarketSummary, PositionBadge } from '@/types'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 const positionCfg: Record<PositionBadge, { label: string; desc: string; bg: string; text: string; border: string }> = {
   below:   { label: 'Abaixo do mercado',  desc: 'Preço menor que 75% da concorrência',  bg: 'bg-blue-50',   text: 'text-blue-700',   border: 'border-blue-200'   },

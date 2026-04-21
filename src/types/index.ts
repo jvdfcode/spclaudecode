@@ -25,11 +25,9 @@ export type {
 export type {
   PositionBadge,
   MlListing,
-  MlSearchQuery,
   MlRawResponse,
   CleanedSearchResult,
   MarketSummary,
-  MlSearchResult,
 } from './mercado'
 
 // Tipos do banco de dados

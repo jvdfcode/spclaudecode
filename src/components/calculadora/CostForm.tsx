@@ -11,7 +11,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 import ResultsPanel from './ResultsPanel'
 import ScenarioTable from './ScenarioTable'
 import SaveSkuButton from './SaveSkuButton'

@@ -8,7 +8,7 @@ import { analyzeListings, getPositionBadge, fullCount } from '@/lib/mercadolivre
 import MarketSummaryPanel from './MarketSummaryPanel'
 import PriceDistributionChart from './PriceDistributionChart'
 import ListingCard from './ListingCard'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 interface Props {
   initialSalePrice?: number
@@ -23,7 +23,7 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
   const [errorMsg, setErrorMsg]     = useState('')
   const [rawListings, setRaw]       = useState<MlListing[]>([])
   const [wasCached, setWasCached]   = useState(false)
-  const [salePrice]                 = useState<number | undefined>(initialSalePrice)
+  const salePrice                   = initialSalePrice
   const [excludedIds, setExcluded]  = useState<Set<string>>(new Set())
 
   const [opts, setOpts] = useState<Omit<CleanOptions, 'excludedIds'>>({

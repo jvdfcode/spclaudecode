@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getSkuById } from '@/lib/supabase/skus'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 import type { SkuCalculation } from '@/types/sku'
 
 interface Props {

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import type { ViabilityInput, MlFeesMap } from '@/types'
 import { generateScenarios } from '@/lib/calculations'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 interface Props {
   input: ViabilityInput

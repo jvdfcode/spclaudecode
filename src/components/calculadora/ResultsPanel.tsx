@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import type { ViabilityResult } from '@/types'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 import CostBreakdownTable from './CostBreakdownTable'
 
 interface Props {

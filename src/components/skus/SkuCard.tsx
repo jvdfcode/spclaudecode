@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { SkuWithLatestCalc } from '@/types/sku'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
-import { cn } from '@/lib/utils/cn'
+import { cn } from '@/lib/utils'
 
 const statusCfg = {
   viable:    { label: 'Viável',      bg: 'bg-green-100',  text: 'text-green-700',  border: 'border-green-200',  dot: 'bg-green-400' },

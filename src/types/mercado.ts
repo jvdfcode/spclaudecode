@@ -14,12 +14,6 @@ export interface MlListing {
   permalink: string
 }
 
-export interface MlSearchQuery {
-  query: string
-  limit?: number            // default 50
-  condition?: 'new' | 'used' | 'not_specified'
-}
-
 export interface MlRawResponse {
   results: Array<{
     id: string
@@ -54,11 +48,3 @@ export interface MarketSummary {
   p75Price: number
 }
 
-export interface MlSearchResult {
-  query: string
-  cleaned: CleanedSearchResult
-  summary: MarketSummary
-  positionBadge: PositionBadge | null   // null se salePrice não fornecido
-  cachedAt: string
-  expiresAt: string
-}
