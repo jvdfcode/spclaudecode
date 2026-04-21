@@ -1,9 +1,11 @@
 export type ListingType = 'free' | 'classic' | 'premium'
 export type ViabilityClassification = 'viable' | 'attention' | 'not_viable'
+export type ShippingMode = 'none' | 'envios' | 'full'
 
 export interface ViabilityInput {
   productCost: number       // CMV — custo de aquisição do produto
-  shippingCost: number      // custo de frete
+  shippingCost: number      // custo de frete (0 quando shippingMode='none')
+  shippingMode: ShippingMode
   packagingCost: number     // embalagem e materiais
   taxRate: number           // imposto sobre venda (0-1, ex: 0.06 = 6%)
   overheadRate: number      // overhead geral (0-1, ex: 0.05 = 5%)
@@ -11,6 +13,12 @@ export interface ViabilityInput {
   salePrice: number         // preço de venda a testar
   listingType: ListingType
   installments: number      // 1 a 12
+}
+
+// Mapa de taxas carregado do banco (ou fallback hardcoded)
+export interface MlFeesMap {
+  base: Record<ListingType, number>                            // taxa por tipo (1x)
+  installment: Record<ListingType, Record<number, number>>     // custo adicional por parcelas
 }
 
 export interface CostBreakdown {

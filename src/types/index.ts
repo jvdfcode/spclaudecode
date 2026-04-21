@@ -1,12 +1,14 @@
 // Tipos de cálculo financeiro
 export type {
   ListingType,
+  ShippingMode,
   ViabilityClassification,
   ViabilityInput,
   CostBreakdown,
   ProfitabilityMetrics,
   ViabilityResult,
   SimulationScenario,
+  MlFeesMap,
 } from './pricing'
 
 // Tipos de SKU

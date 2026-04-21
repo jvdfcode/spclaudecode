@@ -5,6 +5,7 @@ import type { ViabilityInput } from '@/types'
 const viableInput: ViabilityInput = {
   productCost: 45,
   shippingCost: 0,
+  shippingMode: 'none',
   packagingCost: 2.5,
   taxRate: 0.06,
   overheadRate: 0.05,
