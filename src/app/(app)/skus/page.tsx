@@ -6,7 +6,7 @@ import SkuFilters from '@/components/skus/SkuFilters'
 import type { SkuStatus } from '@/types/sku'
 
 export const metadata: Metadata = {
-  title: 'Meus SKUs — SmartPreço',
+  title: 'Meus SKUs',
 }
 
 interface Props {

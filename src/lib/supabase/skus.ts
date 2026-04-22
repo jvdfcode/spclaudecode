@@ -103,6 +103,57 @@ export async function getSkuById(id: string): Promise<(Sku & { calculations: Sku
   }
 }
 
+export async function adoptSku(
+  name: string,
+  notes: string | undefined,
+  input: ViabilityInput,
+  result: ViabilityResult,
+  adoptedPrice: number
+): Promise<{ sku: Sku; calculation: SkuCalculation }> {
+  const supabase = await createServerSupabase()
+
+  const { data: { user }, error: authErr } = await supabase.auth.getUser()
+  if (authErr || !user) throw new Error('Usuário não autenticado')
+
+  if (!name.trim()) throw new Error('Nome do SKU é obrigatório')
+  if (adoptedPrice <= 0) throw new Error('Preço adotado deve ser maior que zero')
+
+  const { data: skuRow, error: skuErr } = await supabase
+    .from('skus')
+    .insert({
+      user_id: user.id,
+      name: name.trim(),
+      notes: notes?.trim() || null,
+      status: 'for_sale',
+      is_for_sale: true,
+      adopted_price: adoptedPrice,
+    })
+    .select()
+    .single()
+
+  if (skuErr || !skuRow) throw new Error(skuErr?.message ?? 'Falha ao criar SKU')
+
+  const { data: calcRow, error: calcErr } = await supabase
+    .from('sku_calculations')
+    .insert({
+      sku_id: skuRow.id,
+      cost_data: { ...input, salePrice: adoptedPrice } as unknown as Record<string, unknown>,
+      result_data: result as unknown as Record<string, unknown>,
+      sale_price: adoptedPrice,
+      listing_type: input.listingType,
+      margin_percent: result.metrics.marginPercent,
+      roi_percent: result.metrics.roiPercent,
+      is_viable: result.classification === 'viable',
+      is_adopted: true,
+    })
+    .select()
+    .single()
+
+  if (calcErr || !calcRow) throw new Error(calcErr?.message ?? 'Falha ao salvar cálculo')
+
+  return { sku: mapSku(skuRow), calculation: mapCalc(calcRow) }
+}
+
 export async function listSkus(): Promise<SkuWithLatestCalc[]> {
   const supabase = await createServerSupabase()
 

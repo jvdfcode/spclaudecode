@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import CostForm from '@/components/calculadora/CostForm'
 
 export const metadata: Metadata = {
-  title: 'Calculadora — SmartPreço',
+  title: 'Calculadora de Viabilidade',
 }
 
 export default function CalculadoraPage() {

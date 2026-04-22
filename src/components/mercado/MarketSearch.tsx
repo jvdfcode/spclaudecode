@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { MlListing } from '@/types'
 import { cleanListings, confidencePercent, DEFAULT_CLEAN_OPTIONS } from '@/lib/mercadolivre/cleaner'
 import type { CleanOptions, ConditionFilter } from '@/lib/mercadolivre/cleaner'
@@ -61,6 +61,17 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
   const badge    = useMemo(() => getPositionBadge(salePrice ?? 0, summary), [salePrice, summary])
   const fullCnt  = useMemo(() => fullCount(cleanedListings), [cleanedListings])
   const conf     = confidencePercent(cleanedListings.length, rawListings.length)
+
+  // Persiste summary no sessionStorage para uso no painel de Decisão
+  useEffect(() => {
+    if (state === 'done' && summary.cleanListings > 0) {
+      try {
+        sessionStorage.setItem('smartpreco_market_summary', JSON.stringify(summary))
+      } catch {
+        // sessionStorage indisponível — graceful degradation
+      }
+    }
+  }, [state, summary])
 
   function toggleExclude(id: string) {
     setExcluded(prev => {

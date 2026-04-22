@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import MarketSearch from '@/components/mercado/MarketSearch'
 
 export const metadata: Metadata = {
-  title: 'Mercado — SmartPreço',
+  title: 'Análise de Mercado',
 }
 
 export default function MercadoPage() {

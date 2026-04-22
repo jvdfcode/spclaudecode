@@ -41,11 +41,15 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-full w-56 flex-col border-r border-gray-200 bg-white px-3 py-4">
-      <div className="mb-6 px-3">
+    <aside className="flex h-full w-14 md:w-56 flex-col border-r border-gray-200 bg-white px-2 md:px-3 py-4 flex-shrink-0">
+      <div className="mb-6 px-1 md:px-3 hidden md:block">
         <span className="text-lg font-bold text-primary">SmartPreço</span>
       </div>
-      <nav className="flex flex-1 flex-col gap-1">
+      {/* Logo compacto em tablet */}
+      <div className="mb-6 flex justify-center md:hidden">
+        <span className="text-lg font-bold text-primary">SP</span>
+      </div>
+      <nav className="flex flex-1 flex-col gap-1" aria-label="Navegação principal">
         {navItems.map((item) => (
           <NavLink key={item.href} {...item} />
         ))}

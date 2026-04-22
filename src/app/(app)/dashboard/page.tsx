@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import { createServerSupabase } from '@/lib/supabase/server'
 import Link from 'next/link'
+import WelcomeTour from '@/components/onboarding/WelcomeTour'
 
 export const metadata: Metadata = {
-  title: 'Dashboard — SmartPreço',
+  title: 'Dashboard',
 }
 
 export default async function DashboardPage() {
@@ -12,6 +13,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <WelcomeTour />
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
           Bem-vindo, {user?.email?.split('@')[0]}!

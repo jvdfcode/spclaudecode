@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import type { MlListing } from '@/types'
 import { formatBRL } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
@@ -29,10 +30,13 @@ export default function ListingCard({ listing, isExcluded, onToggleExclude, onUs
     )}>
       {/* Thumbnail */}
       {listing.thumbnail && (
-        <img
+        <Image
           src={listing.thumbnail.replace('http://', 'https://')}
           alt=""
-          className="h-12 w-12 rounded-lg object-cover flex-shrink-0 bg-gray-100"
+          width={48}
+          height={48}
+          className="rounded-lg object-cover flex-shrink-0 bg-gray-100"
+          unoptimized
         />
       )}
 

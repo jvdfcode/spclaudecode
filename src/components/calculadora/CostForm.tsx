@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { ViabilityInput, ListingType, ShippingMode } from '@/types'
 import { calculateViability } from '@/lib/calculations'
 import { useMlFees } from '@/lib/hooks/useMlFees'
@@ -15,6 +15,9 @@ import { cn } from '@/lib/utils'
 import ResultsPanel from './ResultsPanel'
 import ScenarioTable from './ScenarioTable'
 import SaveSkuButton from './SaveSkuButton'
+import DecisionPanel from '@/components/decisao/DecisionPanel'
+
+const FORM_SESSION_KEY = 'smartpreco_calc_form'
 
 const defaultInput: ViabilityInput = {
   productCost: 0,
@@ -33,7 +36,18 @@ const defaultInput: ViabilityInput = {
 }
 
 export default function CostForm() {
-  const [input, setInput] = useState<ViabilityInput>(defaultInput)
+  const [input, setInput] = useState<ViabilityInput>(() => {
+    try {
+      const saved = sessionStorage.getItem(FORM_SESSION_KEY)
+      if (saved) return { ...defaultInput, ...JSON.parse(saved) } as ViabilityInput
+    } catch {}
+    return defaultInput
+  })
+  // Persistir estado no sessionStorage para não perder ao navegar entre páginas
+  useEffect(() => {
+    try { sessionStorage.setItem(FORM_SESSION_KEY, JSON.stringify(input)) } catch {}
+  }, [input])
+
   const [manualFee, setManualFee] = useState(false)
   const [manualFeeInput, setManualFeeInput] = useState('')
   const { fees, loading: feesLoading } = useMlFees()
@@ -286,6 +300,13 @@ export default function CostForm() {
 
     {/* ─── TABELA DE CENÁRIOS ─── */}
     <ScenarioTable input={input} fees={fees} targetMargin={input.targetMargin} />
+
+    {/* ─── DECISÃO DE PREÇO ─── */}
+    {result && (
+      <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <DecisionPanel input={input} result={result} />
+      </div>
+    )}
     </div>
   )
 }

@@ -5,8 +5,20 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'SmartPreço',
-  description: 'Sistema de apoio à decisão de preço para marketplace',
+  title: {
+    default: 'SmartPreço — Precificação inteligente para vendedores ML',
+    template: '%s | SmartPreço',
+  },
+  description: 'Calcule custos reais, simule cenários e compare com o mercado para tomar a melhor decisão de preço no Mercado Livre.',
+  openGraph: {
+    title: 'SmartPreço — Precificação inteligente para vendedores ML',
+    description: 'Calcule custos reais, simule cenários e compare com o mercado para tomar a melhor decisão de preço no Mercado Livre.',
+    type: 'website',
+    locale: 'pt_BR',
+  },
+  icons: {
+    icon: '/favicon.ico',
+  },
 }
 
 export default function RootLayout({
