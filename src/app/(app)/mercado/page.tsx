@@ -11,7 +11,7 @@ export default function MercadoPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Análise de Mercado</h1>
         <p className="mt-1 text-sm text-gray-500">
-          Busque produtos similares no Mercado Livre e veja como seu preço se posiciona.
+          Compare seu preço com anúncios reais do Mercado Livre e descubra onde você está posicionado.
         </p>
       </div>
       <MarketSearch />

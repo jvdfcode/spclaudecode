@@ -1,14 +1,53 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
-import type { MlListing } from '@/types'
-import { cleanListings, confidencePercent, DEFAULT_CLEAN_OPTIONS } from '@/lib/mercadolivre/cleaner'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import type { MlListing, MlRawResponse } from '@/types'
+import { cleanListings, confidencePercent } from '@/lib/mercadolivre/cleaner'
 import type { CleanOptions, ConditionFilter } from '@/lib/mercadolivre/cleaner'
 import { analyzeListings, getPositionBadge, fullCount } from '@/lib/mercadolivre/analyzer'
 import MarketSummaryPanel from './MarketSummaryPanel'
 import PriceDistributionChart from './PriceDistributionChart'
 import ListingCard from './ListingCard'
 import { cn } from '@/lib/utils'
+
+const ML_SEARCH = 'https://api.mercadolibre.com/sites/MLB/search'
+const CACHE_KEY  = 'smartpreco_ml_'
+const CACHE_TTL  = 60 * 60 * 1000 // 1 hora
+
+const QUICK_SEARCHES = [
+  'fone bluetooth', 'tênis esportivo', 'smartwatch',
+  'câmera de segurança', 'mochila escolar', 'fritadeira air fryer',
+]
+
+function readCache(q: string): MlListing[] | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY + q)
+    if (!raw) return null
+    const { data, exp } = JSON.parse(raw) as { data: MlListing[]; exp: number }
+    if (Date.now() > exp) { localStorage.removeItem(CACHE_KEY + q); return null }
+    return data
+  } catch { return null }
+}
+
+function writeCache(q: string, data: MlListing[]) {
+  try { localStorage.setItem(CACHE_KEY + q, JSON.stringify({ data, exp: Date.now() + CACHE_TTL })) } catch {}
+}
+
+function mapListings(raw: MlRawResponse): MlListing[] {
+  return raw.results.map(r => ({
+    id: r.id,
+    title: r.title,
+    price: r.price,
+    currencyId: r.currency_id,
+    condition: r.condition ?? 'not_specified',
+    freeShipping: r.shipping?.free_shipping ?? false,
+    isFulfillment: r.shipping?.logistic_type === 'fulfillment',
+    sellerReputation: r.seller?.seller_reputation?.level_id ?? null,
+    soldQuantity: r.sold_quantity ?? 0,
+    thumbnail: r.thumbnail,
+    permalink: r.permalink,
+  }))
+}
 
 interface Props {
   initialSalePrice?: number
@@ -18,58 +57,73 @@ interface Props {
 type SearchState = 'idle' | 'loading' | 'done' | 'error'
 
 export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
-  const [query, setQuery]           = useState('')
-  const [state, setState]           = useState<SearchState>('idle')
-  const [errorMsg, setErrorMsg]     = useState('')
-  const [rawListings, setRaw]       = useState<MlListing[]>([])
-  const [wasCached, setWasCached]   = useState(false)
-  const salePrice                   = initialSalePrice
-  const [excludedIds, setExcluded]  = useState<Set<string>>(new Set())
-
+  const [query, setQuery]         = useState('')
+  const [activeQuery, setActive]  = useState('')
+  const [state, setState]         = useState<SearchState>('idle')
+  const [errorMsg, setError]      = useState('')
+  const [rawListings, setRaw]     = useState<MlListing[]>([])
+  const [wasCached, setCached]    = useState(false)
+  const [excludedIds, setExcluded] = useState<Set<string>>(new Set())
   const [opts, setOpts] = useState<Omit<CleanOptions, 'excludedIds'>>({
     removeKits: true,
     condition: 'all',
     freeShippingOnly: false,
   })
 
-  async function handleSearch(e: React.FormEvent) {
-    e.preventDefault()
-    if (!query.trim() || query.length < 2) return
+  const doSearch = useCallback(async (q: string) => {
+    const term = q.trim()
+    if (!term || term.length < 2) return
+
     setState('loading')
-    setErrorMsg('')
+    setError('')
     setExcluded(new Set())
+    setActive(term)
+
+    const cached = readCache(term.toLowerCase())
+    if (cached) { setRaw(cached); setCached(true); setState('done'); return }
 
     try {
-      const res = await fetch(`/api/ml-search?q=${encodeURIComponent(query.trim())}`)
-      const data = await res.json()
-      if (!res.ok) { setErrorMsg(data.error ?? 'Erro na busca'); setState('error'); return }
-      setRaw(data.listings ?? [])
-      setWasCached(data.cached ?? false)
+      const res = await fetch(`${ML_SEARCH}?q=${encodeURIComponent(term)}&limit=50`, {
+        headers: { Accept: 'application/json' },
+      })
+      if (!res.ok) {
+        setError(
+          res.status === 429
+            ? 'Muitas buscas em pouco tempo. Aguarde um momento.'
+            : `Erro ao buscar no Mercado Livre (${res.status}). Tente novamente.`
+        )
+        setState('error')
+        return
+      }
+      const data: MlRawResponse = await res.json()
+      const listings = mapListings(data)
+      writeCache(term.toLowerCase(), listings)
+      setRaw(listings)
+      setCached(false)
       setState('done')
     } catch {
-      setErrorMsg('Erro de conexão. Verifique sua internet e tente novamente.')
+      setError('Não foi possível conectar ao Mercado Livre. Verifique sua conexão.')
       setState('error')
     }
+  }, [])
+
+  async function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    await doSearch(query)
   }
 
-  const { listings: cleanedListings, duplicatesRemoved } = useMemo(
+  const { listings: clean, duplicatesRemoved } = useMemo(
     () => cleanListings(rawListings, { ...opts, excludedIds }),
     [rawListings, opts, excludedIds]
   )
+  const summary  = useMemo(() => analyzeListings(clean), [clean])
+  const badge    = useMemo(() => getPositionBadge(initialSalePrice ?? 0, summary), [initialSalePrice, summary])
+  const fullCnt  = useMemo(() => fullCount(clean), [clean])
+  const conf     = confidencePercent(clean.length, rawListings.length)
 
-  const summary  = useMemo(() => analyzeListings(cleanedListings), [cleanedListings])
-  const badge    = useMemo(() => getPositionBadge(salePrice ?? 0, summary), [salePrice, summary])
-  const fullCnt  = useMemo(() => fullCount(cleanedListings), [cleanedListings])
-  const conf     = confidencePercent(cleanedListings.length, rawListings.length)
-
-  // Persiste summary no sessionStorage para uso no painel de Decisão
   useEffect(() => {
     if (state === 'done' && summary.cleanListings > 0) {
-      try {
-        sessionStorage.setItem('smartpreco_market_summary', JSON.stringify(summary))
-      } catch {
-        // sessionStorage indisponível — graceful degradation
-      }
+      try { sessionStorage.setItem('smartpreco_market_summary', JSON.stringify(summary)) } catch {}
     }
   }, [state, summary])
 
@@ -83,87 +137,151 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
 
   return (
     <div className="space-y-5">
-      {/* Campo de busca */}
-      <form onSubmit={handleSearch} className="flex gap-2">
-        <input
-          type="search"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          placeholder="Buscar produto no Mercado Livre... ex: fone bluetooth"
-          className="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-          disabled={state === 'loading'}
-        />
-        <button
-          type="submit"
-          disabled={state === 'loading' || query.length < 2}
-          className={cn(
-            'rounded-xl px-5 py-3 text-sm font-semibold transition-colors',
-            state === 'loading' || query.length < 2
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          )}
-        >
-          {state === 'loading' ? 'Buscando...' : 'Buscar'}
-        </button>
+
+      {/* ─── BARRA DE BUSCA ─── */}
+      <form onSubmit={handleSearch}>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+            <input
+              type="search"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Busque um produto... ex: fone bluetooth, tênis nike"
+              className="w-full rounded-2xl border border-gray-200 bg-white pl-11 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              disabled={state === 'loading'}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={state === 'loading' || query.trim().length < 2}
+            className={cn(
+              'rounded-2xl px-6 py-3.5 text-sm font-semibold transition-all shadow-sm',
+              state === 'loading' || query.trim().length < 2
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+            )}
+          >
+            {state === 'loading'
+              ? <span className="flex items-center gap-2">
+                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  Buscando
+                </span>
+              : 'Buscar'}
+          </button>
+        </div>
       </form>
 
-      {/* Loading */}
+      {/* ─── ESTADO INICIAL ─── */}
+      {state === 'idle' && (
+        <div className="rounded-2xl border border-gray-100 bg-white p-8 space-y-6">
+          <div className="text-center space-y-2">
+            <p className="text-4xl">🏪</p>
+            <p className="text-sm font-semibold text-gray-800">Inteligência de preços em tempo real</p>
+            <p className="text-xs text-gray-400 max-w-xs mx-auto">
+              Busque um produto e veja estatísticas de anúncios reais do Mercado Livre para posicionar seu preço com precisão
+            </p>
+          </div>
+          <div className="space-y-2">
+            <p className="text-[11px] text-gray-400 text-center">Sugestões</p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {QUICK_SEARCHES.map(s => (
+                <button key={s} type="button"
+                  onClick={() => { setQuery(s); doSearch(s) }}
+                  className="rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-xs text-gray-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 pt-1">
+            {[
+              { icon: '📊', label: 'Mínimo, mediana e máximo' },
+              { icon: '📍', label: 'Posição do seu preço' },
+              { icon: '📈', label: 'Distribuição de preços' },
+            ].map(({ icon, label }) => (
+              <div key={label} className="rounded-xl bg-gray-50 p-3 text-center">
+                <p className="text-xl">{icon}</p>
+                <p className="text-[10px] text-gray-500 mt-1 leading-snug">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── LOADING ─── */}
       {state === 'loading' && (
-        <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-6">
-          <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
-          <p className="text-sm text-gray-500">Buscando no Mercado Livre...</p>
+        <div className="space-y-3 animate-pulse">
+          <div className="h-28 rounded-xl bg-gray-100" />
+          <div className="grid grid-cols-4 gap-2">
+            {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-16 rounded-xl bg-gray-100" />)}
+          </div>
+          <div className="h-20 rounded-xl bg-gray-100" />
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-14 rounded-xl bg-gray-100" />)}
         </div>
       )}
 
-      {/* Erro */}
+      {/* ─── ERRO ─── */}
       {state === 'error' && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-          {errorMsg}
+        <div className="rounded-2xl border border-red-100 bg-red-50 p-6 text-center space-y-3">
+          <p className="text-3xl">⚠️</p>
+          <p className="text-sm font-semibold text-red-700">Não foi possível buscar</p>
+          <p className="text-xs text-red-600 max-w-xs mx-auto">{errorMsg}</p>
+          <button onClick={() => doSearch(activeQuery)}
+            className="rounded-xl border border-red-200 bg-white px-5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 transition-colors">
+            Tentar novamente
+          </button>
         </div>
       )}
 
-      {/* Resultados */}
+      {/* ─── SEM RESULTADOS ─── */}
       {state === 'done' && rawListings.length === 0 && (
-        <div className="rounded-xl border border-dashed border-gray-200 bg-white p-10 text-center text-sm text-gray-400">
-          Nenhum resultado encontrado para &ldquo;{query}&rdquo;
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center space-y-2">
+          <p className="text-3xl">🔍</p>
+          <p className="text-sm font-semibold text-gray-600">Nenhum resultado para &ldquo;{activeQuery}&rdquo;</p>
+          <p className="text-xs text-gray-400">Tente um termo mais genérico ou verifique a ortografia</p>
         </div>
       )}
 
+      {/* ─── RESULTADOS ─── */}
       {state === 'done' && rawListings.length > 0 && (
-        <>
-          {/* Cabeçalho dos resultados */}
-          <div className="flex items-center justify-between flex-wrap gap-2">
-            <p className="text-xs text-gray-500">
-              <span className="font-semibold text-gray-800">{rawListings.length}</span> anúncios encontrados
-              {wasCached && <span className="ml-2 text-gray-400">(resultado em cache)</span>}
-              {duplicatesRemoved > 0 && <span className="ml-2 text-gray-400">· {duplicatesRemoved} duplicado{duplicatesRemoved !== 1 ? 's' : ''} removido{duplicatesRemoved !== 1 ? 's' : ''}</span>}
-            </p>
-            <p className="text-xs font-semibold text-gray-700">
-              Base limpa: {cleanedListings.length} ({conf}%)
-            </p>
+        <div className="space-y-4">
+
+          {/* Cabeçalho */}
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-gray-800">
+                {rawListings.length} anúncios — &ldquo;{activeQuery}&rdquo;
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Base limpa: <strong className="text-gray-600">{clean.length}</strong> anúncios · {conf}% confiança
+                {duplicatesRemoved > 0 && ` · ${duplicatesRemoved} duplicados removidos`}
+                {wasCached && ' · cache'}
+              </p>
+            </div>
+            <button onClick={() => setState('idle')}
+              className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
+              ← Nova busca
+            </button>
           </div>
 
           {/* Filtros */}
-          <div className="flex flex-wrap gap-3 rounded-xl border border-gray-100 bg-gray-50 p-3">
-            <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-              <input type="checkbox" checked={opts.removeKits}
-                onChange={e => setOpts(o => ({ ...o, removeKits: e.target.checked }))}
-                className="h-3.5 w-3.5 accent-blue-600" />
-              Remover kits/combos
-            </label>
-            <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-              <input type="checkbox" checked={opts.freeShippingOnly}
-                onChange={e => setOpts(o => ({ ...o, freeShippingOnly: e.target.checked }))}
-                className="h-3.5 w-3.5 accent-blue-600" />
-              Somente frete grátis
-            </label>
-            <div className="flex items-center gap-1.5 text-xs text-gray-600">
-              <span>Condição:</span>
+          <div className="flex flex-wrap gap-2 items-center">
+            <FilterChip active={opts.removeKits} onClick={() => setOpts(o => ({ ...o, removeKits: !o.removeKits }))}>
+              Sem kits
+            </FilterChip>
+            <FilterChip active={opts.freeShippingOnly} onClick={() => setOpts(o => ({ ...o, freeShippingOnly: !o.freeShippingOnly }))}>
+              Frete grátis
+            </FilterChip>
+            <div className="flex overflow-hidden rounded-xl border border-gray-200">
               {(['all', 'new', 'used'] as ConditionFilter[]).map(c => (
                 <button key={c} onClick={() => setOpts(o => ({ ...o, condition: c }))}
                   className={cn(
-                    'rounded-full px-2.5 py-0.5 transition-colors',
-                    opts.condition === c ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-500 hover:border-gray-300'
+                    'px-3 py-1.5 text-xs font-medium transition-colors',
+                    opts.condition === c ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'
                   )}>
                   {c === 'all' ? 'Todos' : c === 'new' ? 'Novo' : 'Usado'}
                 </button>
@@ -171,23 +289,25 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
             </div>
           </div>
 
-          {/* Painel de análise */}
-          {cleanedListings.length > 0 && (
+          {/* Análise de mercado */}
+          {clean.length > 0 && (
             <>
               <MarketSummaryPanel
                 summary={summary}
                 totalRaw={rawListings.length}
                 fullCount={fullCnt}
                 positionBadge={badge}
-                salePrice={salePrice ?? null}
+                salePrice={initialSalePrice ?? null}
               />
-              <PriceDistributionChart listings={cleanedListings} salePrice={salePrice} />
+              <PriceDistributionChart listings={clean} salePrice={initialSalePrice} />
             </>
           )}
 
-          {/* Lista de anúncios */}
+          {/* Lista */}
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-gray-600">Anúncios ({cleanedListings.length + excludedIds.size})</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+              Anúncios ({clean.length + excludedIds.size})
+            </p>
             {rawListings.map(listing => (
               <ListingCard
                 key={listing.id}
@@ -198,8 +318,24 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
               />
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
+  )
+}
+
+function FilterChip({ active, onClick, children }: {
+  active: boolean; onClick: () => void; children: React.ReactNode
+}) {
+  return (
+    <button onClick={onClick}
+      className={cn(
+        'rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors',
+        active
+          ? 'border-blue-500 bg-blue-50 text-blue-700'
+          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+      )}>
+      {children}
+    </button>
   )
 }
