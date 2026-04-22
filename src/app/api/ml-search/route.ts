@@ -94,8 +94,8 @@ export async function GET(req: NextRequest) {
     const url = `${ML_SEARCH_URL}?q=${encodeURIComponent(q)}&limit=50`
     const res = await fetch(url, { headers, next: { revalidate: 0 } })
 
-    // ML bloqueou sem token → pede ao browser para tentar diretamente
-    if (res.status === 403 && !token) {
+    // ML bloqueia IPs de servidores cloud (com ou sem token) → browser busca direto
+    if (res.status === 403) {
       return NextResponse.json({ clientSide: true }, { status: 503 })
     }
 
