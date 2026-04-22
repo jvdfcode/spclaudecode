@@ -114,10 +114,7 @@ export async function GET(req: NextRequest) {
     const html = await res.text()
     const listings = parseListings(html, q)
 
-    // debug temporário — remover após diagnóstico
-    const hasItems = html.includes('ui-search-layout__item')
-    const htmlSize = html.length
-    return NextResponse.json({ listings, _debug: { htmlSize, hasItems, url } })
+    return NextResponse.json({ listings })
   } catch {
     return NextResponse.json({ error: 'Erro de conexão com o Mercado Livre.' }, { status: 503 })
   }
