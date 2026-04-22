@@ -15,6 +15,7 @@ export const metadata: Metadata = {
     description: 'Calcule custos reais, simule cenários e compare com o mercado para tomar a melhor decisão de preço no Mercado Livre.',
     type: 'website',
     locale: 'pt_BR',
+    url: process.env.NEXT_PUBLIC_APP_URL,
   },
   icons: {
     icon: '/favicon.ico',

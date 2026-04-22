@@ -58,9 +58,8 @@ export default function WelcomeTour() {
   const isLast = activeStep === steps.length - 1
 
   return (
-    <div
+    <section
       className="rounded-xl border-2 border-blue-200 bg-blue-50 p-5 space-y-4"
-      role="dialog"
       aria-label="Tour de onboarding do SmartPreço"
     >
       {/* Cabeçalho */}
@@ -136,6 +135,6 @@ export default function WelcomeTour() {
           </Link>
         )}
       </div>
-    </div>
+    </section>
   )
 }

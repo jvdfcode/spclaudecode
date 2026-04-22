@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import { useDecisionEngine } from '@/hooks/useDecisionEngine'
 import type { DecisionOptionId, DecisionOption } from '@/hooks/useDecisionEngine'
@@ -53,18 +54,18 @@ export default function DecisionPanel({ input, result }: Props) {
           <span className="font-semibold">{skuName}</span> · {formatBRL(selectedOption.suggestedPrice)} ({selectedOption.label})
         </p>
         <div className="flex justify-center gap-2 pt-1">
-          <a
+          <Link
             href={`/skus/${savedId}`}
             className="rounded-lg bg-green-600 px-4 py-2 text-xs font-semibold text-white hover:bg-green-700 transition-colors"
           >
             Ver SKU
-          </a>
-          <a
+          </Link>
+          <Link
             href="/skus"
             className="rounded-lg border border-green-300 px-4 py-2 text-xs font-medium text-green-700 hover:bg-green-100 transition-colors"
           >
             Meus SKUs
-          </a>
+          </Link>
         </div>
         <button
           onClick={() => {

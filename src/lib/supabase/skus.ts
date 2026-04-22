@@ -1,6 +1,7 @@
 'use server'
 
 import { createServerSupabase } from '@/lib/supabase/server'
+import { calculateViability } from '@/lib/calculations'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import type { Sku, SkuCalculation, SkuWithLatestCalc } from '@/types/sku'
 import type { DbSku, DbSkuCalculation } from '@/types/database'
@@ -133,17 +134,20 @@ export async function adoptSku(
 
   if (skuErr || !skuRow) throw new Error(skuErr?.message ?? 'Falha ao criar SKU')
 
+  const adoptedInput = { ...input, salePrice: adoptedPrice }
+  const adoptedResult = calculateViability(adoptedInput)
+
   const { data: calcRow, error: calcErr } = await supabase
     .from('sku_calculations')
     .insert({
       sku_id: skuRow.id,
-      cost_data: { ...input, salePrice: adoptedPrice } as unknown as Record<string, unknown>,
-      result_data: result as unknown as Record<string, unknown>,
+      cost_data: adoptedInput as unknown as Record<string, unknown>,
+      result_data: adoptedResult as unknown as Record<string, unknown>,
       sale_price: adoptedPrice,
       listing_type: input.listingType,
-      margin_percent: result.metrics.marginPercent,
-      roi_percent: result.metrics.roiPercent,
-      is_viable: result.classification === 'viable',
+      margin_percent: adoptedResult.metrics.marginPercent,
+      roi_percent: adoptedResult.metrics.roiPercent,
+      is_viable: adoptedResult.classification === 'viable',
       is_adopted: true,
     })
     .select()
