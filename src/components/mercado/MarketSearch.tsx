@@ -10,14 +10,9 @@ import PriceDistributionChart from './PriceDistributionChart'
 import ListingCard from './ListingCard'
 import { cn } from '@/lib/utils'
 
-const ML_SEARCH = 'https://api.mercadolibre.com/sites/MLB/search'
-const CACHE_KEY  = 'smartpreco_ml_'
-const CACHE_TTL  = 60 * 60 * 1000 // 1 hora
-
-const QUICK_SEARCHES = [
-  'fone bluetooth', 'tênis esportivo', 'smartwatch',
-  'câmera de segurança', 'mochila escolar', 'fritadeira air fryer',
-]
+// ─── Cache localStorage (performance, não fix de API) ─────────────────────────
+const CACHE_KEY = 'smartpreco_ml_'
+const CACHE_TTL = 60 * 60 * 1000
 
 function readCache(q: string): MlListing[] | null {
   try {
@@ -33,6 +28,7 @@ function writeCache(q: string, data: MlListing[]) {
   try { localStorage.setItem(CACHE_KEY + q, JSON.stringify({ data, exp: Date.now() + CACHE_TTL })) } catch {}
 }
 
+// ─── Mapeador da resposta bruta do ML ─────────────────────────────────────────
 function mapListings(raw: MlRawResponse): MlListing[] {
   return raw.results.map(r => ({
     id: r.id,
@@ -48,6 +44,20 @@ function mapListings(raw: MlRawResponse): MlListing[] {
     permalink: r.permalink,
   }))
 }
+
+// ─── Busca direta do browser no ML (fallback quando servidor é bloqueado) ──────
+async function fetchFromBrowser(q: string): Promise<MlListing[]> {
+  const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
+  const res = await fetch(url, { headers: { Accept: 'application/json' } })
+  if (!res.ok) throw new Error(`ML API ${res.status}`)
+  const data = await res.json() as MlRawResponse
+  return mapListings(data)
+}
+
+const QUICK_SEARCHES = [
+  'fone bluetooth', 'tênis esportivo', 'smartwatch',
+  'câmera de segurança', 'mochila escolar', 'fritadeira air fryer',
+]
 
 interface Props {
   initialSalePrice?: number
@@ -79,28 +89,42 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
     setExcluded(new Set())
     setActive(term)
 
+    // 1. Cache local (performance)
     const cached = readCache(term.toLowerCase())
     if (cached) { setRaw(cached); setCached(true); setState('done'); return }
 
     try {
-      const res = await fetch(`${ML_SEARCH}?q=${encodeURIComponent(term)}&limit=50`, {
-        headers: { Accept: 'application/json' },
-      })
-      if (!res.ok) {
-        setError(
-          res.status === 429
-            ? 'Muitas buscas em pouco tempo. Aguarde um momento.'
-            : `Erro ao buscar no Mercado Livre (${res.status}). Tente novamente.`
-        )
-        setState('error')
+      // 2. Servidor (com autenticação ML se configurada, cache Supabase)
+      const serverRes = await fetch(`/api/ml-search?q=${encodeURIComponent(term)}`)
+      const serverData = await serverRes.json() as {
+        listings?: MlListing[]
+        cached?: boolean
+        clientSide?: boolean
+        error?: string
+      }
+
+      if (serverRes.ok && serverData.listings) {
+        // Servidor retornou resultados (autenticado ou não)
+        writeCache(term.toLowerCase(), serverData.listings)
+        setRaw(serverData.listings)
+        setCached(serverData.cached ?? false)
+        setState('done')
         return
       }
-      const data: MlRawResponse = await res.json()
-      const listings = mapListings(data)
-      writeCache(term.toLowerCase(), listings)
-      setRaw(listings)
-      setCached(false)
-      setState('done')
+
+      if (serverRes.status === 503 && serverData.clientSide) {
+        // 3. Fallback: browser busca direto no ML (ML bloqueou o servidor sem token)
+        const listings = await fetchFromBrowser(term)
+        writeCache(term.toLowerCase(), listings)
+        setRaw(listings)
+        setCached(false)
+        setState('done')
+        return
+      }
+
+      // Erro real (429, 502, etc.)
+      setError(serverData.error ?? 'Erro inesperado. Tente novamente.')
+      setState('error')
     } catch {
       setError('Não foi possível conectar ao Mercado Livre. Verifique sua conexão.')
       setState('error')
@@ -289,7 +313,7 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
             </div>
           </div>
 
-          {/* Análise de mercado */}
+          {/* Análise */}
           {clean.length > 0 && (
             <>
               <MarketSummaryPanel
