@@ -1,10 +1,96 @@
-// Edge Function — roda na infraestrutura Cloudflare do Vercel.
-// IPs do edge não são bloqueados pelo ML (diferente de servidores cloud e IPs residenciais bloqueados).
-export const runtime = 'edge'
-
+// Scraping de lista.mercadolivre.com.br com headers de browser.
+// Funciona de servidores porque o site ML não bloqueia IPs de servidor como a API faz.
 import { NextRequest, NextResponse } from 'next/server'
+import * as cheerio from 'cheerio'
+import type { MlListing } from '@/types'
 
-const ML_SEARCH = 'https://api.mercadolibre.com/sites/MLB/search'
+const ML_SITE = 'https://lista.mercadolivre.com.br'
+
+const HEADERS = {
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+  'Accept-Language': 'pt-BR,pt;q=0.9,en;q=0.8',
+  'Cache-Control': 'no-cache',
+  'Sec-Ch-Ua': '"Brave";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+  'Sec-Ch-Ua-Mobile': '?0',
+  'Sec-Ch-Ua-Platform': 'Linux',
+  'Sec-Fetch-Dest': 'document',
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Site': 'same-origin',
+  'Sec-Fetch-User': '?1',
+  'Upgrade-Insecure-Requests': '1',
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
+}
+
+function slugify(q: string): string {
+  return q
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+}
+
+function parsePrice(raw: string): number | null {
+  if (!raw) return null
+  const n = parseFloat(raw.replace('R$', '').replace(/\./g, '').replace(',', '.').replace(/\s/g, ''))
+  return isFinite(n) ? n : null
+}
+
+function matchRatio(title: string, query: string): number {
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w\s]/g, ' ')
+  const words = norm(query).split(/\s+/).filter(Boolean)
+  if (!words.length) return 0
+  const titleNorm = norm(title)
+  const matched = words.filter(w => titleNorm.includes(w))
+  return matched.length / words.length
+}
+
+function parseListings(html: string, query: string): MlListing[] {
+  const $ = cheerio.load(html)
+  const results: MlListing[] = []
+
+  $('.ui-search-layout__item').each((_, el) => {
+    const title = $(el).find('div.poly-card__content h3').text().trim()
+    if (!title) return
+
+    const priceRaw = $(el).find('div.poly-price__current span').first().text()
+    const price = parsePrice(priceRaw)
+    if (!price) return
+
+    const ratio = matchRatio(title, query)
+    if (ratio < 0.5) return  // menos restritivo que 0.8 para retornar mais resultados
+
+    const href = $(el).find('a.poly-component__title').attr('href') ?? ''
+    const thumbnail = $(el).find('img.poly-component__picture').attr('src')
+      || $(el).find('img.poly-component__picture').attr('data-src')
+      || ''
+
+    const shippingText = $(el).find('div.poly-component__shipping, div.poly-component__shipping-v2').text().toLowerCase()
+    const freeShipping = shippingText.includes('frete grátis') || shippingText.includes('frete gratis')
+
+    const isFull = $(el).find('svg[aria-label="Enviado pelo FULL"], span.poly-component__shipped-from svg').length > 0
+
+    const sellerRaw = $(el).find('span.poly-component__seller').clone().children().remove().end().text().trim()
+
+    results.push({
+      id: href.split('/MLB')[1]?.split('?')[0] ?? String(Math.random()),
+      title,
+      price,
+      currencyId: 'BRL',
+      condition: 'not_specified',
+      freeShipping,
+      isFulfillment: isFull,
+      sellerReputation: null,
+      soldQuantity: 0,
+      thumbnail,
+      permalink: href,
+    })
+
+    if (results.length >= 50) return false
+  })
+
+  return results
+}
 
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim()
@@ -12,23 +98,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Informe ao menos 2 caracteres' }, { status: 400 })
   }
 
-  const url = `${ML_SEARCH}?q=${encodeURIComponent(q)}&limit=50`
+  const slug = slugify(q)
+  const url = `${ML_SITE}/novo/${slug}_OrderId_PRICE_NoIndex_True`
 
   try {
     const res = await fetch(url, {
-      headers: { Accept: 'application/json' },
+      headers: { ...HEADERS, Referer: `${ML_SITE}/${slug}` },
+      next: { revalidate: 0 },
     })
 
-    if (res.status === 429) {
-      return NextResponse.json({ error: 'Limite de requisições atingido. Aguarde um momento.' }, { status: 429 })
-    }
-
     if (!res.ok) {
-      return NextResponse.json({ error: `ML API ${res.status}` }, { status: 502 })
+      return NextResponse.json({ error: `ML site ${res.status}` }, { status: 502 })
     }
 
-    const data = await res.json()
-    return NextResponse.json(data)
+    const html = await res.text()
+    const listings = parseListings(html, q)
+
+    return NextResponse.json({ listings })
   } catch {
     return NextResponse.json({ error: 'Erro de conexão com o Mercado Livre.' }, { status: 503 })
   }

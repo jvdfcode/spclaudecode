@@ -45,15 +45,16 @@ function mapListings(raw: MlRawResponse): MlListing[] {
   }))
 }
 
-// ─── Busca via Edge Function (proxy Cloudflare — IP não bloqueado pelo ML) ─────
-async function fetchFromEdge(q: string): Promise<MlListing[]> {
+// ─── Busca via scraping server-side (lista.mercadolivre.com.br + cheerio) ──────
+async function fetchFromScraper(q: string): Promise<MlListing[]> {
   const res = await fetch(`/api/ml-proxy?q=${encodeURIComponent(q)}`)
   if (!res.ok) {
     const err = await res.json().catch(() => ({})) as { error?: string }
-    throw new Error(err.error ?? `Edge proxy ${res.status}`)
+    throw new Error(err.error ?? `Scraper ${res.status}`)
   }
-  const data = await res.json() as MlRawResponse
-  return mapListings(data)
+  const data = await res.json() as { listings?: MlListing[]; error?: string }
+  if (!data.listings?.length) throw new Error('Scraper sem resultados')
+  return data.listings
 }
 
 // ─── Busca direta do browser (ML direto — funciona de IPs residenciais normais) ─
@@ -135,18 +136,13 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
       }
 
       if (serverRes.status === 503 && serverData.clientSide) {
-        // 3. Edge Function (Cloudflare) — IP diferente, não bloqueado pelo ML
+        // 3. Scraper server-side (lista.mercadolivre.com.br — funciona de qualquer IP)
         let listings: MlListing[]
         try {
-          listings = await fetchFromEdge(term)
+          listings = await fetchFromScraper(term)
         } catch {
-          try {
-            // 4. Browser direto ao ML (funciona de IPs residenciais normais)
-            listings = await fetchFromBrowser(term)
-          } catch {
-            // 5. CORS proxy público (browser → corsproxy.io → ML)
-            listings = await fetchViaCorsProxy(term)
-          }
+          // 4. Fallback: browser direto ao ML
+          listings = await fetchFromBrowser(term)
         }
         writeCache(term.toLowerCase(), listings)
         setRaw(listings)
