@@ -45,11 +45,22 @@ function mapListings(raw: MlRawResponse): MlListing[] {
   }))
 }
 
-// ─── Busca direta do browser no ML (fallback quando servidor é bloqueado) ──────
+// ─── Busca via Edge Function (proxy Cloudflare — IP não bloqueado pelo ML) ─────
+async function fetchFromEdge(q: string): Promise<MlListing[]> {
+  const res = await fetch(`/api/ml-proxy?q=${encodeURIComponent(q)}`)
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({})) as { error?: string }
+    throw new Error(err.error ?? `Edge proxy ${res.status}`)
+  }
+  const data = await res.json() as MlRawResponse
+  return mapListings(data)
+}
+
+// ─── Busca direta do browser (último recurso) ──────────────────────────────────
 async function fetchFromBrowser(q: string): Promise<MlListing[]> {
   const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
-  const res = await fetch(url, { headers: { Accept: 'application/json' } })
-  if (!res.ok) throw new Error(`ML API ${res.status}`)
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`ML direto ${res.status}`)
   const data = await res.json() as MlRawResponse
   return mapListings(data)
 }
@@ -113,12 +124,24 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
       }
 
       if (serverRes.status === 503 && serverData.clientSide) {
-        // 3. Fallback: browser busca direto no ML (ML bloqueou o servidor sem token)
-        const listings = await fetchFromBrowser(term)
+        // 3. Edge Function (Cloudflare) — IP diferente, não bloqueado pelo ML
+        let listings: MlListing[]
+        try {
+          listings = await fetchFromEdge(term)
+        } catch {
+          // 4. Último recurso: browser direto ao ML
+          listings = await fetchFromBrowser(term)
+        }
         writeCache(term.toLowerCase(), listings)
         setRaw(listings)
         setCached(false)
         setState('done')
+        // Salva no cache Supabase em background
+        fetch(`/api/ml-search`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ q: term, listings }),
+        }).catch(() => {})
         return
       }
 
