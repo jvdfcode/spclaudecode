@@ -15,8 +15,11 @@ export default function LogoutButton() {
   }
 
   return (
-    <Button variant="outline" onClick={handleLogout}>
+    <button
+      onClick={handleLogout}
+      className="text-sm text-gray-500 hover:text-red-600 transition-colors"
+    >
       Sair
-    </Button>
+    </button>
   )
 }

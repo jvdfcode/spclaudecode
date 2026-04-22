@@ -41,19 +41,30 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-full w-14 md:w-56 flex-col border-r border-gray-200 bg-white px-2 md:px-3 py-4 flex-shrink-0">
-      <div className="mb-6 px-1 md:px-3 hidden md:block">
-        <span className="text-lg font-bold text-primary">SmartPreço</span>
+    <aside className="flex h-full w-14 md:w-56 flex-col border-r border-gray-200 bg-white px-2 md:px-3 py-5 flex-shrink-0">
+      {/* Logo desktop */}
+      <div className="mb-7 px-1 hidden md:flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-sm flex-shrink-0">
+          💰
+        </div>
+        <span className="text-base font-bold text-gray-900">SmartPreço</span>
       </div>
-      {/* Logo compacto em tablet */}
-      <div className="mb-6 flex justify-center md:hidden">
-        <span className="text-lg font-bold text-primary">SP</span>
+      {/* Logo compacto tablet */}
+      <div className="mb-7 flex justify-center md:hidden">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-sm">
+          💰
+        </div>
       </div>
-      <nav className="flex flex-1 flex-col gap-1" aria-label="Navegação principal">
+
+      <nav className="flex flex-1 flex-col gap-0.5" aria-label="Navegação principal">
         {navItems.map((item) => (
           <NavLink key={item.href} {...item} />
         ))}
       </nav>
+
+      <div className="hidden md:block pt-4 border-t border-gray-100">
+        <p className="text-[10px] text-gray-400 text-center">SmartPreço · v1.0</p>
+      </div>
     </aside>
   )
 }

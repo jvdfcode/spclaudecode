@@ -4,10 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -35,52 +33,60 @@ export default function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">SmartPreço</CardTitle>
-        <CardDescription>Entre com sua conta para continuar</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <div className="mb-7">
+        <h2 className="text-2xl font-bold text-gray-900">Bem-vindo de volta</h2>
+        <p className="text-gray-500 mt-1 text-sm">Entre com sua conta para continuar</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            className="h-11"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            autoComplete="current-password"
+            className="h-11"
+          />
+        </div>
+        {error && (
+          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
+            <p className="text-sm text-red-700">{error}</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              autoComplete="current-password"
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>
-          )}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </Button>
-          <p className="text-sm text-center text-gray-600">
-            Não tem conta?{' '}
-            <Link href="/cadastro" className="text-blue-600 hover:underline">
-              Criar conta
-            </Link>
-          </p>
-        </form>
-      </CardContent>
-    </Card>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-11 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:opacity-60 transition-colors"
+        >
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
+      </form>
+
+      <p className="text-sm text-center text-gray-500 mt-6">
+        Não tem conta?{' '}
+        <Link href="/cadastro" className="text-blue-600 font-medium hover:underline">
+          Criar conta grátis
+        </Link>
+      </p>
+    </div>
   )
 }

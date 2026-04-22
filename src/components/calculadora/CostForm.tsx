@@ -50,6 +50,9 @@ export default function CostForm() {
 
   const [manualFee, setManualFee] = useState(false)
   const [manualFeeInput, setManualFeeInput] = useState('')
+  const [showExtraCosts, setShowExtraCosts] = useState(false)
+  const [showMlSection, setShowMlSection] = useState(false)
+  const [showFreteSection, setShowFreteSection] = useState(false)
   const { fees, loading: feesLoading } = useMlFees()
 
   const result = useMemo(() => {
@@ -93,169 +96,199 @@ export default function CostForm() {
     <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
 
       {/* ─── FORMULÁRIO ─── */}
-      <div className="space-y-6">
+      <div className="space-y-4">
 
-        {/* Seção 1: Produto */}
-        <Section title="Produto" icon="📦">
+        {/* HERO: os 2 campos essenciais */}
+        <div className="rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold text-blue-800">Informe os valores essenciais</h2>
+            <p className="text-xs text-blue-600 mt-0.5">Preencha os dois campos para ver o resultado imediatamente</p>
+          </div>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Custo do produto (CMV)" hint="Quanto você paga para adquirir/fabricar" suffix="R$">
-              <Input type="number" min={0} step={0.01} placeholder="0,00" onChange={setNum('productCost')} />
+            <Field label="Custo do produto" hint="Quanto você paga para adquirir/fabricar" suffix="R$">
+              <Input type="number" min={0} step={0.01} placeholder="0,00"
+                value={input.productCost || ''}
+                onChange={setNum('productCost')}
+                className="h-11 text-base font-medium bg-white" />
             </Field>
             <Field label="Preço de venda" hint="Valor que o comprador paga no ML" suffix="R$">
-              <Input type="number" min={0} step={0.01} placeholder="0,00" onChange={setNum('salePrice')} />
+              <Input type="number" min={0} step={0.01} placeholder="0,00"
+                value={input.salePrice || ''}
+                onChange={setNum('salePrice')}
+                className="h-11 text-base font-medium bg-white" />
             </Field>
+          </div>
+        </div>
+
+        {/* Custos adicionais — colapsável */}
+        <CollapsibleSection
+          title="Outros custos e parâmetros"
+          icon="⚙️"
+          open={showExtraCosts}
+          onToggle={() => setShowExtraCosts(v => !v)}
+          summary={`Embalagem · Impostos ${(input.taxRate*100).toFixed(0)}% · Overhead ${(input.overheadRate*100).toFixed(0)}% · Margem alvo ${(input.targetMargin*100).toFixed(0)}%`}
+        >
+          <div className="grid grid-cols-2 gap-4">
             <Field label="Embalagem" hint="Caixa, plástico bolha, fita, etc." suffix="R$">
-              <Input type="number" min={0} step={0.01} placeholder="0,00" onChange={setNum('packagingCost')} />
+              <Input type="number" min={0} step={0.01} placeholder="0,00"
+                value={input.packagingCost || ''}
+                onChange={setNum('packagingCost')} />
             </Field>
             <Field label="Imposto sobre venda" hint="Simples Nacional: ~6% | MEI: ~0%" suffix="%">
-              <Input type="number" min={0} max={100} step={0.1} defaultValue={6} onChange={setPercent('taxRate')} />
+              <Input type="number" min={0} max={100} step={0.1}
+                value={(input.taxRate * 100).toFixed(1)}
+                onChange={setPercent('taxRate')} />
             </Field>
             <Field label="Overhead" hint="Aluguel, energia, pessoal, etc." suffix="%">
-              <Input type="number" min={0} max={100} step={0.1} defaultValue={5} onChange={setPercent('overheadRate')} />
+              <Input type="number" min={0} max={100} step={0.1}
+                value={(input.overheadRate * 100).toFixed(1)}
+                onChange={setPercent('overheadRate')} />
             </Field>
             <Field label="Margem alvo" hint="% mínima para considerar viável" suffix="%">
-              <Input type="number" min={0} max={100} step={0.1} defaultValue={20} onChange={setPercent('targetMargin')} />
+              <Input type="number" min={0} max={100} step={0.1}
+                value={(input.targetMargin * 100).toFixed(1)}
+                onChange={setPercent('targetMargin')} />
             </Field>
-            <Field label="Custo fixo mensal" hint="Aluguel, funcionários, energia — para calcular quantas unidades/mês você precisa vender" suffix="R$">
-              <Input type="number" min={0} step={1} placeholder="0,00" onChange={setNum('monthlyFixedCost')} />
+            <Field label="Custo fixo mensal" hint="Para calcular quantas unidades/mês você precisa vender" suffix="R$">
+              <Input type="number" min={0} step={1} placeholder="0,00"
+                value={input.monthlyFixedCost || ''}
+                onChange={setNum('monthlyFixedCost')} />
             </Field>
           </div>
-        </Section>
+        </CollapsibleSection>
 
-        {/* Seção 2: Taxas ML */}
-        <Section title="Taxas Mercado Livre" icon="🏪">
-          {/* Tipo de anúncio */}
-          <div className="space-y-1.5">
-            <Label className="text-sm text-gray-600">Tipo de anúncio</Label>
-            <p className="text-xs text-gray-400">Clássico = visibilidade padrão | Premium = destaque + frete grátis obrigatório</p>
-            <div className="grid grid-cols-3 gap-2 mt-1">
-              {(['free', 'classic', 'premium'] as ListingType[]).map(type => (
-                <button key={type} type="button" onClick={() => handleListingType(type)}
-                  className={cn(
-                    'rounded-lg border py-2.5 text-sm font-medium transition-all',
-                    input.listingType === type
-                      ? 'border-blue-500 bg-blue-50 text-blue-800 shadow-sm'
-                      : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  )}>
-                  <div>{type === 'free' ? 'Gratuito' : type === 'classic' ? 'Clássico' : 'Premium'}</div>
-                  <div className="text-xs opacity-70 mt-0.5">
-                    {type === 'free' ? '0%' : type === 'classic' ? '11–14%' : '16–19%'}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Categoria */}
-          {input.listingType !== 'free' && !manualFee && (
-            <Field label="Categoria do produto" hint="A taxa varia por categoria — selecione a mais próxima">
-              <NativeSelect
-                value={input.categoryId ?? ''}
-                onChange={e => handleCategory(e.target.value)}
-                options={[
-                  { value: '', label: `Taxa geral (${input.listingType === 'classic' ? '11' : '17'}%)` },
-                  ...ML_CATEGORY_FEES.map(c => ({
-                    value: c.id,
-                    label: `${c.name} — ${input.listingType === 'classic' ? c.classic : c.premium}%`,
-                  })),
-                ]}
-              />
-            </Field>
-          )}
-
-          {/* Toggle manual */}
-          {input.listingType !== 'free' && (
-            <label className="flex cursor-pointer items-start gap-2.5 text-sm select-none">
-              <input type="checkbox" checked={manualFee}
-                onChange={e => handleManualFeeToggle(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded accent-blue-600" />
-              <div>
-                <span className="text-gray-700 font-medium">Inserir taxa manualmente</span>
-                <p className="text-xs text-gray-400 mt-0.5">Use quando o ML ofereceu uma condição especial (ex: promoção, categoria diferente)</p>
+        {/* Taxas ML — colapsável */}
+        <CollapsibleSection
+          title="Taxas Mercado Livre"
+          icon="🏪"
+          open={showMlSection}
+          onToggle={() => setShowMlSection(v => !v)}
+          summary={`Anúncio ${input.listingType === 'free' ? 'Gratuito' : input.listingType === 'classic' ? 'Clássico' : 'Premium'} · ${effectiveCommissionPct}% comissão · ${input.installments}x`}
+        >
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-sm text-gray-600">Tipo de anúncio</Label>
+              <p className="text-xs text-gray-400">Clássico = visibilidade padrão | Premium = destaque + frete grátis obrigatório</p>
+              <div className="grid grid-cols-3 gap-2 mt-1">
+                {(['free', 'classic', 'premium'] as ListingType[]).map(type => (
+                  <button key={type} type="button" onClick={() => handleListingType(type)}
+                    className={cn(
+                      'rounded-lg border py-2.5 text-sm font-medium transition-all',
+                      input.listingType === type
+                        ? 'border-blue-500 bg-blue-50 text-blue-800 shadow-sm'
+                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    )}>
+                    <div>{type === 'free' ? 'Gratuito' : type === 'classic' ? 'Clássico' : 'Premium'}</div>
+                    <div className="text-xs opacity-70 mt-0.5">
+                      {type === 'free' ? '0%' : type === 'classic' ? '11–14%' : '16–19%'}
+                    </div>
+                  </button>
+                ))}
               </div>
-            </label>
-          )}
-
-          {manualFee && input.listingType !== 'free' && (
-            <Field label="Taxa de comissão personalizada" hint="Informe o % que o ML cobra no seu caso" suffix="%">
-              <Input type="number" min={0} max={100} step={0.1} value={manualFeeInput}
-                placeholder={`Padrão: ${getCategoryFee(input.categoryId, input.listingType as 'classic' | 'premium')}%`}
-                onChange={e => {
-                  setManualFeeInput(e.target.value)
-                  const v = parseFloat(e.target.value)
-                  setInput(prev => ({ ...prev, commissionOverride: isNaN(v) ? null : v }))
-                }} />
-            </Field>
-          )}
-
-          {/* Parcelas */}
-          <Field label="Parcelas máximas" hint="Custo adicional cobrado pelo ML ao parcelar sem juros">
-            <NativeSelect
-              value={String(input.installments)}
-              onChange={e => setInput(prev => ({ ...prev, installments: parseInt(e.target.value) }))}
-              options={Array.from({ length: 12 }, (_, i) => ({
-                value: String(i + 1),
-                label: i === 0
-                  ? '1x (sem custo adicional)'
-                  : `${i + 1}x (+${(ML_INSTALLMENT_FEES[input.listingType] as Record<number, number>)?.[i + 1] ?? 0}%)`,
-              }))}
-            />
-          </Field>
-
-          {/* Resumo das taxas ML */}
-          {!feesLoading && input.listingType !== 'free' && (
-            <div className="rounded-xl border border-blue-100 bg-blue-50 divide-y divide-blue-100 text-sm overflow-hidden">
-              <FeeRow
-                label={manualFee && input.commissionOverride !== null ? 'Comissão (manual)' : `Comissão ${input.categoryId ? `· ${ML_CATEGORY_FEES.find(c => c.id === input.categoryId)?.name}` : '· taxa geral'}`}
-                pct={effectiveCommissionPct}
-                amount={input.salePrice > 0 ? input.salePrice * effectiveCommissionPct / 100 : null}
-                textColor="text-blue-800"
-              />
-              {installmentPct > 0 && (
-                <FeeRow
-                  label={`Parcelamento em ${input.installments}x`}
-                  pct={installmentPct}
-                  amount={input.salePrice > 0 ? input.salePrice * installmentPct / 100 : null}
-                  textColor="text-blue-700"
-                  prefix="+"
-                />
-              )}
-              {(installmentPct > 0) && (
-                <FeeRow
-                  label="Total ML"
-                  pct={effectiveCommissionPct + installmentPct}
-                  amount={input.salePrice > 0 ? input.salePrice * (effectiveCommissionPct + installmentPct) / 100 : null}
-                  textColor="text-blue-900"
-                  bold
-                />
-              )}
-              {fixedCostLabel && (
-                <div className="flex items-center justify-between px-3 py-2 bg-orange-50">
-                  <div>
-                    <span className="font-medium text-orange-700">⚠ Custo fixo ML (preço &lt; R$79)</span>
-                    <p className="text-xs text-orange-500 mt-0.5">{fixedCostLabel} · cobrado por unidade vendida</p>
-                  </div>
-                  <span className="font-bold text-orange-700">{formatBRL(fixedCostValue)}</span>
-                </div>
-              )}
             </div>
-          )}
-        </Section>
 
-        {/* Seção 3: Frete */}
-        <Section title="Modalidade de Frete" icon="🚚">
-          <p className="text-xs text-gray-400 -mt-2">Escolha como o produto será entregue ao comprador</p>
-          <div className="space-y-2">
+            {input.listingType !== 'free' && !manualFee && (
+              <Field label="Categoria do produto" hint="A taxa varia por categoria — selecione a mais próxima">
+                <NativeSelect
+                  value={input.categoryId ?? ''}
+                  onChange={e => handleCategory(e.target.value)}
+                  options={[
+                    { value: '', label: `Taxa geral (${input.listingType === 'classic' ? '11' : '17'}%)` },
+                    ...ML_CATEGORY_FEES.map(c => ({
+                      value: c.id,
+                      label: `${c.name} — ${input.listingType === 'classic' ? c.classic : c.premium}%`,
+                    })),
+                  ]}
+                />
+              </Field>
+            )}
+
+            {input.listingType !== 'free' && (
+              <label className="flex cursor-pointer items-start gap-2.5 text-sm select-none">
+                <input type="checkbox" checked={manualFee}
+                  onChange={e => handleManualFeeToggle(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded accent-blue-600" />
+                <div>
+                  <span className="text-gray-700 font-medium">Inserir taxa manualmente</span>
+                  <p className="text-xs text-gray-400 mt-0.5">Use quando o ML ofereceu uma condição especial</p>
+                </div>
+              </label>
+            )}
+
+            {manualFee && input.listingType !== 'free' && (
+              <Field label="Taxa de comissão personalizada" suffix="%">
+                <Input type="number" min={0} max={100} step={0.1} value={manualFeeInput}
+                  placeholder={`Padrão: ${getCategoryFee(input.categoryId, input.listingType as 'classic' | 'premium')}%`}
+                  onChange={e => {
+                    setManualFeeInput(e.target.value)
+                    const v = parseFloat(e.target.value)
+                    setInput(prev => ({ ...prev, commissionOverride: isNaN(v) ? null : v }))
+                  }} />
+              </Field>
+            )}
+
+            <Field label="Parcelas máximas" hint="Custo adicional cobrado pelo ML ao parcelar sem juros">
+              <NativeSelect
+                value={String(input.installments)}
+                onChange={e => setInput(prev => ({ ...prev, installments: parseInt(e.target.value) }))}
+                options={Array.from({ length: 12 }, (_, i) => ({
+                  value: String(i + 1),
+                  label: i === 0
+                    ? '1x (sem custo adicional)'
+                    : `${i + 1}x (+${(ML_INSTALLMENT_FEES[input.listingType] as Record<number, number>)?.[i + 1] ?? 0}%)`,
+                }))}
+              />
+            </Field>
+
+            {!feesLoading && input.listingType !== 'free' && (
+              <div className="rounded-xl border border-blue-100 bg-blue-50 divide-y divide-blue-100 text-sm overflow-hidden">
+                <FeeRow
+                  label={manualFee && input.commissionOverride !== null ? 'Comissão (manual)' : `Comissão ${input.categoryId ? `· ${ML_CATEGORY_FEES.find(c => c.id === input.categoryId)?.name}` : '· taxa geral'}`}
+                  pct={effectiveCommissionPct}
+                  amount={input.salePrice > 0 ? input.salePrice * effectiveCommissionPct / 100 : null}
+                  textColor="text-blue-800"
+                />
+                {installmentPct > 0 && (
+                  <FeeRow label={`Parcelamento em ${input.installments}x`} pct={installmentPct}
+                    amount={input.salePrice > 0 ? input.salePrice * installmentPct / 100 : null}
+                    textColor="text-blue-700" prefix="+" />
+                )}
+                {installmentPct > 0 && (
+                  <FeeRow label="Total ML" pct={effectiveCommissionPct + installmentPct}
+                    amount={input.salePrice > 0 ? input.salePrice * (effectiveCommissionPct + installmentPct) / 100 : null}
+                    textColor="text-blue-900" bold />
+                )}
+                {fixedCostLabel && (
+                  <div className="flex items-center justify-between px-3 py-2 bg-orange-50">
+                    <div>
+                      <span className="font-medium text-orange-700">⚠ Custo fixo ML (preço &lt; R$79)</span>
+                      <p className="text-xs text-orange-500 mt-0.5">{fixedCostLabel} · cobrado por unidade vendida</p>
+                    </div>
+                    <span className="font-bold text-orange-700">{formatBRL(fixedCostValue)}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </CollapsibleSection>
+
+        {/* Frete — colapsável */}
+        <CollapsibleSection
+          title="Modalidade de Frete"
+          icon="🚚"
+          open={showFreteSection}
+          onToggle={() => setShowFreteSection(v => !v)}
+          summary={input.shippingMode === 'none' ? 'Sem frete grátis — comprador paga' : input.shippingMode === 'full' ? 'Mercado Envios Full' : 'Mercado Envios'}
+        >
+          <div className="space-y-3">
             {([
-              { mode: 'none' as ShippingMode,   label: 'Sem frete grátis',     desc: 'Comprador paga o frete — sem custo para você' },
-              { mode: 'envios' as ShippingMode, label: 'Mercado Envios',        desc: 'Você despacha com etiqueta ML (Correios/transportadora)' },
-              { mode: 'full' as ShippingMode,   label: 'Mercado Envios Full',   desc: 'Estoque no armazém ML — custo variável por peso/dimensão' },
+              { mode: 'none' as ShippingMode,   label: 'Sem frete grátis',   desc: 'Comprador paga o frete — sem custo para você' },
+              { mode: 'envios' as ShippingMode, label: 'Mercado Envios',      desc: 'Você despacha com etiqueta ML (Correios/transportadora)' },
+              { mode: 'full' as ShippingMode,   label: 'Mercado Envios Full', desc: 'Estoque no armazém ML — custo variável por peso/dimensão' },
             ]).map(({ mode, label, desc }) => (
               <label key={mode} className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors',
-                input.shippingMode === mode
-                  ? 'border-blue-400 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                input.shippingMode === mode ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
               )}>
                 <input type="radio" name="shippingMode" value={mode}
                   checked={input.shippingMode === mode}
@@ -267,18 +300,19 @@ export default function CostForm() {
                 </div>
               </label>
             ))}
+            {input.shippingMode !== 'none' && (
+              <Field
+                label={input.shippingMode === 'full' ? 'Custo operacional (Full)' : 'Custo de frete estimado'}
+                hint={input.shippingMode === 'full' ? 'Consulte o Seller Center do ML para o valor exato' : 'Custo médio que você paga por envio'}
+                suffix="R$"
+              >
+                <Input type="number" min={0} step={0.01} placeholder="0,00"
+                  value={input.shippingCost || ''}
+                  onChange={setNum('shippingCost')} />
+              </Field>
+            )}
           </div>
-
-          {input.shippingMode !== 'none' && (
-            <Field
-              label={input.shippingMode === 'full' ? 'Custo operacional (Full)' : 'Custo de frete estimado'}
-              hint={input.shippingMode === 'full' ? 'Consulte o Seller Center do ML para o valor exato por produto' : 'Custo médio que você paga por envio'}
-              suffix="R$"
-            >
-              <Input type="number" min={0} step={0.01} placeholder="0,00" onChange={setNum('shippingCost')} />
-            </Field>
-          )}
-        </Section>
+        </CollapsibleSection>
       </div>
 
       {/* ─── RESULTADO ─── */}
@@ -289,10 +323,10 @@ export default function CostForm() {
             <SaveSkuButton input={input} result={result} />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 p-10 text-center gap-3">
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-100 bg-blue-50/40 p-10 text-center gap-3">
             <span className="text-4xl">🧮</span>
-            <p className="text-sm font-medium text-gray-500">Calculadora pronta</p>
-            <p className="text-xs text-gray-400">Preencha o <strong>custo do produto</strong> e o <strong>preço de venda</strong> para ver o resultado em tempo real</p>
+            <p className="text-sm font-semibold text-gray-600">Calculadora pronta</p>
+            <p className="text-xs text-gray-400">Preencha o <strong>custo do produto</strong> e o <strong>preço de venda</strong> acima para ver o resultado</p>
           </div>
         )}
       </div>
@@ -312,6 +346,27 @@ export default function CostForm() {
 }
 
 // ─── Sub-componentes ───
+
+function CollapsibleSection({ title, icon, open, onToggle, summary, children }: {
+  title: string; icon: string; open: boolean; onToggle: () => void; summary: string; children: React.ReactNode
+}) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <button type="button" onClick={onToggle}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors">
+        <div className="flex items-center gap-2">
+          <span>{icon}</span>
+          <span className="text-sm font-semibold text-gray-700">{title}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {!open && <span className="text-xs text-gray-400 hidden sm:block">{summary}</span>}
+          <span className={cn('text-gray-400 transition-transform text-xs', open && 'rotate-180')}>▼</span>
+        </div>
+      </button>
+      {open && <div className="px-5 pb-5 space-y-4 border-t border-gray-100 pt-4">{children}</div>}
+    </div>
+  )
+}
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (

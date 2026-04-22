@@ -4,10 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export default function SignupForm() {
   const router = useRouter()
@@ -49,65 +47,74 @@ export default function SignupForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Criar conta</CardTitle>
-        <CardDescription>Crie sua conta no SmartPreço gratuitamente</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+      <div className="mb-7">
+        <h2 className="text-2xl font-bold text-gray-900">Criar conta grátis</h2>
+        <p className="text-gray-500 mt-1 text-sm">Comece a precificar com inteligência agora</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            className="h-11"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="Mínimo 6 caracteres"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            autoComplete="new-password"
+            className="h-11"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirmar senha</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Repita a senha"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={6}
+            autoComplete="new-password"
+            className="h-11"
+          />
+        </div>
+        {error && (
+          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
+            <p className="text-sm text-red-700">{error}</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Mínimo 6 caracteres"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              autoComplete="new-password"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar senha</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Repita a senha"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              minLength={6}
-              autoComplete="new-password"
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>
-          )}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Criando conta...' : 'Criar conta'}
-          </Button>
-          <p className="text-sm text-center text-gray-600">
-            Já tem conta?{' '}
-            <Link href="/login" className="text-blue-600 hover:underline">
-              Entrar
-            </Link>
-          </p>
-        </form>
-      </CardContent>
-    </Card>
+        )}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-11 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:opacity-60 transition-colors"
+        >
+          {loading ? 'Criando conta...' : 'Criar conta grátis'}
+        </button>
+      </form>
+
+      <p className="text-sm text-center text-gray-500 mt-6">
+        Já tem conta?{' '}
+        <Link href="/login" className="text-blue-600 font-medium hover:underline">
+          Entrar
+        </Link>
+      </p>
+    </div>
   )
 }
