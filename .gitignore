@@ -32,3 +32,4 @@ coverage/
 # AIOX
 .aiox/handoffs/
 .aiox/sessions/
+.env*.local
