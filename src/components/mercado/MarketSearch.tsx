@@ -56,12 +56,23 @@ async function fetchFromEdge(q: string): Promise<MlListing[]> {
   return mapListings(data)
 }
 
-// ─── Busca direta do browser (último recurso) ──────────────────────────────────
+// ─── Busca direta do browser (ML direto — funciona de IPs residenciais normais) ─
 async function fetchFromBrowser(q: string): Promise<MlListing[]> {
   const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`ML direto ${res.status}`)
   const data = await res.json() as MlRawResponse
+  return mapListings(data)
+}
+
+// ─── CORS proxy público (browser → corsproxy.io → ML) — para IPs bloqueados ────
+async function fetchViaCorsProxy(q: string): Promise<MlListing[]> {
+  const mlUrl = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
+  const proxy = `https://corsproxy.io/?${encodeURIComponent(mlUrl)}`
+  const res = await fetch(proxy, { headers: { 'x-requested-with': 'XMLHttpRequest' } })
+  if (!res.ok) throw new Error(`Proxy ${res.status}`)
+  const data = await res.json() as MlRawResponse
+  if (!data.results) throw new Error('Proxy sem resultados')
   return mapListings(data)
 }
 
@@ -129,8 +140,13 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
         try {
           listings = await fetchFromEdge(term)
         } catch {
-          // 4. Último recurso: browser direto ao ML
-          listings = await fetchFromBrowser(term)
+          try {
+            // 4. Browser direto ao ML (funciona de IPs residenciais normais)
+            listings = await fetchFromBrowser(term)
+          } catch {
+            // 5. CORS proxy público (browser → corsproxy.io → ML)
+            listings = await fetchViaCorsProxy(term)
+          }
         }
         writeCache(term.toLowerCase(), listings)
         setRaw(listings)
