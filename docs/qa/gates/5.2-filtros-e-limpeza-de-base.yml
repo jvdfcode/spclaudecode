@@ -1,0 +1,8 @@
+schema: 1
+story: '5.2'
+gate: PASS
+status_reason: 'Funções puras bem tipadas com todos os filtros, deduplicação e índice de confiança implementados conforme especificado.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues: []
+waiver: { active: false }

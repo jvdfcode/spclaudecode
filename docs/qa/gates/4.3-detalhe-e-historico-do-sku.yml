@@ -1,0 +1,12 @@
+schema: 1
+story: '4.3'
+gate: CONCERNS
+status_reason: 'Detalhe e histórico implementados corretamente, porém o botão Recalcular não passa dados do SKU para pré-preencher a calculadora como especificado no AC5.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues:
+  - id: 'REQ-001'
+    severity: medium
+    finding: 'AC5: botão Recalcular linka para /calculadora sem passar costData/salePrice — calculadora abre vazia, sem pré-preenchimento'
+    suggested_action: 'Passar dados via searchParams (?cost=...&price=...) ou localStorage e ler na CostForm'
+waiver: { active: false }

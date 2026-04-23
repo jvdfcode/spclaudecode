@@ -1,0 +1,12 @@
+schema: 1
+story: '5.1'
+gate: PASS
+status_reason: 'Todos os ACs implementados. Fallback client-side para busca ML é decisão arquitetural documentada (ML bloqueia IPs de servidor), não um defeito.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues:
+  - id: 'MNT-001'
+    severity: low
+    finding: 'hashQuery usa hash numérico simples (imul) com possibilidade teórica de colisão em cache'
+    suggested_action: 'Baixo risco para MVP — considerar substituir por hash mais robusto (ex: SHA-256 truncado) em volume maior'
+waiver: { active: false }

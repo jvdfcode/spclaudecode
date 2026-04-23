@@ -4,7 +4,7 @@ import { useState } from 'react'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import { saveSkuAction } from '@/app/(app)/calculadora/actions'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { GenieButton } from '@/components/ui/genie-button'
 
 interface Props {
   input: ViabilityInput
@@ -18,7 +18,6 @@ export default function SaveSkuButton({ input, result }: Props) {
   const [name, setName] = useState('')
   const [notes, setNotes] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
-
   const [savedId, setSavedId] = useState<string | null>(null)
 
   async function handleSave() {
@@ -34,36 +33,55 @@ export default function SaveSkuButton({ input, result }: Props) {
     }
   }
 
+  /* ── Estado: SKU salvo com sucesso ── */
   if (state === 'saved') {
     return (
-      <div className="rounded-xl border border-green-200 bg-green-50 p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-green-600 font-bold text-lg">✓</span>
-          <span className="text-sm font-semibold text-green-700">SKU salvo com sucesso!</span>
+      <div className="genie-pop-in rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-5 space-y-4 shadow-[0_2px_16px_rgba(34,197,94,0.15)]">
+        {/* Cabeçalho de sucesso */}
+        <div className="flex items-center gap-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-green-500 shadow-[0_2px_8px_rgba(34,197,94,0.4)] text-white text-lg font-bold shrink-0">
+            ✓
+          </span>
+          <div>
+            <p className="text-sm font-bold text-green-800">SKU salvo com sucesso!</p>
+            <p className="text-xs text-green-600 mt-0.5 truncate max-w-[180px]">{name}</p>
+          </div>
         </div>
+
+        {/* Ações primárias */}
         <div className="flex gap-2">
-          <a
-            href={`/skus/${savedId}`}
-            className="flex-1 rounded-lg bg-green-600 py-2 text-center text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+          <GenieButton
+            variant="success"
+            size="sm"
+            fullWidth
+            onClick={() => { window.location.href = `/skus/${savedId}` }}
           >
             Ver SKU
-          </a>
-          <a
-            href="/skus"
-            className="flex-1 rounded-lg border border-green-300 py-2 text-center text-sm font-medium text-green-700 hover:bg-green-100 transition-colors"
+          </GenieButton>
+          <GenieButton
+            variant="secondary"
+            size="sm"
+            fullWidth
+            onClick={() => { window.location.href = '/skus' }}
           >
             Meus SKUs
-          </a>
+          </GenieButton>
         </div>
-        <a
-          href={`/mercado?q=${encodeURIComponent(name)}`}
-          className="w-full rounded-lg border border-blue-200 bg-blue-50 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+
+        {/* Ação de mercado */}
+        <GenieButton
+          variant="outline"
+          size="sm"
+          fullWidth
+          onClick={() => { window.location.href = `/mercado?q=${encodeURIComponent(name)}` }}
         >
           🔍 Comparar no ML
-        </a>
+        </GenieButton>
+
+        {/* Resetar */}
         <button
           onClick={() => { setState('idle'); setName(''); setNotes(''); setSavedId(null) }}
-          className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors pt-1"
         >
           Fazer novo cálculo
         </button>
@@ -71,23 +89,27 @@ export default function SaveSkuButton({ input, result }: Props) {
     )
   }
 
+  /* ── Estado: idle — botão convite ── */
   if (state === 'idle') {
     return (
       <button
         onClick={() => setState('form')}
-        className="w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-3 text-sm font-semibold text-blue-700 hover:bg-blue-100 hover:border-blue-400 transition-colors"
+        className="btn-genie w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/60 py-3 text-sm font-semibold text-blue-700 transition-all duration-200 hover:border-blue-400 hover:bg-blue-50 hover:shadow-[0_2px_12px_rgba(59,130,246,0.18)] active:scale-[0.98]"
       >
         + Salvar como SKU
       </button>
     )
   }
 
+  /* ── Estado: formulário de nome ── */
   return (
-    <div className="rounded-xl border border-blue-200 bg-white p-4 space-y-3 shadow-sm">
-      <p className="text-sm font-semibold text-gray-800">Salvar como SKU</p>
+    <div className="genie-pop-in rounded-2xl border border-blue-200 bg-white p-4 space-y-3 shadow-[0_2px_14px_rgba(59,130,246,0.12)]">
+      <p className="text-sm font-bold text-gray-800">Salvar como SKU</p>
 
       <div className="space-y-1.5">
-        <label className="text-xs text-gray-500">Nome do produto <span className="text-red-400">*</span></label>
+        <label className="text-xs text-gray-500 font-medium">
+          Nome do produto <span className="text-red-400">*</span>
+        </label>
         <Input
           autoFocus
           placeholder="Ex: Fone Bluetooth XYZ"
@@ -95,42 +117,48 @@ export default function SaveSkuButton({ input, result }: Props) {
           onChange={e => setName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSave()}
           maxLength={100}
+          className="h-10 rounded-xl"
         />
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs text-gray-500">Notas <span className="text-gray-300">(opcional)</span></label>
+        <label className="text-xs text-gray-500 font-medium">
+          Notas <span className="text-gray-300">(opcional)</span>
+        </label>
         <Input
           placeholder="Observações, variações, fornecedor..."
           value={notes}
           onChange={e => setNotes(e.target.value)}
           maxLength={300}
+          className="h-10 rounded-xl"
         />
       </div>
 
       {state === 'error' && (
-        <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{errorMsg}</p>
+        <p className="text-xs text-red-600 bg-red-50 rounded-xl px-3 py-2 border border-red-100">
+          {errorMsg}
+        </p>
       )}
 
       <div className="flex gap-2 pt-1">
-        <button
+        <GenieButton
           onClick={handleSave}
-          disabled={!name.trim() || state === 'saving'}
-          className={cn(
-            'flex-1 rounded-lg py-2 text-sm font-semibold transition-colors',
-            name.trim()
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-          )}
+          disabled={!name.trim()}
+          loading={state === 'saving'}
+          variant={name.trim() ? 'primary' : 'ghost'}
+          size="sm"
+          className="flex-1"
         >
-          {state === 'saving' ? 'Salvando...' : 'Salvar'}
-        </button>
-        <button
+          Salvar
+        </GenieButton>
+        <GenieButton
           onClick={() => { setState('idle'); setName(''); setNotes(''); setErrorMsg('') }}
-          className="px-4 rounded-lg border border-gray-200 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+          variant="ghost"
+          size="sm"
+          className="px-4"
         >
           Cancelar
-        </button>
+        </GenieButton>
       </div>
     </div>
   )

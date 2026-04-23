@@ -1,0 +1,8 @@
+schema: 1
+story: '4.1'
+gate: PASS
+status_reason: 'Todos os ACs implementados corretamente. Autenticação, validação de input e persistência Supabase com tratamento de erros adequado.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues: []
+waiver: { active: false }

@@ -5,6 +5,7 @@ import { getSkuById } from '@/lib/supabase/skus'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 import type { SkuCalculation } from '@/types/sku'
+import RecalcularButton from '@/components/skus/RecalcularButton'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -55,14 +56,9 @@ export default async function SkuDetailPage({ params }: Props) {
           Criado em {new Date(sku.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
         </p>
 
-        {/* Botão recalcular */}
+        {/* Botão recalcular — pré-preenche calculadora com dados do último cálculo */}
         {sku.calculations[0] && (
-          <Link
-            href={`/calculadora`}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
-          >
-            🔄 Recalcular
-          </Link>
+          <RecalcularButton costData={sku.calculations[0].costData} />
         )}
       </div>
 

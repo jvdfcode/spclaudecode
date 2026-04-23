@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { GenieButton } from '@/components/ui/genie-button'
 
 export default function SignupForm() {
   const router = useRouter()
@@ -100,13 +101,14 @@ export default function SignupForm() {
             <p className="text-sm text-red-700">{error}</p>
           </div>
         )}
-        <button
+        <GenieButton
           type="submit"
-          disabled={loading}
-          className="w-full h-11 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:opacity-60 transition-colors"
+          loading={loading}
+          fullWidth
+          size="lg"
         >
-          {loading ? 'Criando conta...' : 'Criar conta grátis'}
-        </button>
+          Criar conta grátis
+        </GenieButton>
       </form>
 
       <p className="text-sm text-center text-gray-500 mt-6">

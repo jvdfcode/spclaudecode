@@ -1,0 +1,8 @@
+schema: 1
+story: '5.3'
+gate: PASS
+status_reason: 'Todas as métricas estatísticas, badge de posicionamento, gráfico de distribuição, Full count e botão Usar preço implementados corretamente.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues: []
+waiver: { active: false }

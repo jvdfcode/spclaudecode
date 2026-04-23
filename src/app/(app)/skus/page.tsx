@@ -37,12 +37,12 @@ export default async function SkusPage({ searchParams }: Props) {
           <h1 className="text-2xl font-bold text-gray-900">Meus SKUs</h1>
           <p className="mt-1 text-sm text-gray-500">Portfólio de produtos calculados</p>
         </div>
-        <Link
+        <a
           href="/calculadora"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+          className="btn-genie inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 px-4 py-2 text-sm font-semibold text-white shadow-[0_2px_14px_rgba(79,70,229,0.32)] hover:shadow-[0_5px_22px_rgba(79,70,229,0.44)] border border-indigo-500/25 transition-all duration-[220ms] ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-[2px] active:scale-[0.96] active:translate-y-0"
         >
           + Novo cálculo
-        </Link>
+        </a>
       </div>
 
       {/* Filtros */}

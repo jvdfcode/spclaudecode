@@ -1,0 +1,12 @@
+schema: 1
+story: '4.2'
+gate: PASS
+status_reason: 'Grid, filtros, busca e estado vazio implementados como Server Component com dados reais do Supabase.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues:
+  - id: 'TEST-001'
+    severity: low
+    finding: 'Campo de busca usa defaultValue (uncontrolled) — não reflete mudanças externas de URL'
+    suggested_action: 'Usar controlled input com value={search} em iteração futura se necessário'
+waiver: { active: false }

@@ -47,10 +47,12 @@ export default function SkuFilters({ total }: { total: number }) {
             key={opt.value}
             onClick={() => push('status', opt.value)}
             className={cn(
-              'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+              'btn-genie rounded-full px-3 py-1 text-xs font-medium select-none',
+              'transition-all duration-[200ms] ease-[cubic-bezier(.34,1.56,.64,1)]',
+              'hover:-translate-y-[1px] active:scale-[0.95] active:translate-y-0',
               current === opt.value
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-[0_2px_8px_rgba(79,70,229,0.28)]'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:shadow-sm'
             )}
           >
             {opt.label}
