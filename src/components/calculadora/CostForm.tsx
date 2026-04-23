@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
-import type { ViabilityInput, ListingType, ShippingMode } from '@/types'
+import { useState, useMemo, useEffect, useCallback } from 'react'
+import type { ViabilityInput, ListingType, ShippingMode, MarketSummary } from '@/types'
 import { calculateViability } from '@/lib/calculations'
 import { useMlFees } from '@/lib/hooks/useMlFees'
 import {
@@ -16,6 +16,9 @@ import ResultsPanel from './ResultsPanel'
 import ScenarioTable from './ScenarioTable'
 import SaveSkuButton from './SaveSkuButton'
 import DecisionPanel from '@/components/decisao/DecisionPanel'
+import ProductIdentification from './ProductIdentification'
+import ModeSelection from './ModeSelection'
+import MlScenarioCards from '@/components/mercado/MlScenarioCards'
 
 const FORM_SESSION_KEY = 'smartpreco_calc_form'
 
@@ -36,17 +39,39 @@ const defaultInput: ViabilityInput = {
 }
 
 export default function CostForm() {
-  const [input, setInput] = useState<ViabilityInput>(() => {
+  const [input, setInput] = useState<ViabilityInput>(defaultInput)
+
+  // Carregar sessionStorage só após mount (evita hydration mismatch SSR vs client)
+  useEffect(() => {
     try {
       const saved = sessionStorage.getItem(FORM_SESSION_KEY)
-      if (saved) return { ...defaultInput, ...JSON.parse(saved) } as ViabilityInput
+      if (saved) setInput({ ...defaultInput, ...JSON.parse(saved) } as ViabilityInput)
     } catch {}
-    return defaultInput
-  })
-  // Persistir estado no sessionStorage para não perder ao navegar entre páginas
+  }, [])
+
+  // Persistir no sessionStorage sempre que input mudar
   useEffect(() => {
     try { sessionStorage.setItem(FORM_SESSION_KEY, JSON.stringify(input)) } catch {}
   }, [input])
+
+  const [productName, setProductName] = useState('')
+  const [sku, setSku] = useState('')
+  const [mlSummary, setMlSummary] = useState<MarketSummary | null>(null)
+
+  const handleIdentificationChange = useCallback((data: { productName: string; sku: string; mlSummary: MarketSummary | null }) => {
+    setProductName(data.productName)
+    setSku(data.sku)
+    setMlSummary(data.mlSummary)
+  }, [])
+
+  const [purchaseMode, setPurchaseMode] = useState<'avulso' | 'massa'>('avulso')
+
+  const handleModeChange = useCallback((data: { mode: 'avulso' | 'massa'; unitCost: number | null }) => {
+    setPurchaseMode(data.mode)
+    if (data.mode === 'massa' && data.unitCost !== null) {
+      setInput(prev => ({ ...prev, productCost: data.unitCost! }))
+    }
+  }, [])
 
   const [manualFee, setManualFee] = useState(false)
   const [manualFeeInput, setManualFeeInput] = useState('')
@@ -98,18 +123,36 @@ export default function CostForm() {
       {/* ─── FORMULÁRIO ─── */}
       <div className="space-y-4">
 
-        {/* HERO: os 2 campos essenciais */}
+        {/* Etapa 1: Identificação do produto */}
+        <ProductIdentification onChange={handleIdentificationChange} />
+
+        {/* Etapa 2: Modo de compra */}
+        <ModeSelection onChange={handleModeChange} />
+
+        {/* Etapa 3: Custos e precificação */}
+        <div className="space-y-2">
         <div className="rounded-2xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 space-y-4">
-          <div>
-            <h2 className="text-sm font-semibold text-blue-800">Informe os valores essenciais</h2>
-            <p className="text-xs text-blue-600 mt-0.5">Preencha os dois campos para ver o resultado imediatamente</p>
+          <div className="flex items-center gap-2">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+              3
+            </span>
+            <span className="text-sm font-semibold text-blue-800">Custos e precificação</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Field label="Custo do produto" hint="Quanto você paga para adquirir/fabricar" suffix="R$">
-              <Input type="number" min={0} step={0.01} placeholder="0,00"
+            <Field
+              label="Custo do produto"
+              hint={purchaseMode === 'massa' ? 'Calculado pelo rateio do lote acima' : 'Quanto você paga para adquirir/fabricar'}
+              suffix="R$"
+            >
+              <Input
+                type="number" min={0} step={0.01} placeholder="0,00"
                 value={input.productCost || ''}
                 onChange={setNum('productCost')}
-                className="h-11 text-base font-medium bg-white" />
+                readOnly={purchaseMode === 'massa'}
+                className={purchaseMode === 'massa'
+                  ? 'h-11 text-base font-medium bg-violet-50 border-violet-200 text-violet-700 cursor-default'
+                  : 'h-11 text-base font-medium bg-white'}
+              />
             </Field>
             <Field label="Preço de venda" hint="Valor que o comprador paga no ML" suffix="R$">
               <Input type="number" min={0} step={0.01} placeholder="0,00"
@@ -313,6 +356,7 @@ export default function CostForm() {
             )}
           </div>
         </CollapsibleSection>
+        </div>{/* fim Etapa 3 */}
       </div>
 
       {/* ─── RESULTADO ─── */}
@@ -332,12 +376,31 @@ export default function CostForm() {
       </div>
     </div>
 
+    {/* ─── Etapa 4: Cenários com preços reais do ML ─── */}
+    {mlSummary && mlSummary.cleanListings > 0 && input.productCost > 0 && (
+      <div className="rounded-2xl border-2 border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
+            4
+          </span>
+          <span className="text-sm font-semibold text-emerald-800">Posicionamento no mercado</span>
+        </div>
+        <MlScenarioCards summary={mlSummary} costInput={input} />
+      </div>
+    )}
+
     {/* ─── TABELA DE CENÁRIOS ─── */}
     <ScenarioTable input={input} fees={fees} targetMargin={input.targetMargin} />
 
-    {/* ─── DECISÃO DE PREÇO ─── */}
+    {/* ─── Etapa 5: Decisão ─── */}
     {result && (
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
+      <div className="rounded-2xl border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-amber-50 p-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white">
+            5
+          </span>
+          <span className="text-sm font-semibold text-orange-800">O que fazer com esse produto?</span>
+        </div>
         <DecisionPanel input={input} result={result} />
       </div>
     )}

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 
 interface Props {
   summary: MarketSummary
+  costInput?: ViabilityInput
 }
 
 const FORM_KEY = 'smartpreco_calc_form'
@@ -58,17 +59,19 @@ const viabilityStyle = {
   not_viable: { badge: 'bg-red-100 text-red-700',       label: '✗ Inviável' },
 }
 
-export default function MlScenarioCards({ summary }: Props) {
+export default function MlScenarioCards({ summary, costInput }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
 
   const scenarios = useMemo(() => {
     if (summary.cleanListings === 0) return []
 
-    let input: ViabilityInput | null = null
-    try {
-      const raw = sessionStorage.getItem(FORM_KEY)
-      if (raw) input = JSON.parse(raw) as ViabilityInput
-    } catch {}
+    let input: ViabilityInput | null = costInput ?? null
+    if (!input) {
+      try {
+        const raw = sessionStorage.getItem(FORM_KEY)
+        if (raw) input = JSON.parse(raw) as ViabilityInput
+      } catch {}
+    }
 
     if (!input || input.productCost <= 0) return []
 
@@ -85,7 +88,7 @@ export default function MlScenarioCards({ summary }: Props) {
         classification: classifyViability(metrics.marginPercent) as keyof typeof viabilityStyle,
       }
     })
-  }, [summary])
+  }, [summary, costInput])
 
   if (!scenarios.length) return null
 
