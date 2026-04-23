@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: 'Análise de Mercado',
 }
 
-export default function MercadoPage() {
+export default function MercadoPage({ searchParams }: { searchParams: { q?: string } }) {
   return (
     <div className="space-y-6 max-w-3xl">
       <div>
@@ -14,7 +14,7 @@ export default function MercadoPage() {
           Compare seu preço com anúncios reais do Mercado Livre e descubra onde você está posicionado.
         </p>
       </div>
-      <MarketSearch />
+      <MarketSearch initialQuery={searchParams.q} />
     </div>
   )
 }

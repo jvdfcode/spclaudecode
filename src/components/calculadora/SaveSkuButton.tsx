@@ -55,6 +55,12 @@ export default function SaveSkuButton({ input, result }: Props) {
             Meus SKUs
           </a>
         </div>
+        <a
+          href={`/mercado?q=${encodeURIComponent(name)}`}
+          className="w-full rounded-lg border border-blue-200 bg-blue-50 py-2 text-center text-sm font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+        >
+          🔍 Comparar no ML
+        </a>
         <button
           onClick={() => { setState('idle'); setName(''); setNotes(''); setSavedId(null) }}
           className="w-full text-xs text-gray-400 hover:text-gray-600 transition-colors"

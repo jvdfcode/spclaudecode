@@ -9,6 +9,7 @@ import MarketSummaryPanel from './MarketSummaryPanel'
 import PriceDistributionChart from './PriceDistributionChart'
 import ListingCard from './ListingCard'
 import { cn } from '@/lib/utils'
+import MlScenarioCards from './MlScenarioCards'
 
 // ─── Cache localStorage (performance, não fix de API) ─────────────────────────
 const CACHE_KEY = 'smartpreco_ml_'
@@ -85,11 +86,12 @@ const QUICK_SEARCHES = [
 interface Props {
   initialSalePrice?: number
   onUsePrice?: (price: number) => void
+  initialQuery?: string
 }
 
 type SearchState = 'idle' | 'loading' | 'done' | 'error'
 
-export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
+export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuery }: Props) {
   const [query, setQuery]         = useState('')
   const [activeQuery, setActive]  = useState('')
   const [state, setState]         = useState<SearchState>('idle')
@@ -136,14 +138,8 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
       }
 
       if (serverRes.status === 503 && serverData.clientSide) {
-        // 3. Scraper server-side (lista.mercadolivre.com.br — funciona de qualquer IP)
-        let listings: MlListing[]
-        try {
-          listings = await fetchFromScraper(term)
-        } catch {
-          // 4. Fallback: browser direto ao ML
-          listings = await fetchFromBrowser(term)
-        }
+        // Browser do usuário busca direto no ML (IP residencial não é bloqueado)
+        const listings = await fetchFromBrowser(term)
         writeCache(term.toLowerCase(), listings)
         setRaw(listings)
         setCached(false)
@@ -185,6 +181,13 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
       try { sessionStorage.setItem('smartpreco_market_summary', JSON.stringify(summary)) } catch {}
     }
   }, [state, summary])
+
+  useEffect(() => {
+    if (initialQuery?.trim()) {
+      setQuery(initialQuery.trim())
+      doSearch(initialQuery.trim())
+    }
+  }, [initialQuery, doSearch])
 
   function toggleExclude(id: string) {
     setExcluded(prev => {
@@ -359,6 +362,7 @@ export default function MarketSearch({ initialSalePrice, onUsePrice }: Props) {
                 salePrice={initialSalePrice ?? null}
               />
               <PriceDistributionChart listings={clean} salePrice={initialSalePrice} />
+              <MlScenarioCards summary={summary} />
             </>
           )}
 
