@@ -1,0 +1,117 @@
+epic:
+  id: EPIC-07
+  title: "Prontidão para Lançamento Público"
+  description: |
+    Resolver os bloqueadores críticos identificados no Brownfield Discovery para
+    transformar o MVP em produto utilizável por qualquer usuário real. Foco em:
+    navegação mobile, segurança dos endpoints, observabilidade e UX de feedback.
+  priority: CRITICAL
+  source: "Brownfield Discovery — TECHNICAL-DEBT-REPORT.md Sprint 1"
+  created_at: "2026-04-23"
+  status: Draft
+
+stories:
+  - id: "7.1"
+    title: "Sidebar mobile com drawer"
+    description: |
+      Implementar navegação mobile via drawer (Sheet do shadcn/ui) com botão
+      hamburguer no TopBar. Usuários em smartphone devem conseguir navegar entre
+      todas as páginas da aplicação.
+    acceptance_criteria:
+      - "AC1: Botão hamburguer visível no TopBar em viewport < md (mobile)"
+      - "AC2: Clique no hamburguer abre drawer lateral com os NavLinks"
+      - "AC3: Clicar em um NavLink fecha o drawer e navega para a rota"
+      - "AC4: Sidebar desktop (>= md) permanece inalterado"
+      - "AC5: Drawer fecha ao pressionar ESC ou clicar fora"
+    effort: "1 dia"
+    priority: Must Have
+    debt_refs: [TD-FEAT-02]
+
+  - id: "7.2"
+    title: "Rate limiting nos endpoints ML"
+    description: |
+      Implementar rate limiting por usuário autenticado nos endpoints /api/ml-proxy
+      e /api/ml-search para prevenir abuso e protect contra ban de IP do servidor.
+    acceptance_criteria:
+      - "AC1: Máximo 10 requisições por minuto por usuário em /api/ml-proxy"
+      - "AC2: Requisições acima do limite retornam HTTP 429 com mensagem clara"
+      - "AC3: Header X-RateLimit-Remaining retornado em cada resposta"
+      - "AC4: Implementação não afeta usuários dentro do limite"
+    effort: "1-2 dias"
+    priority: Must Have
+    debt_refs: [TD-SEC-01]
+    implementation_notes: |
+      Usar Upstash Redis + @upstash/ratelimit, ou implementar via Supabase
+      (contar rows por user_id nos últimos 60s na tabela ml_search_cache).
+      Preferir solução sem nova dependência se possível.
+
+  - id: "7.3"
+    title: "Monitoramento básico com Sentry"
+    description: |
+      Integrar Sentry para captura automática de erros de runtime, erros de
+      Server Actions e falhas nos endpoints de API. Sem Sentry, erros em
+      produção são invisíveis.
+    acceptance_criteria:
+      - "AC1: Erros não tratados em Server Components são capturados"
+      - "AC2: Erros de Server Actions são capturados com contexto de usuário"
+      - "AC3: Erros nas routes /api/* são capturados"
+      - "AC4: Sem PII nos eventos Sentry (sem email, sem dados de produto)"
+      - "AC5: Dashboard Sentry mostrando eventos de teste"
+    effort: "1-2 dias"
+    priority: Must Have
+    debt_refs: [TD-OBS-01]
+
+  - id: "7.4"
+    title: "Cleanup automático do cache ML"
+    description: |
+      Implementar limpeza automática de registros expirados da tabela
+      ml_search_cache para prevenir crescimento ilimitado do banco.
+    acceptance_criteria:
+      - "AC1: Registros com expires_at < now() são removidos automaticamente"
+      - "AC2: Limpeza ocorre ao menos 1x por dia"
+      - "AC3: Sem impacto em registros válidos (expires_at >= now())"
+    effort: "2h"
+    priority: Must Have
+    debt_refs: [TD-PERF-02, DB-GAP]
+    implementation_notes: |
+      Opção A: Supabase pg_cron (requer extensão habilitada)
+        -- cron.schedule('cleanup-ml-cache', '0 3 * * *',
+        --   'DELETE FROM ml_search_cache WHERE expires_at < now()')
+      Opção B: Vercel Cron Job (vercel.json + route handler)
+      Preferir Opção B para não depender de extensão Supabase.
+
+  - id: "7.5"
+    title: "Feedback de loading na busca ML"
+    description: |
+      Melhorar a experiência durante o carregamento da busca de mercado, que
+      pode demorar 3-8 segundos. Adicionar skeleton de ListingCards e mensagem
+      de progresso.
+    acceptance_criteria:
+      - "AC1: Durante busca, exibir N=3 SkeletonRows no lugar dos ListingCards"
+      - "AC2: Mensagem 'Buscando no Mercado Livre...' visível durante carregamento"
+      - "AC3: Skeleton removido quando resultados chegam"
+      - "AC4: Em caso de erro, mensagem de erro clara (não tela em branco)"
+    effort: "4h"
+    priority: Must Have
+    debt_refs: [UX-GAP-01]
+
+wave_plan:
+  wave_1:
+    parallel: ["7.4", "7.5"]
+    sequential: []
+    notes: "Tarefas independentes, sem dependências entre si"
+  wave_2:
+    parallel: ["7.1", "7.2"]
+    sequential: []
+    notes: "Após wave_1 — também independentes entre si"
+  wave_3:
+    sequential: ["7.3"]
+    notes: "Sentry requer config de projeto e env vars — melhor fazer focado"
+
+definition_of_done:
+  - Todas as ACs de cada story verificadas manualmente
+  - npm run lint PASS
+  - npm run typecheck PASS
+  - npm test PASS
+  - Testado em viewport mobile (375px) e desktop (1280px)
+  - Sem regressões nas features existentes (calculadora, mercado, SKUs)
