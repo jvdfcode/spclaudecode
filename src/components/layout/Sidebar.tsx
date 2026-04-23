@@ -41,17 +41,21 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-full w-14 md:w-56 flex-col border-r border-gray-200 bg-white px-2 md:px-3 py-5 flex-shrink-0">
+    <aside className="relative flex h-full w-14 md:w-56 flex-col border-r border-paper-200 bg-white px-2 md:px-3 py-5 flex-shrink-0 shadow-[1px_0_0_0_rgba(45,50,119,0.04)]">
+      {/* Barra dourada no topo */}
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+
       {/* Logo desktop */}
       <div className="mb-7 px-1 hidden md:flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-sm flex-shrink-0">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 text-gold-400 text-sm flex-shrink-0 shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
           💰
         </div>
-        <span className="text-base font-bold text-gray-900">SmartPreço</span>
+        <span className="text-sm font-extrabold tracking-[-0.02em] text-ink-950">SmartPreço</span>
       </div>
+
       {/* Logo compacto tablet */}
       <div className="mb-7 flex justify-center md:hidden">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white text-sm">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 text-gold-400 text-sm shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
           💰
         </div>
       </div>
@@ -62,8 +66,8 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="hidden md:block pt-4 border-t border-gray-100">
-        <p className="text-[10px] text-gray-400 text-center">SmartPreço · v1.0</p>
+      <div className="hidden md:block pt-4 border-t border-paper-200">
+        <p className="text-[10px] text-ink-500 text-center font-medium">SmartPreço · v1.0</p>
       </div>
     </aside>
   )

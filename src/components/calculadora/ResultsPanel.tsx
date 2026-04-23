@@ -1,10 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { CircleAlert, CircleCheckBig, CircleX, ChevronDown, ChevronUp } from 'lucide-react'
 import type { ViabilityResult } from '@/types'
 import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 import CostBreakdownTable from './CostBreakdownTable'
+import { ProfitabilityBadge } from '@/components/ui/ProfitabilityBadge'
+import { ResultCard } from '@/components/ui/ResultCard'
 
 interface Props {
   result: ViabilityResult
@@ -12,31 +15,22 @@ interface Props {
 
 const cfg = {
   viable: {
-    label: 'Viável',
-    icon: '✓',
-    border: 'border-green-300',
-    headerBg: 'bg-green-500',
-    metricColor: 'text-green-700',
-    barColor: 'bg-green-500',
     hint: 'Boa margem! Este produto é lucrativo nas condições informadas.',
+    barColor: 'bg-profit-500',
+    metricTone: 'profit' as const,
+    metricColor: 'text-profit-500',
   },
   attention: {
-    label: 'Atenção',
-    icon: '!',
-    border: 'border-yellow-300',
-    headerBg: 'bg-yellow-400',
-    metricColor: 'text-yellow-700',
-    barColor: 'bg-yellow-400',
     hint: 'Margem baixa. Qualquer variação de custo pode tornar inviável.',
+    barColor: 'bg-warn-500',
+    metricTone: 'warn' as const,
+    metricColor: 'text-warn-500',
   },
   not_viable: {
-    label: 'Não Viável',
-    icon: '✗',
-    border: 'border-red-300',
-    headerBg: 'bg-red-500',
-    metricColor: 'text-red-700',
-    barColor: 'bg-red-500',
     hint: 'Prejuízo nesse preço. Veja o Preço Mínimo Viável abaixo.',
+    barColor: 'bg-loss-500',
+    metricTone: 'loss' as const,
+    metricColor: 'text-loss-500',
   },
 }
 
@@ -45,183 +39,159 @@ export default function ResultsPanel({ result }: Props) {
   const { metrics, classification, costBreakdown, input } = result
   const c = cfg[classification]
 
-  // Barra de margem: 0-50% mapeado para 0-100% da barra
+  // Barra de margem: 0–50% mapeado para 0–100%
   const marginBarPct = Math.max(0, Math.min(100, (metrics.marginPercent / 50) * 100))
   const isNotViable = classification === 'not_viable'
   const gapToViable = metrics.priceGapToViable
 
   return (
-    <div className={cn('rounded-xl border-2 overflow-hidden shadow-sm', c.border)}>
-      {/* Header colorido */}
-      <div className={cn('px-5 py-3 flex items-center justify-between', c.headerBg)}>
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/30 text-white font-bold text-sm">
-            {c.icon}
-          </span>
-          <span className="font-bold text-white text-base">{c.label}</span>
+    <div className="rounded-[28px] border border-paper-200 overflow-hidden shadow-[0_16px_40px_rgba(45,50,119,0.08)] bg-white">
+      {/* Barra gradiente + cabeçalho */}
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+      <div className="relative px-6 pt-6 pb-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-ink-700">
+              Resultado da análise
+            </p>
+            <p className="mt-1 text-lg font-extrabold tracking-[-0.02em] text-ink-950">
+              {c.hint}
+            </p>
+          </div>
+          <ProfitabilityBadge classification={classification} />
         </div>
-        <span className="text-white/80 text-xs text-right max-w-[200px] leading-tight">{c.hint}</span>
-      </div>
-
-      <div className="bg-white p-5 space-y-5">
 
         {/* Barra de margem */}
-        <div>
-          <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-            <span className="text-red-400">Inviável &lt;0%</span>
-            <span className="text-yellow-500">Atenção 10–19%</span>
-            <span className="text-green-500">Viável ≥20%</span>
+        <div className="mt-5">
+          <div className="flex justify-between text-[11px] mb-2 font-medium">
+            <span className="text-loss-500">Inviável &lt;0%</span>
+            <span className="text-warn-500">Atenção 10–19%</span>
+            <span className="text-profit-500">Viável ≥20%</span>
           </div>
-          <div className="relative h-4 w-full rounded-full bg-gray-100 overflow-hidden">
+          <div className="relative h-3 w-full rounded-full bg-paper-100 overflow-hidden border border-paper-200">
             <div className="absolute inset-0 flex">
-              <div className="w-[40%] bg-red-100" />
-              <div className="w-[20%] bg-yellow-100" />
-              <div className="w-[40%] bg-green-100" />
+              <div className="w-[40%] bg-loss-50" />
+              <div className="w-[20%] bg-warn-50" />
+              <div className="w-[40%] bg-profit-50" />
             </div>
-            <div className="absolute top-0 bottom-0 w-px bg-white/70" style={{ left: '40%' }} />
-            <div className="absolute top-0 bottom-0 w-px bg-white/70" style={{ left: '60%' }} />
+            <div className="absolute top-0 bottom-0 w-px bg-white/80" style={{ left: '40%' }} />
+            <div className="absolute top-0 bottom-0 w-px bg-white/80" style={{ left: '60%' }} />
             <div
-              className={cn('absolute top-1 h-2 w-2 rounded-full -translate-x-1/2 ring-2 ring-white shadow-md', c.barColor)}
+              className={cn('absolute top-0.5 h-2 w-2 rounded-full -translate-x-1/2 ring-2 ring-white shadow-md', c.barColor)}
               style={{ left: `${marginBarPct}%` }}
             />
           </div>
-          <p className={cn('mt-2 text-center text-2xl font-bold tabular-nums', c.metricColor)}>
+          <p className={cn('mt-3 text-center text-2xl font-extrabold tabular-nums tracking-[-0.02em]', c.metricColor)}>
             {formatPercent(metrics.marginPercent)} de margem
           </p>
         </div>
+      </div>
 
-        {/* Métricas principais */}
-        <div className="grid grid-cols-3 gap-2.5">
-          <MetricCard
+      {/* Grid de métricas */}
+      <div className="px-6 pb-5">
+        <div className="grid grid-cols-3 gap-3">
+          <ResultCard
             label="Lucro"
             value={formatBRL(metrics.profit)}
-            formula={`Preço de venda − Custo total\n= ${formatBRL(input.salePrice)} − ${formatBRL(costBreakdown.total)}`}
-            highlight={c.metricColor}
-            negative={metrics.profit < 0}
+            tone={metrics.profit < 0 ? 'loss' : c.metricTone}
+            compact
+            footer={`ROI: ${formatPercent(metrics.roiPercent)}`}
           />
-          <MetricCard
-            label="ROI"
-            value={formatPercent(metrics.roiPercent)}
-            formula={`Lucro ÷ Custo total × 100\n= ${formatBRL(metrics.profit)} ÷ ${formatBRL(costBreakdown.total)} × 100`}
-            negative={metrics.roiPercent < 0}
-          />
-          <MetricCard
+          <ResultCard
             label="Custo Total"
             value={formatBRL(costBreakdown.total)}
-            formula={`CMV + Comissão ML + Parcelamento\n+ Frete + Embalagem + Imposto + Overhead`}
+            compact
+            footer="CMV + ML + impostos"
           />
-        </div>
-
-        {/* Preços de referência */}
-        <div className="rounded-xl border border-gray-100 divide-y divide-gray-100 overflow-hidden">
-          <PriceLine
-            label="Preço Mínimo Viável"
-            hint="Menor preço que cobre todos os custos (lucro = R$0,00)"
-            formula={`Busca iterativa: menor salePrice onde profit ≥ 0\nAbaixo disso você tem prejuízo`}
+          <ResultCard
+            label="Preço Break-even"
             value={formatBRL(metrics.minimumViablePrice)}
-          />
-          <PriceLine
-            label="Preço Recomendado"
-            hint={`Para atingir ${formatPercent(input.targetMargin * 100)} de margem`}
-            formula={`Custo total ÷ (1 − margem alvo)\n= ${formatBRL(costBreakdown.total)} ÷ (1 − ${formatPercent(input.targetMargin * 100)})`}
-            value={formatBRL(metrics.recommendedPrice)}
-            emphasized
+            compact
+            footer="Lucro = R$0,00"
           />
         </div>
+      </div>
 
-        {/* Break-even em unidades */}
-        {metrics.breakEvenUnits !== null && (
-          <div className="rounded-xl border border-purple-100 bg-purple-50 p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-sm font-semibold text-purple-800">
-                  Break-even mensal
-                  <Tooltip text={`Custo fixo mensal ÷ Lucro por unidade\n= ${formatBRL(input.monthlyFixedCost)} ÷ ${formatBRL(metrics.profit)}`} />
-                </p>
-                <p className="text-xs text-purple-500 mt-0.5">
-                  Unidades por mês para cobrir R${input.monthlyFixedCost.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} de custo fixo
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-3xl font-bold text-purple-700 tabular-nums">{metrics.breakEvenUnits}</p>
-                <p className="text-xs text-purple-400">unidades/mês</p>
-              </div>
+      {/* Preços de referência */}
+      <div className="mx-6 mb-5 rounded-[20px] border border-paper-200 divide-y divide-paper-200 overflow-hidden">
+        <PriceLine
+          label="Preço Mínimo Viável"
+          hint="Menor preço que cobre todos os custos"
+          value={formatBRL(metrics.minimumViablePrice)}
+        />
+        <PriceLine
+          label="Preço Recomendado"
+          hint={`Para atingir ${formatPercent(input.targetMargin * 100)} de margem`}
+          value={formatBRL(metrics.recommendedPrice)}
+          emphasized
+        />
+      </div>
+
+      {/* Break-even mensal (quando houver custo fixo) */}
+      {metrics.breakEvenUnits !== null && (
+        <div className="mx-6 mb-5 rounded-[20px] border border-[#cfd4ff] bg-[#eef0fb] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-bold text-ink-950">Break-even mensal</p>
+              <p className="text-xs text-ink-700 mt-0.5">
+                Unidades para cobrir R${input.monthlyFixedCost?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} de custo fixo
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-extrabold text-ink-950 tabular-nums">{metrics.breakEvenUnits}</p>
+              <p className="text-xs text-ink-700">unidades/mês</p>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Alerta quando não viável */}
-        {isNotViable && gapToViable > 0 && (
-          <div className="rounded-xl bg-red-50 border border-red-200 p-4">
-            <p className="text-sm font-semibold text-red-700">Para ser viável, aumente o preço em:</p>
-            <p className="text-2xl font-bold text-red-800 mt-1 tabular-nums">{formatBRL(gapToViable)}</p>
-            <p className="text-xs text-red-400 mt-1">
-              {formatBRL(input.salePrice)} atual → mínimo {formatBRL(metrics.minimumViablePrice)}
-            </p>
-          </div>
-        )}
+      {/* Alerta inviável */}
+      {isNotViable && gapToViable > 0 && (
+        <div className="mx-6 mb-5 rounded-[20px] bg-loss-50 border border-loss-200 p-4">
+          <p className="text-sm font-bold text-loss-500">Para ser viável, aumente o preço em:</p>
+          <p className="text-2xl font-extrabold text-loss-500 mt-1 tabular-nums">{formatBRL(gapToViable)}</p>
+          <p className="text-xs text-loss-500/70 mt-1">
+            {formatBRL(input.salePrice)} atual → mínimo {formatBRL(metrics.minimumViablePrice)}
+          </p>
+        </div>
+      )}
 
-        {/* Detalhamento */}
+      {/* Detalhamento de custos */}
+      <div className="px-6 pb-6">
         <button
           onClick={() => setShowBreakdown(!showBreakdown)}
-          className="w-full rounded-lg border border-gray-200 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+          className="w-full rounded-[16px] border border-paper-200 py-2.5 text-sm text-ink-700 hover:bg-paper-100 hover:text-ink-950 transition-colors flex items-center justify-center gap-2 font-medium"
         >
-          {showBreakdown ? '▲ Ocultar' : '▼ Ver'} detalhamento de custos
+          {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          {showBreakdown ? 'Ocultar' : 'Ver'} detalhamento de custos
         </button>
-        {showBreakdown && <CostBreakdownTable breakdown={costBreakdown} />}
+        {showBreakdown && (
+          <div className="mt-4">
+            <CostBreakdownTable breakdown={costBreakdown} />
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-// ─── Sub-componentes ───
-
-function MetricCard({ label, value, formula, highlight, negative }: {
-  label: string; value: string; formula: string; highlight?: string; negative?: boolean
+function PriceLine({ label, hint, value, emphasized }: {
+  label: string; hint: string; value: string; emphasized?: boolean
 }) {
   return (
-    <div className="rounded-xl border border-gray-100 bg-gray-50 p-3 text-center">
-      <p className="text-xs text-gray-400 flex items-center justify-center gap-1">
-        {label}<Tooltip text={formula} />
-      </p>
-      <p className={cn(
-        'text-base font-bold mt-1 tabular-nums',
-        negative ? 'text-red-600' : (highlight ?? 'text-gray-900')
-      )}>
-        {value}
-      </p>
-    </div>
-  )
-}
-
-function PriceLine({ label, hint, formula, value, emphasized }: {
-  label: string; hint: string; formula: string; value: string; emphasized?: boolean
-}) {
-  return (
-    <div className={cn('flex items-center justify-between px-4 py-3 gap-4', emphasized && 'bg-blue-50')}>
+    <div className={cn('flex items-center justify-between px-4 py-3 gap-4', emphasized && 'bg-[#eef0fb]')}>
       <div className="min-w-0">
-        <p className={cn('text-sm flex items-center gap-1', emphasized ? 'font-semibold text-gray-800' : 'text-gray-600')}>
-          {label}<Tooltip text={formula} />
+        <p className={cn('text-sm', emphasized ? 'font-bold text-ink-950' : 'font-medium text-ink-700')}>
+          {label}
         </p>
-        <p className="text-xs text-gray-400 truncate">{hint}</p>
+        <p className="text-xs text-ink-500 truncate">{hint}</p>
       </div>
       <span className={cn(
         'text-sm tabular-nums shrink-0',
-        emphasized ? 'font-bold text-blue-700 text-base' : 'font-medium text-gray-700'
+        emphasized ? 'font-extrabold text-ink-950 text-base' : 'font-semibold text-ink-900',
       )}>
         {value}
       </span>
     </div>
-  )
-}
-
-function Tooltip({ text }: { text: string }) {
-  return (
-    <span
-      className="inline-flex h-3.5 w-3.5 cursor-help items-center justify-center rounded-full bg-gray-200 text-gray-500 text-[9px] font-bold hover:bg-blue-100 hover:text-blue-600 transition-colors"
-      title={text}
-    >
-      ?
-    </span>
   )
 }
