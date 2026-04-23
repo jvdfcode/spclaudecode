@@ -1,0 +1,20 @@
+schema: 1
+story: '6.2'
+gate: CONCERNS
+status_reason: 'Todos os 7 ACs implementados e verificados (92/92 testes). Issues são de acessibilidade e SEO — nenhum compromete a funcionalidade do MVP. Story aprovada para merge.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues:
+  - id: 'MNT-001'
+    severity: medium
+    finding: 'WelcomeTour.tsx:64 — role="dialog" inadequado para componente inline sem trap de foco; screen readers podem ter comportamento inesperado'
+    suggested_action: 'Substituir por <section aria-label="Tour de onboarding do SmartPreço"> ou adicionar aria-modal="false"'
+  - id: 'MNT-002'
+    severity: medium
+    finding: 'layout.tsx:13 — openGraph sem url canônica (process.env.NEXT_PUBLIC_APP_URL ausente); impacta SEO e social sharing'
+    suggested_action: 'Adicionar url: process.env.NEXT_PUBLIC_APP_URL ao objeto openGraph'
+  - id: 'DOC-001'
+    severity: low
+    finding: 'ErrorBoundary.tsx — getDerivedStateFromError sem componentDidCatch para logging; dificulta debug em produção'
+    suggested_action: 'Adicionar componentDidCatch(error, info) { console.error("[ErrorBoundary]", error.digest ?? error.message) }'
+waiver: { active: false }

@@ -1,0 +1,28 @@
+schema: 1
+story: '6.1'
+gate: CONCERNS
+status_reason: 'Funcionalidade principal entregue e testada (92/92). O issue HIGH de margin_percent afeta dado denormalizado — o sale_price primário está correto. Story aprovada para merge; fix do HIGH recomendado antes de features de relatório que dependam de margin_percent.'
+reviewer: Quinn
+updated: '2026-04-23T00:00:00Z'
+top_issues:
+  - id: 'REL-001'
+    severity: high
+    finding: 'skus.ts:145 — margin_percent salvo usa marginPercent do salePrice original, não do adoptedPrice; dado denormalizado inconsistente após adoção de preço diferente'
+    suggested_action: 'Recalcular calculateViability({ ...input, salePrice: adoptedPrice }) antes de persistir e usar suas métricas para margin_percent'
+  - id: 'MNT-001'
+    severity: medium
+    finding: 'DecisionPanel.tsx:57-65 — links "Ver SKU" e "Meus SKUs" usam <a href> causando full page reload desnecessário'
+    suggested_action: 'Substituir por <Link href={...}> do next/link'
+  - id: 'MNT-002'
+    severity: medium
+    finding: 'DecisionPanel.tsx:157-219 — div com inputs sem wrapper <form> nativa; Enter via onKeyDown não é semântico para screen readers'
+    suggested_action: 'Envolver inputs em <form onSubmit={handleAdopt}>'
+  - id: 'REQ-001'
+    severity: medium
+    finding: 'AC6: DecisionPanel integrado inline no CostForm em vez da tab "Decisão" no FlowTabs conforme especificado'
+    suggested_action: 'Aceito como WAIVED para MVP; registrar como backlog de UX para integração futura no FlowTabs'
+  - id: 'TEST-001'
+    severity: low
+    finding: 'adoptSku e adoptSkuAction sem cobertura de teste (apenas cálculos puros testados)'
+    suggested_action: 'Adicionar testes com mock do Supabase para cobrir persistência em sprint futuro'
+waiver: { active: false }
