@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 import type { MlListing } from '@/types'
+
+const log = (msg: string, data?: object) =>
+  console.log(JSON.stringify({ ts: Date.now(), msg, ...data }))
 
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hora
 
@@ -32,8 +36,8 @@ export async function GET(req: NextRequest) {
     if (cached && new Date(cached.expires_at) > new Date()) {
       return NextResponse.json({ listings: cached.results_json, cached: true })
     }
-  } catch {
-    // Supabase indisponível — continua para busca no browser
+  } catch (err) {
+    log('ml-search cache read error', { error: String(err) })
   }
 
   // Sinaliza ao browser para buscar direto no ML (IP residencial não é bloqueado)
@@ -41,12 +45,31 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // Browser envia resultados para cache Supabase após busca bem-sucedida
   try {
+    const supabase = await createServerSupabase()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ ok: false, error: 'Não autenticado' }, { status: 401 })
+    }
+
+    const rl = checkRateLimit(`ml-search:${user.id}`, 20)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { ok: false, error: 'Muitas requisições de cache.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(rl.limit),
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': String(rl.retryAfter),
+          },
+        }
+      )
+    }
+
     const { q, listings } = await req.json() as { q: string; listings: MlListing[] }
     if (!q || !listings?.length) return NextResponse.json({ ok: false })
 
-    const supabase = await createServerSupabase()
     const hash = hashQuery(q.toLowerCase())
     const expiresAt = new Date(Date.now() + CACHE_TTL_MS).toISOString()
 
@@ -59,7 +82,8 @@ export async function POST(req: NextRequest) {
     }, { onConflict: 'query_hash' })
 
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (err) {
+    log('ml-search cache write error', { error: String(err) })
     return NextResponse.json({ ok: false })
   }
 }

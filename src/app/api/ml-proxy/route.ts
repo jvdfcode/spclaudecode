@@ -2,7 +2,12 @@
 // Funciona de servidores porque o site ML não bloqueia IPs de servidor como a API faz.
 import { NextRequest, NextResponse } from 'next/server'
 import * as cheerio from 'cheerio'
+import { createServerSupabase } from '@/lib/supabase/server'
+import { checkRateLimit } from '@/lib/rateLimit'
 import type { MlListing } from '@/types'
+
+const log = (msg: string, data?: object) =>
+  console.log(JSON.stringify({ ts: Date.now(), msg, ...data }))
 
 const ML_SITE = 'https://lista.mercadolivre.com.br'
 
@@ -71,6 +76,7 @@ function parseListings(html: string, query: string): MlListing[] {
     const isFull = $(el).find('svg[aria-label="Enviado pelo FULL"], span.poly-component__shipped-from svg').length > 0
 
     const sellerRaw = $(el).find('span.poly-component__seller').clone().children().remove().end().text().trim()
+    void sellerRaw
 
     results.push({
       id: href.split('/MLB')[1]?.split('?')[0] ?? String(Math.random()),
@@ -93,9 +99,29 @@ function parseListings(html: string, query: string): MlListing[] {
 }
 
 export async function GET(req: NextRequest) {
+  const supabase = await createServerSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+  }
+
+  const rl = checkRateLimit(`ml-proxy:${user.id}`)
+  const rlHeaders = {
+    'X-RateLimit-Limit': String(rl.limit),
+    'X-RateLimit-Remaining': String(rl.remaining),
+    ...(rl.retryAfter ? { 'Retry-After': String(rl.retryAfter) } : {}),
+  }
+
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: 'Muitas requisições. Aguarde antes de buscar novamente.' },
+      { status: 429, headers: rlHeaders }
+    )
+  }
+
   const q = req.nextUrl.searchParams.get('q')?.trim()
   if (!q || q.length < 2) {
-    return NextResponse.json({ error: 'Informe ao menos 2 caracteres' }, { status: 400 })
+    return NextResponse.json({ error: 'Informe ao menos 2 caracteres' }, { status: 400, headers: rlHeaders })
   }
 
   const slug = slugify(q)
@@ -108,14 +134,16 @@ export async function GET(req: NextRequest) {
     })
 
     if (!res.ok) {
-      return NextResponse.json({ error: `ML site ${res.status}` }, { status: 502 })
+      log('ml-proxy error', { status: res.status, q })
+      return NextResponse.json({ error: `ML site ${res.status}` }, { status: 502, headers: rlHeaders })
     }
 
     const html = await res.text()
     const listings = parseListings(html, q)
 
-    return NextResponse.json({ listings })
-  } catch {
-    return NextResponse.json({ error: 'Erro de conexão com o Mercado Livre.' }, { status: 503 })
+    return NextResponse.json({ listings }, { headers: rlHeaders })
+  } catch (err) {
+    log('ml-proxy error', { error: String(err), q })
+    return NextResponse.json({ error: 'Erro de conexão com o Mercado Livre.' }, { status: 503, headers: rlHeaders })
   }
 }

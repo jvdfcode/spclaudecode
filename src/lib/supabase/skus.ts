@@ -168,7 +168,7 @@ export async function listSkus(): Promise<SkuWithLatestCalc[]> {
       sku_calculations (
         id, sku_id, sale_price, listing_type,
         margin_percent, roi_percent, is_viable, is_adopted,
-        cost_data, result_data, created_at
+        created_at
       )
     `)
     .order('updated_at', { ascending: false })
