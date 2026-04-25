@@ -33,3 +33,4 @@ coverage/
 .aiox/handoffs/
 .aiox/sessions/
 .env*.local
+supabase/.temp/
