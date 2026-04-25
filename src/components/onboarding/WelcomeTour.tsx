@@ -121,7 +121,7 @@ export default function WelcomeTour() {
         {!isLast ? (
           <button
             onClick={() => setActiveStep(a => a + 1)}
-            className="flex-1 rounded-lg bg-blue-600 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="ml-auto px-3 py-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
           >
             Próximo →
           </button>
@@ -129,7 +129,7 @@ export default function WelcomeTour() {
           <Link
             href={step.href}
             onClick={dismiss}
-            className="flex-1 rounded-lg bg-blue-600 py-1.5 text-center text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="ml-auto px-3 py-1.5 rounded-lg bg-blue-600 text-center text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
           >
             Começar agora 🚀
           </Link>
