@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: false, error: 'Não autenticado' }, { status: 401 })
     }
 
-    const rl = checkRateLimit(`ml-search:${user.id}`, 20)
+    const rl = await checkRateLimit(user.id, 'ml-search', 20)
     if (!rl.ok) {
       return NextResponse.json(
         { ok: false, error: 'Muitas requisições de cache.' },

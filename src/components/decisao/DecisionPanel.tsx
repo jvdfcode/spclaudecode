@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import Link from 'next/link'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import { useDecisionEngine } from '@/hooks/useDecisionEngine'
@@ -39,9 +40,11 @@ export default function DecisionPanel({ input, result }: Props) {
     if (res.ok) {
       setSavedId(res.skuId)
       setAdoptState('done')
+      toast.success(`Preço ${selectedOption.label} adotado — SKU "${skuName}" salvo!`)
     } else {
       setErrorMsg(res.error)
       setAdoptState('error')
+      toast.error('Erro ao adotar preço. Tente novamente.')
     }
   }
 

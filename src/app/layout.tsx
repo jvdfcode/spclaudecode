@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-sans', weight: ['400', '500', '600', '700', '800'] })
@@ -29,7 +30,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={manrope.variable}>{children}</body>
+      <body className={manrope.variable}>
+        {children}
+        <Toaster richColors position="top-right" duration={3000} />
+      </body>
     </html>
   )
 }

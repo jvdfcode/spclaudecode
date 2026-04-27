@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import type { ViabilityInput, ViabilityResult } from '@/types'
 import { saveSkuAction } from '@/app/(app)/calculadora/actions'
 import { Input } from '@/components/ui/input'
@@ -27,9 +28,11 @@ export default function SaveSkuButton({ input, result }: Props) {
     if (res.ok) {
       setSavedId(res.skuId)
       setState('saved')
+      toast.success(`SKU "${name}" salvo com sucesso!`)
     } else {
       setErrorMsg(res.error)
       setState('error')
+      toast.error('Erro ao salvar SKU. Tente novamente.')
     }
   }
 

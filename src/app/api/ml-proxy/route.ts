@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
   }
 
-  const rl = checkRateLimit(`ml-proxy:${user.id}`)
+  const rl = await checkRateLimit(user.id, 'ml-proxy')
   const rlHeaders = {
     'X-RateLimit-Limit': String(rl.limit),
     'X-RateLimit-Remaining': String(rl.remaining),
