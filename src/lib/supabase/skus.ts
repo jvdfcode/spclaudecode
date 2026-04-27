@@ -210,15 +210,13 @@ export async function listSkus(): Promise<SkuWithLatestCalc[]> {
       )
     `)
     .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false, referencedTable: 'sku_calculations' })
+    .limit(1, { referencedTable: 'sku_calculations' })
 
   if (error) throw new Error(error.message)
 
   return (data ?? []).map((row: DbSku & { sku_calculations: DbSkuCalculation[] }) => {
-    const calcs: DbSkuCalculation[] = row.sku_calculations ?? []
-    const latest = calcs.sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )[0] ?? null
-
+    const latest = (row.sku_calculations ?? [])[0] ?? null
     return {
       ...mapSku(row as DbSku),
       latestCalculation: latest ? mapCalc(latest) : null,
