@@ -4,9 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { GenieButton } from '@/components/ui/genie-button'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -27,7 +24,7 @@ export default function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      setError('Email ou senha incorretos')
+      setError('Email ou senha incorretos. Verifique e tente novamente.')
       setLoading(false)
       return
     }
@@ -37,66 +34,69 @@ export default function LoginForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-      <div className="mb-7">
-        <h2 className="text-2xl font-bold text-gray-900">Bem-vindo de volta</h2>
-        <p className="text-gray-500 mt-1 text-sm">Entre com sua conta para continuar</p>
-      </div>
+    <div className="auth-card">
+      <h2 className="auth-card-title">Bem-vindo de volta</h2>
+      <p className="auth-card-subtitle">Entre com sua conta para continuar</p>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
-          <Input
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="auth-field">
+          <label htmlFor="email" className="auth-label">Email</label>
+          <input
             id="email"
             type="email"
+            className="auth-input"
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
-            className="h-11"
+            disabled={loading}
           />
         </div>
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
-            <Link
-              href="/recuperar-senha"
-              className="text-xs text-blue-600 hover:underline"
-            >
+
+        <div className="auth-field">
+          <div className="auth-field-header">
+            <label htmlFor="password" className="auth-label">Senha</label>
+            <Link href="/recuperar-senha" className="auth-link-sm">
               Esqueceu sua senha?
             </Link>
           </div>
-          <Input
+          <input
             id="password"
             type="password"
+            className="auth-input"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
-            className="h-11"
+            disabled={loading}
           />
         </div>
+
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="auth-error" role="alert">
+            <svg className="auth-error-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+            </svg>
+            <p>{error}</p>
           </div>
         )}
-        <GenieButton
-          type="submit"
-          loading={loading}
-          fullWidth
-          size="lg"
-        >
-          Entrar
-        </GenieButton>
+
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="auth-btn-spinner" />
+              Entrando...
+            </>
+          ) : (
+            'Entrar'
+          )}
+        </button>
       </form>
 
-      <p className="text-sm text-center text-gray-500 mt-6">
+      <div className="auth-card-footer">
         Não tem conta?{' '}
-        <Link href="/cadastro" className="text-blue-600 font-medium hover:underline">
-          Criar conta grátis
-        </Link>
-      </p>
+        <Link href="/cadastro">Criar conta grátis</Link>
+      </div>
     </div>
   )
 }

@@ -4,51 +4,40 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { GenieButton } from '@/components/ui/genie-button'
-import { cn } from '@/lib/utils'
 
-function PasswordStrength({ password }: { password: string }) {
-  if (!password) return null
+function strengthOf(password: string): { score: number; label: string; color: string; width: string } {
+  if (!password) return { score: 0, label: '', color: '#e2e8f0', width: '0%' }
   const hasMin    = password.length >= 6
   const hasUpper  = /[A-Z]/.test(password)
   const hasNumber = /[0-9]/.test(password)
   const score     = [hasMin, hasUpper, hasNumber].filter(Boolean).length
-
-  const bar   = ['bg-red-400', 'bg-yellow-400', 'bg-green-500'][score - 1] ?? 'bg-gray-200'
-  const label = ['Fraca', 'Média', 'Forte'][score - 1] ?? ''
-  const width  = ['w-1/3', 'w-2/3', 'w-full'][score - 1] ?? 'w-0'
-
-  return (
-    <div className="space-y-1">
-      <div className="h-1 w-full rounded-full bg-gray-100 overflow-hidden">
-        <div className={cn('h-full rounded-full transition-all duration-300', bar, width)} />
-      </div>
-      {label && (
-        <p className={cn('text-[11px]', score === 3 ? 'text-green-600' : score === 2 ? 'text-yellow-600' : 'text-red-500')}>
-          Senha {label} {score < 3 && '— adicione letras maiúsculas e números'}
-        </p>
-      )}
-    </div>
-  )
+  const map = [
+    { label: '',       color: '#e2e8f0', width: '0%'   },
+    { label: 'Fraca',  color: '#f87171', width: '33%'  },
+    { label: 'Média',  color: '#fbbf24', width: '66%'  },
+    { label: 'Forte',  color: '#34d399', width: '100%' },
+  ]
+  return { score, ...map[score] }
 }
 
 export default function SignupForm() {
   const router = useRouter()
-  const [email, setEmail]               = useState('')
-  const [password, setPassword]         = useState('')
-  const [confirmPassword, setConfirm]   = useState('')
-  const [error, setError]               = useState('')
-  const [loading, setLoading]           = useState(false)
-  const [emailSent, setEmailSent]       = useState(false)
+  const [email, setEmail]             = useState('')
+  const [password, setPassword]       = useState('')
+  const [confirmPassword, setConfirm] = useState('')
+  const [error, setError]             = useState('')
+  const [loading, setLoading]         = useState(false)
+  const [emailSent, setEmailSent]     = useState(false)
+
+  const strength      = strengthOf(password)
+  const confirmMismatch = confirmPassword.length > 0 && confirmPassword !== password
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    if (!email.trim())              { setError('Informe seu email.'); return }
-    if (password.length < 6)        { setError('A senha deve ter pelo menos 6 caracteres.'); return }
+    if (!email.trim())               { setError('Informe seu email.'); return }
+    if (password.length < 6)         { setError('A senha deve ter pelo menos 6 caracteres.'); return }
     if (password !== confirmPassword) { setError('As senhas não coincidem.'); return }
 
     setLoading(true)
@@ -56,114 +45,148 @@ export default function SignupForm() {
     const { data, error } = await supabase.auth.signUp({ email, password })
 
     if (error) {
-      if (error.message.includes('already registered')) {
-        setError('Este email já possui uma conta.')
-      } else {
-        setError('Erro ao criar conta. Tente novamente.')
-      }
+      setError(
+        error.message.includes('already registered')
+          ? 'Este email já possui uma conta.'
+          : 'Erro ao criar conta. Tente novamente.'
+      )
       setLoading(false)
       return
     }
 
-    // Sem sessão → Supabase requer confirmação de email
     if (!data.session) {
       setEmailSent(true)
       setLoading(false)
       return
     }
 
-    // Sessão ativa → auto-confirm habilitado, acessa diretamente
     router.push('/dashboard')
     router.refresh()
   }
 
   if (emailSent) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center space-y-4">
-        <div className="text-5xl">📬</div>
-        <h2 className="text-xl font-bold text-gray-900">Verifique seu email</h2>
-        <p className="text-sm text-gray-500 max-w-xs mx-auto">
-          Enviamos um link de confirmação para{' '}
-          <span className="font-semibold text-gray-700">{email}</span>.
-          Clique no link para ativar sua conta.
-        </p>
-        <p className="text-xs text-gray-400">Não recebeu? Verifique a pasta de spam.</p>
-        <Link href="/login" className="inline-block text-sm text-blue-600 hover:underline mt-2">
-          Voltar ao login
-        </Link>
+      <div className="auth-card">
+        <div className="auth-success-card">
+          <div className="auth-success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="auth-success-title">Verifique seu email</h2>
+          <p className="auth-success-text">
+            Enviamos um link de confirmação para{' '}
+            <strong>{email}</strong>.
+            Clique no link para ativar sua conta.
+          </p>
+          <p className="auth-success-text" style={{ fontSize: '0.8125rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+            Não recebeu? Verifique a pasta de spam.
+          </p>
+          <div style={{ marginTop: '1.5rem' }}>
+            <Link href="/login" className="auth-link-sm" style={{ fontSize: '0.875rem' }}>
+              ← Voltar ao login
+            </Link>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-      <div className="mb-7">
-        <h2 className="text-2xl font-bold text-gray-900">Criar conta grátis</h2>
-        <p className="text-gray-500 mt-1 text-sm">Comece a precificar com inteligência agora</p>
-      </div>
+    <div className="auth-card">
+      <h2 className="auth-card-title">Criar conta grátis</h2>
+      <p className="auth-card-subtitle">Comece a precificar com inteligência agora</p>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
-          <Input
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="auth-field">
+          <label htmlFor="email" className="auth-label">Email</label>
+          <input
             id="email"
             type="email"
+            className="auth-input"
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
-            className="h-11"
+            disabled={loading}
           />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
-          <Input
+
+        <div className="auth-field">
+          <label htmlFor="password" className="auth-label">Senha</label>
+          <input
             id="password"
             type="password"
+            className="auth-input"
             placeholder="Mínimo 6 caracteres"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
-            className="h-11"
+            disabled={loading}
           />
-          <PasswordStrength password={password} />
+          {password && (
+            <>
+              <div className="auth-strength-bar-wrap">
+                <div
+                  className="auth-strength-bar"
+                  style={{ width: strength.width, background: strength.color }}
+                />
+              </div>
+              <span
+                className="auth-strength-label"
+                style={{ color: strength.color === '#e2e8f0' ? '#94a3b8' : strength.color }}
+              >
+                {strength.label && `Senha ${strength.label}`}
+                {strength.score < 3 && strength.score > 0 && ' — adicione letras maiúsculas e números'}
+              </span>
+            </>
+          )}
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirmar senha</Label>
-          <Input
+
+        <div className="auth-field">
+          <label htmlFor="confirmPassword" className="auth-label">Confirmar senha</label>
+          <input
             id="confirmPassword"
             type="password"
+            className={`auth-input${confirmMismatch ? ' auth-match-err' : confirmPassword && !confirmMismatch ? ' auth-match-ok' : ''}`}
             placeholder="Repita a senha"
             value={confirmPassword}
             onChange={(e) => setConfirm(e.target.value)}
             autoComplete="new-password"
-            className={cn('h-11', confirmPassword && confirmPassword !== password && 'border-red-300 focus-visible:ring-red-300')}
+            disabled={loading}
           />
-          {confirmPassword && confirmPassword !== password && (
-            <p className="text-[11px] text-red-500">As senhas não coincidem</p>
+          {confirmMismatch && (
+            <span className="auth-strength-label" style={{ color: '#ef4444' }}>
+              As senhas não coincidem
+            </span>
           )}
         </div>
+
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="auth-error" role="alert">
+            <svg className="auth-error-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+            </svg>
+            <p>{error}</p>
           </div>
         )}
-        <GenieButton
-          type="submit"
-          loading={loading}
-          fullWidth
-          size="lg"
-        >
-          Criar conta grátis
-        </GenieButton>
+
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="auth-btn-spinner" />
+              Criando conta...
+            </>
+          ) : (
+            'Criar conta grátis'
+          )}
+        </button>
       </form>
 
-      <p className="text-sm text-center text-gray-500 mt-6">
+      <div className="auth-card-footer">
         Já tem conta?{' '}
-        <Link href="/login" className="text-blue-600 font-medium hover:underline">
-          Entrar
-        </Link>
-      </p>
+        <Link href="/login">Entrar</Link>
+      </div>
     </div>
   )
 }

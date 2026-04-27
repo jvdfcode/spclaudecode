@@ -3,14 +3,11 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { GenieButton } from '@/components/ui/genie-button'
 
 export default function RecoverForm() {
-  const [email, setEmail]   = useState('')
-  const [error, setError]   = useState('')
-  const [sent, setSent]     = useState(false)
+  const [email, setEmail]     = useState('')
+  const [error, setError]     = useState('')
+  const [sent, setSent]       = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -24,7 +21,6 @@ export default function RecoverForm() {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/nova-senha`,
     })
-
     setLoading(false)
 
     if (error) {
@@ -37,53 +33,75 @@ export default function RecoverForm() {
 
   if (sent) {
     return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center space-y-4">
-        <div className="text-4xl">📬</div>
-        <h2 className="text-xl font-bold text-gray-900">Verifique seu email</h2>
-        <p className="text-sm text-gray-500">
-          Enviamos um link de redefinição para <span className="font-medium text-gray-700">{email}</span>.
-          Verifique também a pasta de spam.
-        </p>
-        <Link href="/login" className="inline-block text-sm text-blue-600 hover:underline mt-2">
-          Voltar ao login
-        </Link>
+      <div className="auth-card">
+        <div className="auth-success-card">
+          <div className="auth-success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="auth-success-title">Email enviado</h2>
+          <p className="auth-success-text">
+            Enviamos um link de redefinição para{' '}
+            <strong>{email}</strong>.
+            Verifique também a pasta de spam.
+          </p>
+          <div style={{ marginTop: '1.5rem' }}>
+            <Link href="/login" className="auth-link-sm" style={{ fontSize: '0.875rem' }}>
+              ← Voltar ao login
+            </Link>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-      <div className="mb-7">
-        <Link href="/login" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-5">
+    <div className="auth-card">
+      <div style={{ marginBottom: '0.75rem' }}>
+        <Link href="/login" className="auth-link-sm" style={{ fontSize: '0.8125rem' }}>
           ← Voltar ao login
         </Link>
-        <h2 className="text-2xl font-bold text-gray-900">Recuperar senha</h2>
-        <p className="text-gray-500 mt-1 text-sm">
-          Informe seu email e enviaremos um link para redefinir sua senha.
-        </p>
       </div>
+      <h2 className="auth-card-title">Recuperar senha</h2>
+      <p className="auth-card-subtitle">
+        Informe seu email e enviaremos um link para redefinir sua senha.
+      </p>
 
-      <form onSubmit={handleSubmit} noValidate className="space-y-5">
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
-          <Input
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="auth-field">
+          <label htmlFor="email" className="auth-label">Email</label>
+          <input
             id="email"
             type="email"
+            className="auth-input"
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
-            className="h-11"
+            disabled={loading}
           />
         </div>
+
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-100 px-4 py-3">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="auth-error" role="alert">
+            <svg className="auth-error-icon" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+            </svg>
+            <p>{error}</p>
           </div>
         )}
-        <GenieButton type="submit" loading={loading} fullWidth size="lg">
-          Enviar link de redefinição
-        </GenieButton>
+
+        <button type="submit" className="auth-btn" disabled={loading}>
+          {loading ? (
+            <>
+              <span className="auth-btn-spinner" />
+              Enviando...
+            </>
+          ) : (
+            'Enviar link de redefinição'
+          )}
+        </button>
       </form>
     </div>
   )
