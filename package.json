@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "generate:types": "supabase gen types typescript --project-id ltpdqavqhraphoyusmdi > src/types/supabase.gen.ts",
+    "check:types-drift": "supabase gen types typescript --project-id ltpdqavqhraphoyusmdi > /tmp/db-types-check.ts && diff src/types/supabase.gen.ts /tmp/db-types-check.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
