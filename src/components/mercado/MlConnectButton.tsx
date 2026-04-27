@@ -54,7 +54,11 @@ export default function MlConnectButton() {
     }
   }
 
-  if (status === null) return null // carregando
+  if (status === null) {
+    return (
+      <div className="h-9 w-44 animate-pulse rounded-xl bg-gray-100" aria-hidden />
+    )
+  }
 
   if (status.connected) {
     return (

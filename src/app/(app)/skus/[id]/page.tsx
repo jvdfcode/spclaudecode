@@ -6,6 +6,7 @@ import { formatBRL, formatPercent } from '@/lib/utils/format'
 import { cn } from '@/lib/utils'
 import type { SkuCalculation } from '@/types/sku'
 import RecalcularButton from '@/components/skus/RecalcularButton'
+import SkuCardMenu from '@/components/skus/SkuCardMenu'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -47,9 +48,12 @@ export default async function SkuDetailPage({ params }: Props) {
       <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
         <div className="flex items-start justify-between gap-3">
           <h1 className="text-xl font-bold text-gray-900">{sku.name}</h1>
-          <span className={cn('flex-shrink-0 rounded-full px-3 py-1 text-sm font-semibold', s.bg, s.text)}>
-            {s.label}
-          </span>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span className={cn('rounded-full px-3 py-1 text-sm font-semibold', s.bg, s.text)}>
+              {s.label}
+            </span>
+            <SkuCardMenu id={sku.id} name={sku.name} notes={sku.notes} redirectOnDelete="/skus" />
+          </div>
         </div>
         {sku.notes && <p className="text-sm text-gray-500">{sku.notes}</p>}
         <p className="text-xs text-gray-400">
@@ -96,9 +100,9 @@ function CalcRow({ calc, isLatest }: { calc: SkuCalculation; isLatest: boolean }
       'rounded-xl border bg-white p-4',
       isLatest ? 'border-blue-200 shadow-sm' : 'border-gray-100'
     )}>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {isLatest && (
               <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
                 Mais recente
@@ -116,23 +120,28 @@ function CalcRow({ calc, isLatest }: { calc: SkuCalculation; isLatest: boolean }
           </p>
         </div>
 
-        <div className="flex gap-4 text-right">
-          <div>
-            <p className="text-[10px] text-gray-400">Preço</p>
-            <p className="text-sm font-semibold text-gray-800 tabular-nums">{formatBRL(calc.salePrice)}</p>
+        <div className="flex items-center gap-4">
+          <div className="flex gap-4 text-right">
+            <div>
+              <p className="text-[10px] text-gray-400">Preço</p>
+              <p className="text-sm font-semibold text-gray-800 tabular-nums">{formatBRL(calc.salePrice)}</p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400">Margem</p>
+              <p className={cn('text-sm font-bold tabular-nums', marginColor)}>
+                {margin !== null ? formatPercent(margin) : '—'}
+              </p>
+            </div>
+            <div>
+              <p className="text-[10px] text-gray-400">ROI</p>
+              <p className="text-sm font-medium text-gray-600 tabular-nums">
+                {calc.roiPercent !== null ? formatPercent(calc.roiPercent) : '—'}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[10px] text-gray-400">Margem</p>
-            <p className={cn('text-sm font-bold tabular-nums', marginColor)}>
-              {margin !== null ? formatPercent(margin) : '—'}
-            </p>
-          </div>
-          <div>
-            <p className="text-[10px] text-gray-400">ROI</p>
-            <p className="text-sm font-medium text-gray-600 tabular-nums">
-              {calc.roiPercent !== null ? formatPercent(calc.roiPercent) : '—'}
-            </p>
-          </div>
+          {!isLatest && (
+            <RecalcularButton costData={calc.costData} label="Usar" />
+          )}
         </div>
       </div>
     </div>

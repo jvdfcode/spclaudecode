@@ -36,12 +36,12 @@ export default async function SkusPage({ searchParams }: Props) {
             title="Meus SKUs"
             description="Portfólio de produtos calculados com status de viabilidade e histórico de análises."
           />
-          <a
+          <Link
             href="/calculadora"
             className="btn-genie shrink-0 inline-flex items-center justify-center gap-2 rounded-[14px] bg-ink-950 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:shadow-[0_6px_20px_rgba(45,50,119,0.36)] transition-all duration-[220ms] ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-[2px] active:scale-[0.96] mt-6"
           >
             + Nova Análise
-          </a>
+          </Link>
         </div>
 
         <SkuFilters total={skus.length} />

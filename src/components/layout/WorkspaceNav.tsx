@@ -49,8 +49,8 @@ export function WorkspaceNav() {
             {isActive && (
               <span className="absolute inset-x-0 top-0 h-0.5 rounded-t-[12px] bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
             )}
-            <span>{icon}</span>
-            <span className="hidden sm:inline">{label}</span>
+            <span className="text-base">{icon}</span>
+            <span className="text-xs sm:text-sm">{label}</span>
           </Link>
         )
       })}

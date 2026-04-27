@@ -60,7 +60,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="hidden md:block pt-4 border-t border-paper-200">
-        <p className="text-[10px] text-ink-500 text-center font-medium">SmartPreço · v1.0</p>
+        <p className="text-[10px] text-ink-500 text-center font-medium">SmartPreço</p>
       </div>
     </aside>
   )

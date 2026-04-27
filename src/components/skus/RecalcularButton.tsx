@@ -8,9 +8,10 @@ const FORM_SESSION_KEY = 'smartpreco_calc_form'
 
 interface Props {
   costData: ViabilityInput
+  label?: string
 }
 
-export default function RecalcularButton({ costData }: Props) {
+export default function RecalcularButton({ costData, label }: Props) {
   const router = useRouter()
 
   function handleClick() {
@@ -22,7 +23,7 @@ export default function RecalcularButton({ costData }: Props) {
 
   return (
     <GenieButton variant="primary" size="md" onClick={handleClick}>
-      🔄 Recalcular
+      🔄 {label ?? 'Recalcular'}
     </GenieButton>
   )
 }

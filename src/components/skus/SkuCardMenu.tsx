@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
@@ -12,12 +12,21 @@ interface Props {
   id: string
   name: string
   notes: string | null | undefined
+  redirectOnDelete?: string
 }
 
-export default function SkuCardMenu({ id, name, notes }: Props) {
+export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props) {
   const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [dialog, setDialog] = useState<'delete' | 'edit' | null>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenuOpen(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
 
   // Edit state
   const [editName, setEditName] = useState(name)
@@ -44,7 +53,11 @@ export default function SkuCardMenu({ id, name, notes }: Props) {
     const res = await deleteSkuAction(id)
     if (res.ok) {
       toast.success(`SKU "${name}" excluído.`)
-      router.refresh()
+      if (redirectOnDelete) {
+        router.push(redirectOnDelete)
+      } else {
+        router.refresh()
+      }
     } else {
       toast.error(res.error ?? 'Erro ao excluir SKU.')
     }
@@ -76,7 +89,9 @@ export default function SkuCardMenu({ id, name, notes }: Props) {
         <button
           onClick={openMenu}
           aria-label="Opções do SKU"
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors text-lg leading-none"
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors text-lg leading-none"
         >
           ···
         </button>
@@ -85,16 +100,23 @@ export default function SkuCardMenu({ id, name, notes }: Props) {
           <>
             {/* overlay para fechar */}
             <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-            <div className="absolute right-0 top-8 z-20 min-w-[140px] rounded-xl border border-gray-100 bg-white py-1 shadow-lg">
+            <div
+              ref={menuRef}
+              role="menu"
+              aria-label="Opções do SKU"
+              className="absolute right-0 top-9 z-20 min-w-[140px] rounded-xl border border-gray-100 bg-white py-1 shadow-lg"
+            >
               <button
+                role="menuitem"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); openDialog('edit') }}
-                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Editar
               </button>
               <button
+                role="menuitem"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); openDialog('delete') }}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
+                className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
               >
                 Excluir
               </button>

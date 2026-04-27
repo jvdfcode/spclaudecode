@@ -10,16 +10,19 @@ import { GenieButton } from '@/components/ui/genie-button'
 
 export default function LoginForm() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
 
+    if (!email.trim()) { setError('Informe seu email.'); return }
+    if (!password)     { setError('Informe sua senha.'); return }
+
+    setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -40,7 +43,7 @@ export default function LoginForm() {
         <p className="text-gray-500 mt-1 text-sm">Entre com sua conta para continuar</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email</Label>
           <Input
@@ -49,21 +52,26 @@ export default function LoginForm() {
             placeholder="seu@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
             autoComplete="email"
             className="h-11"
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password" className="text-sm font-medium text-gray-700">Senha</Label>
+            <Link
+              href="/recuperar-senha"
+              className="text-xs text-blue-600 hover:underline"
+            >
+              Esqueceu sua senha?
+            </Link>
+          </div>
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
             autoComplete="current-password"
             className="h-11"
           />

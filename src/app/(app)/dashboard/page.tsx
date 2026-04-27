@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { createServerSupabase } from '@/lib/supabase/server'
 import Link from 'next/link'
 import WelcomeTour from '@/components/onboarding/WelcomeTour'
+import { WorkspaceNav } from '@/components/layout/WorkspaceNav'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -39,10 +40,15 @@ const steps = [
 export default async function DashboardPage() {
   const supabase = await createServerSupabase()
   const { data: { user } } = await supabase.auth.getUser()
-  const name = user?.email?.split('@')[0] ?? 'vendedor'
+  const rawName = user?.user_metadata?.full_name as string | undefined
+  const name = rawName?.trim()
+    || user?.email?.split('@')[0]?.replace(/[._-]/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+    || 'vendedor'
 
   return (
-    <div className="space-y-8 max-w-4xl">
+    <div className="space-y-0">
+      <WorkspaceNav />
+      <div className="space-y-8 max-w-4xl">
       <WelcomeTour />
 
       {/* Header */}
@@ -113,6 +119,7 @@ export default async function DashboardPage() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   )
