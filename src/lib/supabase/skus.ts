@@ -158,6 +158,44 @@ export async function adoptSku(
   return { sku: mapSku(skuRow), calculation: mapCalc(calcRow) }
 }
 
+export async function deleteSku(id: string): Promise<void> {
+  const supabase = await createServerSupabase()
+  const { data: { user }, error: authErr } = await supabase.auth.getUser()
+  if (authErr || !user) throw new Error('Usuário não autenticado')
+
+  const { error } = await supabase
+    .from('skus')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id)
+
+  if (error) throw new Error(error.message)
+}
+
+export async function updateSku(
+  id: string,
+  fields: { name?: string; notes?: string | null }
+): Promise<Sku> {
+  const supabase = await createServerSupabase()
+  const { data: { user }, error: authErr } = await supabase.auth.getUser()
+  if (authErr || !user) throw new Error('Usuário não autenticado')
+
+  const updates: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  if (fields.name !== undefined) updates.name = fields.name.trim()
+  if (fields.notes !== undefined) updates.notes = fields.notes?.trim() || null
+
+  const { data, error } = await supabase
+    .from('skus')
+    .update(updates)
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .select()
+    .single()
+
+  if (error || !data) throw new Error(error?.message ?? 'Falha ao atualizar SKU')
+  return mapSku(data as DbSku)
+}
+
 export async function listSkus(): Promise<SkuWithLatestCalc[]> {
   const supabase = await createServerSupabase()
 
