@@ -21,6 +21,11 @@ export default class ErrorBoundary extends Component<Props, State> {
     return { hasError: true }
   }
 
+  componentDidCatch(error: Error) {
+    const digest = (error as Error & { digest?: string }).digest
+    console.error('[ErrorBoundary]', digest ?? error.message)
+  }
+
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? (
