@@ -19,11 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 const statusCfg = {
-  viable:    { label: 'Viável',     bg: 'bg-green-100',  text: 'text-green-700'  },
-  attention: { label: 'Atenção',    bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  not_viable:{ label: 'Não viável', bg: 'bg-red-100',    text: 'text-red-700'    },
-  draft:     { label: 'Rascunho',   bg: 'bg-gray-100',   text: 'text-gray-600'   },
-  for_sale:  { label: 'À venda',    bg: 'bg-blue-100',   text: 'text-blue-700'   },
+  viable:    { label: 'Viável',     bg: 'bg-profit-50',  text: 'text-profit-500' },
+  attention: { label: 'Atenção',    bg: 'bg-warn-50',    text: 'text-warn-500'   },
+  not_viable:{ label: 'Não viável', bg: 'bg-loss-50',    text: 'text-loss-500'   },
+  draft:     { label: 'Rascunho',   bg: 'bg-paper-100',  text: 'text-ink-700'    },
+  for_sale:  { label: 'À venda',    bg: 'bg-primary-50', text: 'text-ink-950'    },
 }
 
 const listingLabel: Record<string, string> = {
@@ -39,15 +39,14 @@ export default async function SkuDetailPage({ params }: Props) {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      {/* Navegação */}
-      <Link href="/skus" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+      <Link href="/skus" className="inline-flex items-center gap-1.5 text-sm text-ink-700 hover:text-ink-950 transition-colors">
         ← Meus SKUs
       </Link>
 
-      {/* Cabeçalho */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="text-xl font-bold text-gray-900">{sku.name}</h1>
+      <div className="relative overflow-hidden rounded-[24px] border border-paper-200 bg-white p-6 space-y-3 shadow-[0_8px_24px_rgba(45,50,119,0.06)]">
+        <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+        <div className="flex items-start justify-between gap-3 pt-1">
+          <h1 className="text-xl font-extrabold text-ink-950">{sku.name}</h1>
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className={cn('rounded-full px-3 py-1 text-sm font-semibold', s.bg, s.text)}>
               {s.label}
@@ -55,25 +54,23 @@ export default async function SkuDetailPage({ params }: Props) {
             <SkuCardMenu id={sku.id} name={sku.name} notes={sku.notes} redirectOnDelete="/skus" />
           </div>
         </div>
-        {sku.notes && <p className="text-sm text-gray-500">{sku.notes}</p>}
-        <p className="text-xs text-gray-400">
+        {sku.notes && <p className="text-sm text-ink-700">{sku.notes}</p>}
+        <p className="text-xs text-ink-500">
           Criado em {new Date(sku.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
         </p>
 
-        {/* Botão recalcular — pré-preenche calculadora com dados do último cálculo */}
         {sku.calculations[0] && (
           <RecalcularButton costData={sku.calculations[0].costData} />
         )}
       </div>
 
-      {/* Histórico */}
       <div>
-        <h2 className="text-sm font-semibold text-gray-700 mb-3">
-          Histórico de cálculos <span className="font-normal text-gray-400">({sku.calculations.length})</span>
+        <h2 className="text-sm font-extrabold text-ink-900 mb-3">
+          Histórico de cálculos <span className="font-normal text-ink-500">({sku.calculations.length})</span>
         </h2>
 
         {sku.calculations.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-200 p-8 text-center text-sm text-gray-400">
+          <div className="rounded-[20px] border-2 border-dashed border-paper-200 p-8 text-center text-sm text-ink-500">
             Nenhum cálculo registrado
           </div>
         ) : (
@@ -90,51 +87,51 @@ export default async function SkuDetailPage({ params }: Props) {
 
 function CalcRow({ calc, isLatest }: { calc: SkuCalculation; isLatest: boolean }) {
   const margin = calc.marginPercent
-  const marginColor = margin === null ? 'text-gray-500'
-    : margin >= 20 ? 'text-green-700'
-    : margin >= 10 ? 'text-yellow-700'
-    : 'text-red-700'
+  const marginColor = margin === null ? 'text-ink-500'
+    : margin >= 20 ? 'text-profit-500'
+    : margin >= 10 ? 'text-warn-500'
+    : 'text-loss-500'
 
   return (
     <div className={cn(
-      'rounded-xl border bg-white p-4',
-      isLatest ? 'border-blue-200 shadow-sm' : 'border-gray-100'
+      'rounded-[20px] border bg-white p-4',
+      isLatest ? 'border-primary-100 shadow-[0_4px_16px_rgba(45,50,119,0.08)]' : 'border-paper-200'
     )}>
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
             {isLatest && (
-              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+              <span className="rounded-full bg-primary-50 px-2 py-0.5 text-[10px] font-semibold text-ink-950">
                 Mais recente
               </span>
             )}
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-ink-500">
               {new Date(calc.createdAt).toLocaleDateString('pt-BR', {
                 day: '2-digit', month: 'short', year: 'numeric',
                 hour: '2-digit', minute: '2-digit',
               })}
             </span>
           </div>
-          <p className="text-xs text-gray-500">
-            Anúncio: <span className="font-medium text-gray-700">{listingLabel[calc.listingType] ?? calc.listingType}</span>
+          <p className="text-xs text-ink-700">
+            Anúncio: <span className="font-medium text-ink-900">{listingLabel[calc.listingType] ?? calc.listingType}</span>
           </p>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="flex gap-4 text-right">
             <div>
-              <p className="text-[10px] text-gray-400">Preço</p>
-              <p className="text-sm font-semibold text-gray-800 tabular-nums">{formatBRL(calc.salePrice)}</p>
+              <p className="text-[10px] text-ink-500">Preço</p>
+              <p className="text-sm font-semibold text-ink-900 tabular-nums">{formatBRL(calc.salePrice)}</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-400">Margem</p>
+              <p className="text-[10px] text-ink-500">Margem</p>
               <p className={cn('text-sm font-bold tabular-nums', marginColor)}>
                 {margin !== null ? formatPercent(margin) : '—'}
               </p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-400">ROI</p>
-              <p className="text-sm font-medium text-gray-600 tabular-nums">
+              <p className="text-[10px] text-ink-500">ROI</p>
+              <p className="text-sm font-medium text-ink-700 tabular-nums">
                 {calc.roiPercent !== null ? formatPercent(calc.roiPercent) : '—'}
               </p>
             </div>

@@ -29,15 +29,15 @@ export default class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return this.props.fallback ?? (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center space-y-2">
+        <div className="rounded-[16px] border border-loss-200 bg-loss-50 p-6 text-center space-y-2">
           <p className="text-2xl" aria-hidden="true">⚠️</p>
-          <p className="text-sm font-semibold text-red-700">Algo deu errado</p>
-          <p className="text-xs text-red-500">
+          <p className="text-sm font-semibold text-loss-500">Algo deu errado</p>
+          <p className="text-xs text-loss-500 opacity-80">
             Recarregue a página ou tente novamente mais tarde.
           </p>
           <button
             onClick={() => this.setState({ hasError: false })}
-            className="mt-2 rounded-lg border border-red-300 px-4 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 transition-colors"
+            className="mt-2 rounded-[10px] border border-loss-200 px-4 py-1.5 text-xs font-medium text-loss-500 hover:bg-loss-50 transition-colors"
           >
             Tentar novamente
           </button>

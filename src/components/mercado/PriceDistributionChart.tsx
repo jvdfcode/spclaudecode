@@ -32,11 +32,11 @@ export default function PriceDistributionChart({ listings, salePrice }: Props) {
     : -1
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 space-y-3">
+    <div className="rounded-[16px] border border-paper-200 bg-white p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-gray-600">Distribuição de preços</p>
+        <p className="text-xs font-semibold text-ink-700">Distribuição de preços</p>
         {salePrice !== undefined && (
-          <span className="text-[10px] font-semibold text-blue-600">
+          <span className="text-[10px] font-semibold text-ink-950">
             ▲ seu preço: {formatBRL(salePrice)}
           </span>
         )}
@@ -59,20 +59,20 @@ export default function PriceDistributionChart({ listings, salePrice }: Props) {
                 <div
                   className={cn(
                     'w-full rounded-t transition-all',
-                    isMy ? 'bg-blue-500' : 'bg-gray-200 group-hover:bg-gray-300'
+                    isMy ? 'bg-ink-950' : 'bg-paper-200 group-hover:bg-paper-300/80'
                   )}
                   style={{ height: `${Math.max(heightPct, 4)}%` }}
                 />
               </div>
               {count > 0 && (
-                <p className="text-[8px] text-gray-400 mt-0.5 tabular-nums">{count}</p>
+                <p className="text-[8px] text-ink-500 mt-0.5 tabular-nums">{count}</p>
               )}
             </div>
           )
         })}
       </div>
 
-      <div className="flex justify-between text-[10px] text-gray-400">
+      <div className="flex justify-between text-[10px] text-ink-500">
         <span>{formatBRL(min)}</span>
         <span>{formatBRL(max)}</span>
       </div>

@@ -56,19 +56,19 @@ export default function MlConnectButton() {
 
   if (status === null) {
     return (
-      <div className="h-9 w-44 animate-pulse rounded-xl bg-gray-100" aria-hidden />
+      <div className="h-9 w-44 animate-pulse rounded-[12px] bg-paper-100" aria-hidden />
     )
   }
 
   if (status.connected) {
     return (
-      <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-3 py-2">
-        <span className="h-2 w-2 rounded-full bg-green-500" />
-        <span className="text-xs font-medium text-green-700">ML Conectado</span>
+      <div className="flex items-center gap-2 rounded-[12px] border border-profit-200 bg-profit-50 px-3 py-2">
+        <span className="h-2 w-2 rounded-full bg-profit-500" />
+        <span className="text-xs font-medium text-profit-500">ML Conectado</span>
         <button
           onClick={handleDisconnect}
           disabled={disconnecting}
-          className="ml-1 text-xs text-green-600 underline hover:text-green-800 disabled:opacity-50"
+          className="ml-1 text-xs text-profit-500 underline hover:opacity-70 disabled:opacity-50"
         >
           {disconnecting ? 'Desconectando...' : 'Desconectar'}
         </button>
@@ -79,7 +79,7 @@ export default function MlConnectButton() {
   return (
     <a
       href="/api/auth/ml/connect"
-      className="inline-flex items-center gap-2 rounded-xl border border-yellow-200 bg-yellow-50 px-3 py-2 text-xs font-medium text-yellow-800 hover:bg-yellow-100 transition-colors"
+      className="inline-flex items-center gap-2 rounded-[12px] border border-[#cfd4ff] bg-[#eef0fb] px-3 py-2 text-xs font-medium text-ink-950 hover:bg-[#e5e8fa] transition-colors"
     >
       <span>🔗</span>
       Conectar Mercado Livre

@@ -5,11 +5,11 @@ import { cn } from '@/lib/utils'
 import SkuCardMenu from './SkuCardMenu'
 
 const statusCfg = {
-  viable:    { label: 'Viável',      bg: 'bg-green-100',  text: 'text-green-700',  border: 'border-green-200',  dot: 'bg-green-400' },
-  attention: { label: 'Atenção',     bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200', dot: 'bg-yellow-400' },
-  not_viable:{ label: 'Não viável',  bg: 'bg-red-100',    text: 'text-red-700',    border: 'border-red-200',    dot: 'bg-red-400'   },
-  draft:     { label: 'Rascunho',    bg: 'bg-gray-100',   text: 'text-gray-600',   border: 'border-gray-200',   dot: 'bg-gray-400'  },
-  for_sale:  { label: 'À venda',     bg: 'bg-blue-100',   text: 'text-blue-700',   border: 'border-blue-200',   dot: 'bg-blue-400'  },
+  viable:    { label: 'Viável',     bg: 'bg-profit-50',   text: 'text-profit-500', border: 'border-profit-200',   dot: 'bg-profit-500' },
+  attention: { label: 'Atenção',    bg: 'bg-warn-50',     text: 'text-warn-500',   border: 'border-warn-200',     dot: 'bg-gold-400'   },
+  not_viable:{ label: 'Não viável', bg: 'bg-loss-50',     text: 'text-loss-500',   border: 'border-loss-200',     dot: 'bg-loss-500'   },
+  draft:     { label: 'Rascunho',   bg: 'bg-paper-100',   text: 'text-ink-700',    border: 'border-paper-200',    dot: 'bg-ink-500'    },
+  for_sale:  { label: 'À venda',    bg: 'bg-primary-50',  text: 'text-ink-950',    border: 'border-primary-100',  dot: 'bg-ink-950'    },
 }
 
 interface Props {
@@ -24,13 +24,12 @@ export default function SkuCard({ sku }: Props) {
 
   return (
     <div className={cn(
-      'relative rounded-xl border-2 bg-white p-4 space-y-3 hover:shadow-md transition-shadow',
+      'relative rounded-[20px] border-2 bg-white p-4 space-y-3 hover:shadow-md transition-shadow',
       s.border
     )}>
-      {/* Header */}
       <div className="flex items-start justify-between gap-2">
         <Link href={`/skus/${sku.id}`} className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 hover:text-ink-950 transition-colors">
+          <h3 className="text-sm font-semibold text-ink-900 leading-tight line-clamp-2 hover:text-ink-950 transition-colors">
             {sku.name}
           </h3>
         </Link>
@@ -43,7 +42,6 @@ export default function SkuCard({ sku }: Props) {
         </div>
       </div>
 
-      {/* Métricas — clicável para detalhe */}
       <Link href={`/skus/${sku.id}`} className="block">
         {calc ? (
           <div className="grid grid-cols-2 gap-2">
@@ -51,16 +49,14 @@ export default function SkuCard({ sku }: Props) {
             <Metric label="Preço de venda" value={price !== null ? formatBRL(price) : '—'} />
           </div>
         ) : (
-          <p className="text-xs text-gray-400">Sem cálculo registrado</p>
+          <p className="text-xs text-ink-500">Sem cálculo registrado</p>
         )}
 
-        {/* Notas */}
         {sku.notes && (
-          <p className="text-xs text-gray-400 line-clamp-1 mt-2">{sku.notes}</p>
+          <p className="text-xs text-ink-500 line-clamp-1 mt-2">{sku.notes}</p>
         )}
 
-        {/* Data */}
-        <p className="text-[11px] text-gray-300 mt-2">
+        <p className="text-[11px] text-ink-500 mt-2">
           {new Date(sku.updatedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
         </p>
       </Link>
@@ -70,9 +66,9 @@ export default function SkuCard({ sku }: Props) {
 
 function Metric({ label, value, accent }: { label: string; value: string; accent?: string }) {
   return (
-    <div className="rounded-lg bg-gray-50 p-2 text-center">
-      <p className="text-[10px] text-gray-400">{label}</p>
-      <p className={cn('text-sm font-bold tabular-nums mt-0.5', accent ?? 'text-gray-700')}>{value}</p>
+    <div className="rounded-[12px] bg-paper-100 p-2 text-center">
+      <p className="text-[10px] text-ink-500">{label}</p>
+      <p className={cn('text-sm font-bold tabular-nums mt-0.5', accent ?? 'text-ink-900')}>{value}</p>
     </div>
   )
 }

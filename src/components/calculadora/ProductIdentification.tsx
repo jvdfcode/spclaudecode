@@ -87,33 +87,33 @@ export default function ProductIdentification({ onChange }: Props) {
   const top3 = listings.slice(0, 3)
 
   return (
-    <div className="step-enter bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="step-enter rounded-[20px] border border-paper-200 bg-white overflow-hidden shadow-[0_4px_16px_rgba(45,50,119,0.06)]">
 
-      {/* Cabeçalho da etapa */}
       <div className="flex items-center gap-3 px-5 pt-5 pb-4">
-        <StepBadge number={1} />
+        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-ink-950 text-gold-400 text-sm font-extrabold">
+          1
+        </span>
         <div>
-          <p className="text-sm font-semibold text-slate-900">Identificação do produto</p>
-          <p className="text-xs text-slate-400 mt-0.5">A busca no Mercado Livre inicia automaticamente</p>
+          <p className="text-sm font-extrabold text-ink-950">Identificação do produto</p>
+          <p className="text-xs text-ink-500 mt-0.5">A busca no Mercado Livre inicia automaticamente</p>
         </div>
         {searchState === 'searching' && (
-          <span className="ml-auto block h-4 w-4 rounded-full border-2 border-indigo-200 border-t-indigo-600 animate-spin flex-shrink-0" />
+          <span className="ml-auto block h-4 w-4 rounded-full border-2 border-ink-950/20 border-t-ink-950 animate-spin flex-shrink-0" />
         )}
         {searchState === 'done' && summary && (
-          <span className="ml-auto text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex-shrink-0">
+          <span className="ml-auto text-xs font-semibold text-profit-500 bg-profit-50 px-2 py-0.5 rounded-full flex-shrink-0">
             {summary.cleanListings} anúncios
           </span>
         )}
       </div>
 
-      <div className="h-px bg-slate-100 mx-5" />
+      <div className="h-px bg-paper-200 mx-5" />
 
-      {/* Campos */}
       <div className="p-5 space-y-4">
         <div className="grid grid-cols-1 sm:grid-cols-[1fr_160px] gap-3">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500">
-              Nome do produto <span className="text-rose-400">*</span>
+            <label className="text-xs font-medium text-ink-700">
+              Nome do produto <span className="text-loss-500">*</span>
             </label>
             <div className="relative">
               <input
@@ -121,47 +121,40 @@ export default function ProductIdentification({ onChange }: Props) {
                 value={productName}
                 onChange={e => setProductName(e.target.value)}
                 placeholder="Ex: Fone Bluetooth JBL Tune 510..."
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-4 pr-10 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 focus:bg-white"
+                className="w-full rounded-[10px] border border-paper-200 bg-paper-100 pl-4 pr-10 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 transition-all focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950 focus:bg-white"
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300">
-                {productName.length >= 2 && searchState !== 'searching' ? (
-                  <svg className="h-4 w-4 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                  </svg>
-                ) : (
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                  </svg>
-                )}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-500">
+                <svg className={cn('h-4 w-4', productName.length >= 2 && searchState !== 'searching' ? 'text-ink-950' : 'text-ink-500')} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                </svg>
               </div>
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-500">
-              SKU <span className="text-slate-300">(opcional)</span>
+            <label className="text-xs font-medium text-ink-700">
+              SKU <span className="text-ink-500">(opcional)</span>
             </label>
             <input
               type="text"
               value={sku}
               onChange={e => setSku(e.target.value)}
               placeholder="Ex: JBL-510-BLK"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-300 focus:bg-white"
+              className="w-full rounded-[10px] border border-paper-200 bg-paper-100 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 transition-all focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950 focus:bg-white"
             />
           </div>
         </div>
 
-        {/* Resultados ML */}
         {searchState === 'done' && summary && summary.cleanListings > 0 && (
-          <div className="step-enter rounded-xl bg-slate-50 border border-slate-100 p-4 space-y-3">
+          <div className="step-enter rounded-[16px] bg-paper-100 border border-paper-200 p-4 space-y-3">
             <div className="grid grid-cols-3 gap-2 text-center">
               {([
-                { label: 'Mínimo',  value: summary.minPrice,    color: 'text-emerald-600', bg: 'bg-emerald-50' },
-                { label: 'Mediana', value: summary.medianPrice, color: 'text-indigo-600',  bg: 'bg-indigo-50'  },
-                { label: 'Máximo',  value: summary.maxPrice,    color: 'text-slate-600',   bg: 'bg-white'      },
+                { label: 'Mínimo',  value: summary.minPrice,    color: 'text-profit-500', bg: 'bg-profit-50 border-profit-200' },
+                { label: 'Mediana', value: summary.medianPrice, color: 'text-ink-950',    bg: 'bg-[#eef0fb] border-[#cfd4ff]' },
+                { label: 'Máximo',  value: summary.maxPrice,    color: 'text-ink-700',    bg: 'bg-white border-paper-200'      },
               ] as const).map(({ label, value, color, bg }) => (
-                <div key={label} className={cn('rounded-lg px-2 py-2.5 border border-slate-100', bg)}>
-                  <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wide">{label}</p>
+                <div key={label} className={cn('rounded-[12px] px-2 py-2.5 border', bg)}>
+                  <p className="text-[10px] font-medium text-ink-500 uppercase tracking-wide">{label}</p>
                   <p className={cn('text-sm font-bold tabular-nums mt-0.5', color)}>{formatBRL(value)}</p>
                 </div>
               ))}
@@ -171,8 +164,8 @@ export default function ProductIdentification({ onChange }: Props) {
               <div className="space-y-1.5 pt-1">
                 {top3.map(l => (
                   <div key={l.id} className="flex items-center justify-between gap-2">
-                    <p className="text-xs text-slate-500 truncate">{l.title}</p>
-                    <span className="text-xs font-semibold text-slate-700 tabular-nums shrink-0">
+                    <p className="text-xs text-ink-700 truncate">{l.title}</p>
+                    <span className="text-xs font-semibold text-ink-900 tabular-nums shrink-0">
                       {formatBRL(l.price)}
                     </span>
                   </div>
@@ -181,7 +174,7 @@ export default function ProductIdentification({ onChange }: Props) {
                   href={`/mercado?q=${encodeURIComponent(productName)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block pt-1 text-center text-[11px] font-medium text-indigo-500 hover:text-indigo-700 transition-colors"
+                  className="block pt-1 text-center text-[11px] font-medium text-ink-950 hover:text-ink-900 transition-colors"
                 >
                   ver todos os anúncios →
                 </a>
@@ -191,19 +184,11 @@ export default function ProductIdentification({ onChange }: Props) {
         )}
 
         {searchState === 'error' && (
-          <p className="step-enter rounded-lg bg-rose-50 border border-rose-100 px-3 py-2 text-xs text-rose-500">
+          <p className="step-enter rounded-[12px] bg-loss-50 border border-loss-200 px-3 py-2 text-xs text-loss-500">
             Não foi possível buscar no Mercado Livre agora. Continue preenchendo normalmente.
           </p>
         )}
       </div>
     </div>
-  )
-}
-
-function StepBadge({ number }: { number: number }) {
-  return (
-    <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 text-white text-sm font-bold shadow-sm">
-      {number}
-    </span>
   )
 }

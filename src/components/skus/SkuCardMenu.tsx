@@ -28,7 +28,6 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
     return () => document.removeEventListener('keydown', onKey)
   }, [menuOpen])
 
-  // Edit state
   const [editName, setEditName] = useState(name)
   const [editNotes, setEditNotes] = useState(notes ?? '')
   const [saving, setSaving] = useState(false)
@@ -84,39 +83,37 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
 
   return (
     <>
-      {/* Botão "..." */}
       <div className="relative">
         <button
           onClick={openMenu}
           aria-label="Opções do SKU"
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors text-lg leading-none"
+          className="flex h-8 w-8 items-center justify-center rounded-[10px] text-ink-500 hover:bg-paper-100 hover:text-ink-900 transition-colors text-lg leading-none"
         >
           ···
         </button>
 
         {menuOpen && (
           <>
-            {/* overlay para fechar */}
             <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
             <div
               ref={menuRef}
               role="menu"
               aria-label="Opções do SKU"
-              className="absolute right-0 top-9 z-20 min-w-[140px] rounded-xl border border-gray-100 bg-white py-1 shadow-lg"
+              className="absolute right-0 top-9 z-20 min-w-[140px] rounded-[14px] border border-paper-200 bg-white py-1 shadow-lg"
             >
               <button
                 role="menuitem"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); openDialog('edit') }}
-                className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-2.5 text-left text-sm text-ink-900 hover:bg-paper-100 transition-colors"
               >
                 Editar
               </button>
               <button
                 role="menuitem"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); openDialog('delete') }}
-                className="w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
+                className="w-full px-4 py-2.5 text-left text-sm text-loss-500 hover:bg-loss-50 transition-colors"
               >
                 Excluir
               </button>
@@ -125,27 +122,26 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
         )}
       </div>
 
-      {/* Dialog — Excluir */}
       <Dialog open={dialog === 'delete'} onOpenChange={(o) => !o && setDialog(null)}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
             <DialogTitle>Excluir SKU?</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-ink-700">
             <span className="font-semibold">&ldquo;{name}&rdquo;</span> e todos os seus cálculos
             serão removidos permanentemente.
           </p>
           <DialogFooter className="gap-2">
             <button
               onClick={() => setDialog(null)}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="rounded-[10px] border border-paper-200 px-4 py-2 text-sm font-medium text-ink-700 hover:bg-paper-100 transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleDelete}
               disabled={saving}
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+              className="rounded-[10px] bg-loss-500 px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {saving ? 'Excluindo...' : 'Excluir'}
             </button>
@@ -153,7 +149,6 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
         </DialogContent>
       </Dialog>
 
-      {/* Dialog — Editar */}
       <Dialog open={dialog === 'edit'} onOpenChange={(o) => !o && setDialog(null)}>
         <DialogContent onClick={(e) => e.stopPropagation()}>
           <DialogHeader>
@@ -171,7 +166,7 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="sku-notes">Notas <span className="text-gray-400">(opcional)</span></Label>
+              <Label htmlFor="sku-notes">Notas <span className="text-ink-500">(opcional)</span></Label>
               <Input
                 id="sku-notes"
                 value={editNotes}
@@ -184,14 +179,14 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
           <DialogFooter className="gap-2">
             <button
               onClick={() => setDialog(null)}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="rounded-[10px] border border-paper-200 px-4 py-2 text-sm font-medium text-ink-700 hover:bg-paper-100 transition-colors"
             >
               Cancelar
             </button>
             <button
               onClick={handleEdit}
               disabled={saving || !editName.trim()}
-              className="rounded-lg bg-ink-950 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-800 disabled:opacity-50 transition-colors"
+              className="rounded-[10px] bg-ink-950 px-4 py-2 text-sm font-semibold text-gold-400 hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </button>

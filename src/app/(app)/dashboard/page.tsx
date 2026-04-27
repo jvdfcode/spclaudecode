@@ -42,11 +42,11 @@ const steps = [
 ]
 
 const statusCfg = {
-  viable:     { label: 'Viáveis',     dot: 'bg-green-400',  text: 'text-green-700'  },
-  attention:  { label: 'Atenção',     dot: 'bg-yellow-400', text: 'text-yellow-700' },
-  not_viable: { label: 'Não viáveis', dot: 'bg-red-400',    text: 'text-red-700'    },
-  for_sale:   { label: 'À venda',     dot: 'bg-blue-400',   text: 'text-blue-700'   },
-  draft:      { label: 'Rascunho',    dot: 'bg-gray-400',   text: 'text-gray-500'   },
+  viable:     { label: 'Viáveis',     dot: 'bg-profit-500', text: 'text-profit-500' },
+  attention:  { label: 'Atenção',     dot: 'bg-gold-400',   text: 'text-warn-500'   },
+  not_viable: { label: 'Não viáveis', dot: 'bg-loss-500',   text: 'text-loss-500'   },
+  for_sale:   { label: 'À venda',     dot: 'bg-ink-950',    text: 'text-ink-950'    },
+  draft:      { label: 'Rascunho',    dot: 'bg-ink-500',    text: 'text-ink-700'    },
 }
 
 function computeStats(skus: SkuWithLatestCalc[]) {
@@ -117,25 +117,25 @@ export default async function DashboardPage() {
                 value={String(stats.byStatus.viable + stats.byStatus.for_sale)}
                 label="Saudáveis"
                 sub={stats.byStatus.for_sale > 0 ? `${stats.byStatus.for_sale} à venda` : null}
-                accent="text-green-700"
-                dot="bg-green-400"
+                accent="text-profit-500"
+                dot="bg-profit-500"
               />
               <StatCard
                 value={String(stats.byStatus.attention)}
                 label="Em atenção"
                 sub={stats.byStatus.not_viable > 0 ? `${stats.byStatus.not_viable} não viável` : null}
-                accent="text-yellow-700"
-                dot="bg-yellow-400"
+                accent="text-warn-500"
+                dot="bg-gold-400"
               />
               <StatCard
                 value={stats.avgMargin !== null ? formatPercent(stats.avgMargin) : '—'}
                 label="Margem média"
                 sub="dos SKUs calculados"
                 accent={
-                  stats.avgMargin === null ? 'text-gray-400'
-                  : stats.avgMargin >= 20 ? 'text-green-700'
-                  : stats.avgMargin >= 10 ? 'text-yellow-700'
-                  : 'text-red-700'
+                  stats.avgMargin === null ? 'text-ink-500'
+                  : stats.avgMargin >= 20 ? 'text-profit-500'
+                  : stats.avgMargin >= 10 ? 'text-warn-500'
+                  : 'text-loss-500'
                 }
               />
             </div>

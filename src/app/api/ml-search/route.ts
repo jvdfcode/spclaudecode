@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabase } from '@/lib/supabase/server'
-import { checkRateLimit } from '@/lib/rateLimit'
+import { checkRateLimit, stringToUuid } from '@/lib/rateLimit'
 import { getMlAccessToken, searchMlApi } from '@/lib/ml-api'
 import type { MlListing } from '@/types'
 
@@ -8,6 +8,8 @@ const log = (msg: string, data?: object) =>
   console.log(JSON.stringify({ ts: Date.now(), msg, ...data }))
 
 const CACHE_TTL_MS = 60 * 60 * 1000 // 1 hora
+const RL_LIMIT = 10
+const RL_WINDOW = 60 // segundos
 
 function hashQuery(q: string): string {
   let h = 0
@@ -25,7 +27,33 @@ export async function GET(req: NextRequest) {
     const supabase = await createServerSupabase()
     const hash = hashQuery(q.toLowerCase())
 
-    // 1. Cache Supabase
+    // 1. Identificar requester para rate limiting (user autenticado ou IP)
+    const { data: { user } } = await supabase.auth.getUser()
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? '0.0.0.0'
+    const rateLimitId = user?.id ?? stringToUuid(`ip:${ip}`)
+
+    // 2. Rate limiting: máx 10 req/min por usuário ou IP
+    const rl = await checkRateLimit(rateLimitId, 'ml-search-get', RL_LIMIT, RL_WINDOW)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: 'Rate limit excedido. Aguarde 1 minuto.' },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': String(rl.limit),
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': String(rl.retryAfter ?? RL_WINDOW),
+          },
+        }
+      )
+    }
+
+    const rlHeaders = {
+      'X-RateLimit-Limit': String(rl.limit),
+      'X-RateLimit-Remaining': String(rl.remaining),
+    }
+
+    // 3. Cache Supabase
     const { data: cached } = await supabase
       .from('ml_search_cache')
       .select('results_json, expires_at')
@@ -33,11 +61,13 @@ export async function GET(req: NextRequest) {
       .single()
 
     if (cached && new Date(cached.expires_at as string) > new Date()) {
-      return NextResponse.json({ listings: cached.results_json, cached: true })
+      return NextResponse.json(
+        { listings: cached.results_json, cached: true },
+        { headers: rlHeaders }
+      )
     }
 
-    // 2. Se usuário tem token ML, busca autenticada server-side
-    const { data: { user } } = await supabase.auth.getUser()
+    // 4. Se usuário tem token ML, busca autenticada server-side
     if (user) {
       const accessToken = await getMlAccessToken(supabase)
       if (accessToken) {
@@ -54,7 +84,10 @@ export async function GET(req: NextRequest) {
               expires_at:   expiresAt,
             }, { onConflict: 'query_hash' })
 
-            return NextResponse.json({ listings, mlAuthenticated: true })
+            return NextResponse.json(
+              { listings, mlAuthenticated: true },
+              { headers: rlHeaders }
+            )
           }
         } catch (err) {
           log('ml-search api error', { error: String(err) })
@@ -62,12 +95,13 @@ export async function GET(req: NextRequest) {
         }
       }
     }
+
+    // Fallback: sinaliza ao browser para buscar direto (IP residencial não é bloqueado)
+    return NextResponse.json({ clientSide: true }, { status: 503, headers: rlHeaders })
   } catch (err) {
     log('ml-search error', { error: String(err) })
+    return NextResponse.json({ clientSide: true }, { status: 503 })
   }
-
-  // Fallback: sinaliza ao browser para buscar direto (IP residencial não é bloqueado)
-  return NextResponse.json({ clientSide: true }, { status: 503 })
 }
 
 export async function POST(req: NextRequest) {

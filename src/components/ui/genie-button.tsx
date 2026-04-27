@@ -39,45 +39,45 @@ export interface GenieButtonProps
 ---------------------------------------------------------------- */
 const variantClasses: Record<GenieVariant, string> = {
   primary: [
-    'bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700',
-    'text-white',
-    'shadow-[0_2px_14px_rgba(79,70,229,0.32)]',
-    'hover:shadow-[0_5px_22px_rgba(79,70,229,0.44)]',
-    'border border-indigo-500/25',
+    'bg-ink-950',
+    'text-gold-400',
+    'shadow-[0_2px_14px_rgba(45,50,119,0.32)]',
+    'hover:shadow-[0_5px_22px_rgba(45,50,119,0.44)]',
+    'border border-ink-950/25',
   ].join(' '),
 
   success: [
-    'bg-gradient-to-br from-emerald-500 via-green-500 to-green-600',
+    'bg-profit-500',
     'text-white',
-    'shadow-[0_2px_14px_rgba(34,197,94,0.30)]',
-    'hover:shadow-[0_5px_22px_rgba(34,197,94,0.42)]',
-    'border border-green-400/25',
+    'shadow-[0_2px_14px_rgba(14,159,110,0.30)]',
+    'hover:shadow-[0_5px_22px_rgba(14,159,110,0.42)]',
+    'border border-profit-500/25',
   ].join(' '),
 
   secondary: [
-    'bg-white text-gray-700',
-    'shadow-[0_1px_6px_rgba(0,0,0,0.09)]',
-    'hover:shadow-[0_3px_14px_rgba(0,0,0,0.13)]',
-    'border border-gray-200 hover:border-gray-300',
+    'bg-white text-ink-700',
+    'shadow-[0_1px_6px_rgba(45,50,119,0.09)]',
+    'hover:shadow-[0_3px_14px_rgba(45,50,119,0.13)]',
+    'border border-paper-200 hover:border-paper-300',
   ].join(' '),
 
   ghost: [
-    'bg-transparent text-gray-600',
+    'bg-transparent text-ink-700',
     'border border-transparent',
-    'hover:bg-gray-100/90 hover:text-gray-800 hover:border-gray-200',
+    'hover:bg-paper-100 hover:text-ink-950 hover:border-paper-200',
   ].join(' '),
 
   outline: [
-    'bg-transparent text-blue-600',
-    'border-2 border-blue-500',
-    'hover:bg-blue-50',
+    'bg-transparent text-ink-950',
+    'border-2 border-[#cfd4ff]',
+    'hover:bg-[#eef0fb]',
   ].join(' '),
 
   danger: [
-    'bg-gradient-to-br from-red-500 to-rose-600',
+    'bg-loss-500',
     'text-white',
-    'shadow-[0_2px_14px_rgba(239,68,68,0.30)]',
-    'hover:shadow-[0_5px_22px_rgba(239,68,68,0.42)]',
+    'shadow-[0_2px_14px_rgba(214,69,69,0.30)]',
+    'hover:shadow-[0_5px_22px_rgba(214,69,69,0.42)]',
   ].join(' '),
 }
 
@@ -147,7 +147,7 @@ export const GenieButton = forwardRef<HTMLButtonElement, GenieButtonProps>(
           'disabled:hover:translate-y-0 disabled:active:scale-100 disabled:shadow-none',
           /* focus */
           'focus-visible:outline-none focus-visible:ring-2',
-          'focus-visible:ring-blue-400/70 focus-visible:ring-offset-2',
+          'focus-visible:ring-ink-950/30 focus-visible:ring-offset-2',
           /* variante e tamanho */
           variantClasses[variant],
           sizeClasses[size],

@@ -13,7 +13,6 @@ type Mode = 'avulso' | 'massa'
 export default function ModeSelection({ onChange }: Props) {
   const [mode, setMode] = useState<Mode>('avulso')
 
-  // Campos da compra em massa
   const [batchCost, setBatchCost]       = useState('')
   const [units, setUnits]               = useState('')
   const [shippingCost, setShippingCost] = useState('')
@@ -36,17 +35,15 @@ export default function ModeSelection({ onChange }: Props) {
   }, [mode, unitCost, onChange])
 
   return (
-    <div className="rounded-2xl border-2 border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 p-6 space-y-4">
+    <div className="rounded-[20px] border border-[#cfd4ff] bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.06)]">
 
-      {/* Indicador de etapa */}
       <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-xs font-bold text-white">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-950 text-xs font-extrabold text-gold-400">
           2
         </span>
-        <span className="text-sm font-semibold text-violet-800">Modo de compra</span>
+        <span className="text-sm font-extrabold text-ink-950">Modo de compra</span>
       </div>
 
-      {/* Seletor de modo */}
       <div className="grid grid-cols-2 gap-3">
         {([
           {
@@ -67,29 +64,28 @@ export default function ModeSelection({ onChange }: Props) {
             type="button"
             onClick={() => setMode(opt.value)}
             className={cn(
-              'flex flex-col items-start gap-1.5 rounded-xl border-2 p-4 text-left transition-all',
+              'flex flex-col items-start gap-1.5 rounded-[16px] border-2 p-4 text-left transition-all',
               mode === opt.value
-                ? 'border-violet-500 bg-white shadow-sm'
+                ? 'border-ink-950 bg-white shadow-[0_4px_12px_rgba(45,50,119,0.12)]'
                 : 'border-transparent bg-white/60 hover:bg-white/80'
             )}
           >
             <span className="text-2xl leading-none">{opt.icon}</span>
             <span className={cn(
               'text-sm font-semibold',
-              mode === opt.value ? 'text-violet-800' : 'text-gray-600'
+              mode === opt.value ? 'text-ink-950' : 'text-ink-700'
             )}>
               {opt.title}
             </span>
-            <span className="text-[11px] text-gray-400 leading-snug">{opt.desc}</span>
+            <span className="text-[11px] text-ink-500 leading-snug">{opt.desc}</span>
           </button>
         ))}
       </div>
 
-      {/* Calculadora de lote — só aparece em modo massa */}
       {mode === 'massa' && (
-        <div className="rounded-xl border border-violet-100 bg-white p-4 space-y-4">
+        <div className="rounded-[16px] border border-paper-200 bg-white p-4 space-y-4">
 
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          <p className="text-xs font-extrabold text-ink-700 uppercase tracking-wide">
             Calculadora de custo por unidade
           </p>
 
@@ -99,7 +95,7 @@ export default function ModeSelection({ onChange }: Props) {
                 type="number" min={0} step={0.01} placeholder="0,00"
                 value={batchCost}
                 onChange={e => setBatchCost(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full rounded-[10px] border border-paper-200 bg-paper-100 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950"
               />
             </BatchField>
 
@@ -108,7 +104,7 @@ export default function ModeSelection({ onChange }: Props) {
                 type="number" min={1} step={1} placeholder="0"
                 value={units}
                 onChange={e => setUnits(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full rounded-[10px] border border-paper-200 bg-paper-100 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950"
               />
             </BatchField>
 
@@ -117,7 +113,7 @@ export default function ModeSelection({ onChange }: Props) {
                 type="number" min={0} step={0.01} placeholder="0,00"
                 value={shippingCost}
                 onChange={e => setShippingCost(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full rounded-[10px] border border-paper-200 bg-paper-100 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950"
               />
             </BatchField>
 
@@ -126,28 +122,27 @@ export default function ModeSelection({ onChange }: Props) {
                 type="number" min={0} step={0.01} placeholder="0,00"
                 value={importCost}
                 onChange={e => setImportCost(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300"
+                className="w-full rounded-[10px] border border-paper-200 bg-paper-100 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950"
               />
             </BatchField>
           </div>
 
-          {/* Resultado do rateio */}
           <div className={cn(
-            'rounded-xl p-4 text-center transition-colors',
-            unitCost !== null ? 'bg-violet-50 border border-violet-200' : 'bg-gray-50 border border-gray-100'
+            'rounded-[14px] p-4 text-center transition-colors',
+            unitCost !== null
+              ? 'bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] border border-[#cfd4ff]'
+              : 'bg-paper-100 border border-paper-200'
           )}>
             {unitCost !== null ? (
               <>
-                <p className="text-[11px] uppercase tracking-wider text-violet-500 mb-1">Custo por unidade</p>
-                <p className="text-3xl font-bold text-violet-700 tabular-nums">{formatBRL(unitCost)}</p>
-                <p className="text-[11px] text-gray-400 mt-1">
+                <p className="text-[11px] uppercase tracking-wider text-ink-700 mb-1">Custo por unidade</p>
+                <p className="text-3xl font-extrabold text-ink-950 tabular-nums">{formatBRL(unitCost)}</p>
+                <p className="text-[11px] text-ink-500 mt-1">
                   {formatBRL(totalBatchExpense)} ÷ {unitsN} unid. · será usado como custo do produto
                 </p>
               </>
             ) : (
-              <>
-                <p className="text-xs text-gray-400">Preencha os campos acima para calcular o custo por unidade</p>
-              </>
+              <p className="text-xs text-ink-500">Preencha os campos acima para calcular o custo por unidade</p>
             )}
           </div>
         </div>
@@ -161,10 +156,10 @@ function BatchField({ label, hint, suffix, children }: {
 }) {
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-gray-600">
-        {label}{suffix && <span className="ml-1 text-[10px] text-gray-400">({suffix})</span>}
+      <label className="text-xs font-medium text-ink-700">
+        {label}{suffix && <span className="ml-1 text-[10px] text-ink-500">({suffix})</span>}
       </label>
-      {hint && <p className="text-[10px] text-gray-400">{hint}</p>}
+      {hint && <p className="text-[10px] text-ink-500">{hint}</p>}
       {children}
     </div>
   )

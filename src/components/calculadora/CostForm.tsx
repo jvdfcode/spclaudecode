@@ -150,7 +150,7 @@ export default function CostForm() {
                 onChange={setNum('productCost')}
                 readOnly={purchaseMode === 'massa'}
                 className={purchaseMode === 'massa'
-                  ? 'h-11 text-base font-medium bg-violet-50 border-violet-200 text-violet-700 cursor-default'
+                  ? 'h-11 text-base font-medium bg-[#eef0fb] border-[#cfd4ff] text-ink-700 cursor-default'
                   : 'h-11 text-base font-medium bg-white'}
               />
             </Field>
@@ -210,16 +210,16 @@ export default function CostForm() {
         >
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <Label className="text-sm text-gray-600">Tipo de anúncio</Label>
-              <p className="text-xs text-gray-400">Clássico = visibilidade padrão | Premium = destaque + frete grátis obrigatório</p>
+              <Label className="text-sm text-ink-700">Tipo de anúncio</Label>
+              <p className="text-xs text-ink-500">Clássico = visibilidade padrão | Premium = destaque + frete grátis obrigatório</p>
               <div className="grid grid-cols-3 gap-2 mt-1">
                 {(['free', 'classic', 'premium'] as ListingType[]).map(type => (
                   <button key={type} type="button" onClick={() => handleListingType(type)}
                     className={cn(
-                      'rounded-lg border py-2.5 text-sm font-medium transition-all',
+                      'rounded-[12px] border py-2.5 text-sm font-semibold transition-all',
                       input.listingType === type
-                        ? 'border-blue-500 bg-blue-50 text-blue-800 shadow-sm'
-                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                        ? 'border-ink-950 bg-primary-50 text-ink-950 shadow-sm'
+                        : 'border-paper-200 text-ink-700 hover:border-ink-950/30 hover:text-ink-950'
                     )}>
                     <div>{type === 'free' ? 'Gratuito' : type === 'classic' ? 'Clássico' : 'Premium'}</div>
                     <div className="text-xs opacity-70 mt-0.5">
@@ -250,10 +250,10 @@ export default function CostForm() {
               <label className="flex cursor-pointer items-start gap-2.5 text-sm select-none">
                 <input type="checkbox" checked={manualFee}
                   onChange={e => handleManualFeeToggle(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded accent-blue-600" />
+                  className="mt-0.5 h-4 w-4 rounded accent-ink-950" />
                 <div>
-                  <span className="text-gray-700 font-medium">Inserir taxa manualmente</span>
-                  <p className="text-xs text-gray-400 mt-0.5">Use quando o ML ofereceu uma condição especial</p>
+                  <span className="text-ink-900 font-medium">Inserir taxa manualmente</span>
+                  <p className="text-xs text-ink-500 mt-0.5">Use quando o ML ofereceu uma condição especial</p>
                 </div>
               </label>
             )}
@@ -284,30 +284,30 @@ export default function CostForm() {
             </Field>
 
             {!feesLoading && input.listingType !== 'free' && (
-              <div className="rounded-xl border border-blue-100 bg-blue-50 divide-y divide-blue-100 text-sm overflow-hidden">
+              <div className="rounded-[16px] border border-primary-100 bg-primary-50 divide-y divide-primary-100 text-sm overflow-hidden">
                 <FeeRow
                   label={manualFee && input.commissionOverride !== null ? 'Comissão (manual)' : `Comissão ${input.categoryId ? `· ${ML_CATEGORY_FEES.find(c => c.id === input.categoryId)?.name}` : '· taxa geral'}`}
                   pct={effectiveCommissionPct}
                   amount={input.salePrice > 0 ? input.salePrice * effectiveCommissionPct / 100 : null}
-                  textColor="text-blue-800"
+                  textColor="text-ink-950"
                 />
                 {installmentPct > 0 && (
                   <FeeRow label={`Parcelamento em ${input.installments}x`} pct={installmentPct}
                     amount={input.salePrice > 0 ? input.salePrice * installmentPct / 100 : null}
-                    textColor="text-blue-700" prefix="+" />
+                    textColor="text-ink-700" prefix="+" />
                 )}
                 {installmentPct > 0 && (
                   <FeeRow label="Total ML" pct={effectiveCommissionPct + installmentPct}
                     amount={input.salePrice > 0 ? input.salePrice * (effectiveCommissionPct + installmentPct) / 100 : null}
-                    textColor="text-blue-900" bold />
+                    textColor="text-ink-950" bold />
                 )}
                 {fixedCostLabel && (
-                  <div className="flex items-center justify-between px-3 py-2 bg-orange-50">
+                  <div className="flex items-center justify-between px-3 py-2 bg-warn-50">
                     <div>
-                      <span className="font-medium text-orange-700">⚠ Custo fixo ML (preço &lt; R$79)</span>
-                      <p className="text-xs text-orange-500 mt-0.5">{fixedCostLabel} · cobrado por unidade vendida</p>
+                      <span className="font-medium text-warn-500">⚠ Custo fixo ML (preço &lt; R$79)</span>
+                      <p className="text-xs text-warn-500 mt-0.5 opacity-80">{fixedCostLabel} · cobrado por unidade vendida</p>
                     </div>
-                    <span className="font-bold text-orange-700">{formatBRL(fixedCostValue)}</span>
+                    <span className="font-bold text-warn-500">{formatBRL(fixedCostValue)}</span>
                   </div>
                 )}
               </div>
@@ -331,15 +331,15 @@ export default function CostForm() {
             ]).map(({ mode, label, desc }) => (
               <label key={mode} className={cn(
                 'flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-colors',
-                input.shippingMode === mode ? 'border-blue-400 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
+                input.shippingMode === mode ? 'border-ink-950 bg-primary-50' : 'border-paper-200 hover:border-ink-950/30'
               )}>
                 <input type="radio" name="shippingMode" value={mode}
                   checked={input.shippingMode === mode}
                   onChange={() => handleShippingMode(mode)}
-                  className="mt-0.5 h-4 w-4 accent-blue-600" />
+                  className="mt-0.5 h-4 w-4 accent-ink-950" />
                 <div>
-                  <p className={cn('text-sm font-medium', input.shippingMode === mode ? 'text-blue-900' : 'text-gray-700')}>{label}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  <p className={cn('text-sm font-medium', input.shippingMode === mode ? 'text-ink-950' : 'text-ink-700')}>{label}</p>
+                  <p className="text-xs text-ink-500 mt-0.5">{desc}</p>
                 </div>
               </label>
             ))}
@@ -433,8 +433,8 @@ function CollapsibleSection({ title, icon, open, onToggle, summary, children }: 
 
 function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+    <div className="rounded-[16px] border border-paper-200 bg-white p-5 space-y-4">
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-ink-900">
         <span>{icon}</span>{title}
       </h2>
       {children}

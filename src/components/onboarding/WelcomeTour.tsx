@@ -8,30 +8,22 @@ const ONBOARDED_KEY = 'smartpreco_onboarded'
 
 const steps = [
   {
-    step: 1,
-    icon: '🧮',
-    title: 'Calculadora de Custos',
+    step: 1, icon: '🧮', title: 'Calculadora de Custos',
     description: 'Informe o custo do produto, taxas ML e preço de venda para ver margem e viabilidade em tempo real.',
     href: '/calculadora',
   },
   {
-    step: 2,
-    icon: '📊',
-    title: 'Simulador de Cenários',
+    step: 2, icon: '📊', title: 'Simulador de Cenários',
     description: 'Veja como sua margem muda em ±35% de variação de preço — encontre a faixa ideal de precificação.',
     href: '/calculadora',
   },
   {
-    step: 3,
-    icon: '🏪',
-    title: 'Bloco Mercado',
+    step: 3, icon: '🏪', title: 'Bloco Mercado',
     description: 'Busque produtos similares no Mercado Livre e compare seu preço com a concorrência real.',
     href: '/mercado',
   },
   {
-    step: 4,
-    icon: '🎯',
-    title: 'Decisão de Preço',
+    step: 4, icon: '🎯', title: 'Decisão de Preço',
     description: 'Com base nos seus custos e no mercado, escolha entre Econômico, Competitivo ou Premium.',
     href: '/calculadora',
   },
@@ -59,29 +51,27 @@ export default function WelcomeTour() {
 
   return (
     <section
-      className="rounded-xl border-2 border-blue-200 bg-blue-50 p-5 space-y-4"
+      className="rounded-[20px] border border-[#cfd4ff] bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] p-5 space-y-4"
       aria-label="Tour de onboarding do SmartPreço"
     >
-      {/* Cabeçalho */}
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">
+          <p className="text-xs font-extrabold text-ink-950 uppercase tracking-wide">
             Bem-vindo ao SmartPreço!
           </p>
-          <p className="text-sm text-blue-700 mt-0.5">
+          <p className="text-sm text-ink-700 mt-0.5">
             Em 4 passos, você estará precificando como um profissional.
           </p>
         </div>
         <button
           onClick={dismiss}
           aria-label="Pular tour"
-          className="text-blue-400 hover:text-blue-600 transition-colors text-xs flex-shrink-0"
+          className="text-ink-500 hover:text-ink-950 transition-colors text-xs flex-shrink-0"
         >
           Pular ✕
         </button>
       </div>
 
-      {/* Indicadores de progresso */}
       <div className="flex gap-1.5" aria-label="Progresso do tour">
         {steps.map((s, i) => (
           <button
@@ -91,29 +81,27 @@ export default function WelcomeTour() {
             aria-current={i === activeStep ? 'step' : undefined}
             className={cn(
               'h-1.5 flex-1 rounded-full transition-all',
-              i <= activeStep ? 'bg-blue-500' : 'bg-blue-200'
+              i <= activeStep ? 'bg-ink-950' : 'bg-paper-200'
             )}
           />
         ))}
       </div>
 
-      {/* Conteúdo do passo */}
       <div className="flex items-start gap-3">
         <span className="text-2xl flex-shrink-0" aria-hidden="true">{step.icon}</span>
         <div>
-          <p className="text-sm font-bold text-blue-800">
+          <p className="text-sm font-extrabold text-ink-950">
             {activeStep + 1}. {step.title}
           </p>
-          <p className="text-xs text-blue-600 mt-0.5 leading-snug">{step.description}</p>
+          <p className="text-xs text-ink-700 mt-0.5 leading-snug">{step.description}</p>
         </div>
       </div>
 
-      {/* Navegação */}
       <div className="flex items-center gap-2">
         {activeStep > 0 && (
           <button
             onClick={() => setActiveStep(a => a - 1)}
-            className="px-3 py-1.5 rounded-lg border border-blue-300 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+            className="px-3 py-1.5 rounded-[10px] border border-paper-200 text-xs font-medium text-ink-700 hover:bg-paper-100 transition-colors"
           >
             ← Anterior
           </button>
@@ -121,7 +109,7 @@ export default function WelcomeTour() {
         {!isLast ? (
           <button
             onClick={() => setActiveStep(a => a + 1)}
-            className="ml-auto px-3 py-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="ml-auto px-3 py-1.5 rounded-[10px] bg-ink-950 text-xs font-semibold text-gold-400 hover:opacity-90 transition-opacity"
           >
             Próximo →
           </button>
@@ -129,7 +117,7 @@ export default function WelcomeTour() {
           <Link
             href={step.href}
             onClick={dismiss}
-            className="ml-auto px-3 py-1.5 rounded-lg bg-blue-600 text-center text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+            className="ml-auto px-3 py-1.5 rounded-[10px] bg-ink-950 text-center text-xs font-semibold text-gold-400 hover:opacity-90 transition-opacity"
           >
             Começar agora 🚀
           </Link>

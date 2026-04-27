@@ -11,7 +11,6 @@ import ListingCard from './ListingCard'
 import { cn } from '@/lib/utils'
 import MlScenarioCards from './MlScenarioCards'
 
-// ─── Cache localStorage (performance, não fix de API) ─────────────────────────
 const CACHE_KEY = 'smartpreco_ml_'
 const CACHE_TTL = 60 * 60 * 1000
 
@@ -29,7 +28,6 @@ function writeCache(q: string, data: MlListing[]) {
   try { localStorage.setItem(CACHE_KEY + q, JSON.stringify({ data, exp: Date.now() + CACHE_TTL })) } catch {}
 }
 
-// ─── Mapeador da resposta bruta do ML ─────────────────────────────────────────
 function mapListings(raw: MlRawResponse): MlListing[] {
   return raw.results.map(r => ({
     id: r.id,
@@ -44,38 +42,6 @@ function mapListings(raw: MlRawResponse): MlListing[] {
     thumbnail: r.thumbnail,
     permalink: r.permalink,
   }))
-}
-
-// ─── Busca via scraping server-side (lista.mercadolivre.com.br + cheerio) ──────
-async function fetchFromScraper(q: string): Promise<MlListing[]> {
-  const res = await fetch(`/api/ml-proxy?q=${encodeURIComponent(q)}`)
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({})) as { error?: string }
-    throw new Error(err.error ?? `Scraper ${res.status}`)
-  }
-  const data = await res.json() as { listings?: MlListing[]; error?: string }
-  if (!data.listings?.length) throw new Error('Scraper sem resultados')
-  return data.listings
-}
-
-// ─── Busca direta do browser (ML direto — funciona de IPs residenciais normais) ─
-async function fetchFromBrowser(q: string): Promise<MlListing[]> {
-  const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`ML direto ${res.status}`)
-  const data = await res.json() as MlRawResponse
-  return mapListings(data)
-}
-
-// ─── CORS proxy público (browser → corsproxy.io → ML) — para IPs bloqueados ────
-async function fetchViaCorsProxy(q: string): Promise<MlListing[]> {
-  const mlUrl = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(q)}&limit=50`
-  const proxy = `https://corsproxy.io/?${encodeURIComponent(mlUrl)}`
-  const res = await fetch(proxy, { headers: { 'x-requested-with': 'XMLHttpRequest' } })
-  if (!res.ok) throw new Error(`Proxy ${res.status}`)
-  const data = await res.json() as MlRawResponse
-  if (!data.results) throw new Error('Proxy sem resultados')
-  return mapListings(data)
 }
 
 const QUICK_SEARCHES = [
@@ -114,12 +80,10 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
     setExcluded(new Set())
     setActive(term)
 
-    // 1. Cache local (performance)
     const cached = readCache(term.toLowerCase())
     if (cached) { setRaw(cached); setCached(true); setState('done'); return }
 
     try {
-      // 2. Servidor (com autenticação ML se configurada, cache Supabase)
       const serverRes = await fetch(`/api/ml-search?q=${encodeURIComponent(term)}`)
       const serverData = await serverRes.json() as {
         listings?: MlListing[]
@@ -129,7 +93,6 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
       }
 
       if (serverRes.ok && serverData.listings) {
-        // Servidor retornou resultados (autenticado ou não)
         writeCache(term.toLowerCase(), serverData.listings)
         setRaw(serverData.listings)
         setCached(serverData.cached ?? false)
@@ -138,13 +101,15 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
       }
 
       if (serverRes.status === 503 && serverData.clientSide) {
-        // Browser do usuário busca direto no ML (IP residencial não é bloqueado)
-        const listings = await fetchFromBrowser(term)
+        const url = `https://api.mercadolibre.com/sites/MLB/search?q=${encodeURIComponent(term)}&limit=50`
+        const res = await fetch(url)
+        if (!res.ok) throw new Error(`ML ${res.status}`)
+        const data = await res.json() as MlRawResponse
+        const listings = mapListings(data)
         writeCache(term.toLowerCase(), listings)
         setRaw(listings)
         setCached(false)
         setState('done')
-        // Salva no cache Supabase em background
         fetch(`/api/ml-search`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -153,7 +118,6 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
         return
       }
 
-      // Erro real (429, 502, etc.)
       setError(serverData.error ?? 'Erro inesperado. Tente novamente.')
       setState('error')
     } catch {
@@ -200,11 +164,11 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
   return (
     <div className="space-y-5">
 
-      {/* ─── BARRA DE BUSCA ─── */}
+      {/* BARRA DE BUSCA */}
       <form onSubmit={handleSearch}>
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
+            <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-500"
               xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
             </svg>
@@ -213,7 +177,7 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Busque um produto... ex: fone bluetooth, tênis nike"
-              className="w-full rounded-2xl border border-gray-200 bg-white pl-11 pr-4 py-3.5 text-sm text-gray-800 placeholder:text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              className="w-full rounded-[16px] border border-paper-200 bg-white pl-11 pr-4 py-3.5 text-sm text-ink-900 placeholder:text-ink-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-ink-950/20 focus:border-ink-950"
               disabled={state === 'loading'}
             />
           </div>
@@ -221,15 +185,15 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
             type="submit"
             disabled={state === 'loading' || query.trim().length < 2}
             className={cn(
-              'rounded-2xl px-6 py-3.5 text-sm font-semibold transition-all shadow-sm',
+              'rounded-[16px] px-6 py-3.5 text-sm font-semibold transition-all shadow-sm',
               state === 'loading' || query.trim().length < 2
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95'
+                ? 'bg-paper-100 text-ink-500 cursor-not-allowed'
+                : 'bg-ink-950 text-gold-400 hover:opacity-90 active:scale-95'
             )}
           >
             {state === 'loading'
               ? <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                  <span className="h-4 w-4 rounded-full border-2 border-gold-400/30 border-t-gold-400 animate-spin" />
                   Buscando
                 </span>
               : 'Buscar'}
@@ -237,23 +201,23 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
         </div>
       </form>
 
-      {/* ─── ESTADO INICIAL ─── */}
+      {/* ESTADO INICIAL */}
       {state === 'idle' && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-8 space-y-6">
+        <div className="rounded-[24px] border border-paper-200 bg-white p-8 space-y-6">
           <div className="text-center space-y-2">
             <p className="text-4xl">🏪</p>
-            <p className="text-sm font-semibold text-gray-800">Inteligência de preços em tempo real</p>
-            <p className="text-xs text-gray-400 max-w-xs mx-auto">
+            <p className="text-sm font-extrabold text-ink-950">Inteligência de preços em tempo real</p>
+            <p className="text-xs text-ink-700 max-w-xs mx-auto">
               Busque um produto e veja estatísticas de anúncios reais do Mercado Livre para posicionar seu preço com precisão
             </p>
           </div>
           <div className="space-y-2">
-            <p className="text-[11px] text-gray-400 text-center">Sugestões</p>
+            <p className="text-[11px] text-ink-500 text-center font-semibold uppercase tracking-wide">Sugestões</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {QUICK_SEARCHES.map(s => (
                 <button key={s} type="button"
                   onClick={() => { setQuery(s); doSearch(s) }}
-                  className="rounded-full border border-gray-200 bg-gray-50 px-3.5 py-1.5 text-xs text-gray-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                  className="rounded-full border border-paper-200 bg-paper-100 px-3.5 py-1.5 text-xs text-ink-700 hover:border-ink-950/30 hover:bg-[#eef0fb] hover:text-ink-950 transition-colors">
                   {s}
                 </button>
               ))}
@@ -265,34 +229,34 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
               { icon: '📍', label: 'Posição do seu preço' },
               { icon: '📈', label: 'Distribuição de preços' },
             ].map(({ icon, label }) => (
-              <div key={label} className="rounded-xl bg-gray-50 p-3 text-center">
+              <div key={label} className="rounded-[16px] bg-paper-100 p-3 text-center border border-paper-200">
                 <p className="text-xl">{icon}</p>
-                <p className="text-[10px] text-gray-500 mt-1 leading-snug">{label}</p>
+                <p className="text-[10px] text-ink-700 mt-1 leading-snug">{label}</p>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* ─── LOADING ─── */}
+      {/* LOADING */}
       {state === 'loading' && (
         <div className="space-y-3">
-          <div className="flex items-center justify-center gap-2 py-1 text-sm text-gray-500">
-            <span className="h-3.5 w-3.5 rounded-full border-2 border-gray-300 border-t-blue-500 animate-spin" />
+          <div className="flex items-center justify-center gap-2 py-1 text-sm text-ink-700">
+            <span className="h-3.5 w-3.5 rounded-full border-2 border-ink-950/20 border-t-ink-950 animate-spin" />
             Buscando no Mercado Livre...
           </div>
           <div className="animate-pulse space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-3">
-                <div className="h-11 w-11 rounded-lg bg-gray-100 flex-shrink-0" />
+              <div key={i} className="flex items-center gap-3 rounded-[16px] border border-paper-200 bg-white p-3">
+                <div className="h-11 w-11 rounded-[10px] bg-paper-100 flex-shrink-0" />
                 <div className="flex-1 min-w-0 space-y-2">
-                  <div className="h-3 bg-gray-100 rounded w-4/5" />
-                  <div className="h-3 bg-gray-100 rounded w-3/5" />
-                  <div className="h-2 bg-gray-100 rounded w-1/3" />
+                  <div className="h-3 bg-paper-100 rounded w-4/5" />
+                  <div className="h-3 bg-paper-100 rounded w-3/5" />
+                  <div className="h-2 bg-paper-100 rounded w-1/3" />
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <div className="h-4 w-16 bg-gray-100 rounded" />
-                  <div className="h-5 w-12 bg-gray-100 rounded-lg" />
+                  <div className="h-4 w-16 bg-paper-100 rounded" />
+                  <div className="h-5 w-12 bg-paper-100 rounded-lg" />
                 </div>
               </div>
             ))}
@@ -300,51 +264,49 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
         </div>
       )}
 
-      {/* ─── ERRO ─── */}
+      {/* ERRO */}
       {state === 'error' && (
-        <div className="rounded-2xl border border-red-100 bg-red-50 p-6 text-center space-y-3">
+        <div className="rounded-[20px] border border-loss-200 bg-loss-50 p-6 text-center space-y-3">
           <p className="text-3xl">⚠️</p>
-          <p className="text-sm font-semibold text-red-700">Não foi possível buscar</p>
-          <p className="text-xs text-red-600 max-w-xs mx-auto">{errorMsg}</p>
+          <p className="text-sm font-semibold text-loss-500">Não foi possível buscar</p>
+          <p className="text-xs text-loss-500 opacity-80 max-w-xs mx-auto">{errorMsg}</p>
           <button onClick={() => doSearch(activeQuery)}
-            className="rounded-xl border border-red-200 bg-white px-5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50 transition-colors">
+            className="rounded-[12px] border border-loss-200 bg-white px-5 py-2 text-xs font-semibold text-loss-500 hover:bg-loss-50 transition-colors">
             Tentar novamente
           </button>
         </div>
       )}
 
-      {/* ─── SEM RESULTADOS ─── */}
+      {/* SEM RESULTADOS */}
       {state === 'done' && rawListings.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-10 text-center space-y-2">
+        <div className="rounded-[20px] border-2 border-dashed border-paper-200 bg-white p-10 text-center space-y-2">
           <p className="text-3xl">🔍</p>
-          <p className="text-sm font-semibold text-gray-600">Nenhum resultado para &ldquo;{activeQuery}&rdquo;</p>
-          <p className="text-xs text-gray-400">Tente um termo mais genérico ou verifique a ortografia</p>
+          <p className="text-sm font-semibold text-ink-900">Nenhum resultado para &ldquo;{activeQuery}&rdquo;</p>
+          <p className="text-xs text-ink-700">Tente um termo mais genérico ou verifique a ortografia</p>
         </div>
       )}
 
-      {/* ─── RESULTADOS ─── */}
+      {/* RESULTADOS */}
       {state === 'done' && rawListings.length > 0 && (
         <div className="space-y-4">
 
-          {/* Cabeçalho */}
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold text-gray-800">
+              <p className="text-sm font-extrabold text-ink-950">
                 {rawListings.length} anúncios — &ldquo;{activeQuery}&rdquo;
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Base limpa: <strong className="text-gray-600">{clean.length}</strong> anúncios · {conf}% confiança
+              <p className="text-xs text-ink-700 mt-0.5">
+                Base limpa: <strong className="text-ink-900">{clean.length}</strong> anúncios · {conf}% confiança
                 {duplicatesRemoved > 0 && ` · ${duplicatesRemoved} duplicados removidos`}
                 {wasCached && ' · cache'}
               </p>
             </div>
             <button onClick={() => setState('idle')}
-              className="shrink-0 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors">
+              className="shrink-0 text-xs font-semibold text-ink-950 hover:text-ink-900 transition-colors">
               ← Nova busca
             </button>
           </div>
 
-          {/* Filtros */}
           <div className="flex flex-wrap gap-2 items-center">
             <FilterChip active={opts.removeKits} onClick={() => setOpts(o => ({ ...o, removeKits: !o.removeKits }))}>
               Sem kits
@@ -352,12 +314,12 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
             <FilterChip active={opts.freeShippingOnly} onClick={() => setOpts(o => ({ ...o, freeShippingOnly: !o.freeShippingOnly }))}>
               Frete grátis
             </FilterChip>
-            <div className="flex overflow-hidden rounded-xl border border-gray-200">
+            <div className="flex overflow-hidden rounded-[12px] border border-paper-200">
               {(['all', 'new', 'used'] as ConditionFilter[]).map(c => (
                 <button key={c} onClick={() => setOpts(o => ({ ...o, condition: c }))}
                   className={cn(
-                    'px-3 py-1.5 text-xs font-medium transition-colors',
-                    opts.condition === c ? 'bg-blue-600 text-white' : 'bg-white text-gray-500 hover:bg-gray-50'
+                    'px-3 py-1.5 text-xs font-semibold transition-colors',
+                    opts.condition === c ? 'bg-ink-950 text-gold-400' : 'bg-white text-ink-700 hover:bg-paper-100'
                   )}>
                   {c === 'all' ? 'Todos' : c === 'new' ? 'Novo' : 'Usado'}
                 </button>
@@ -365,7 +327,6 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
             </div>
           </div>
 
-          {/* Análise */}
           {clean.length > 0 && (
             <>
               <MarketSummaryPanel
@@ -380,9 +341,8 @@ export default function MarketSearch({ initialSalePrice, onUsePrice, initialQuer
             </>
           )}
 
-          {/* Lista */}
           <div className="space-y-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-ink-500">
               Anúncios ({clean.length + excludedIds.size})
             </p>
             {rawListings.map(listing => (
@@ -407,10 +367,10 @@ function FilterChip({ active, onClick, children }: {
   return (
     <button onClick={onClick}
       className={cn(
-        'rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors',
+        'rounded-[12px] border px-3 py-1.5 text-xs font-semibold transition-colors',
         active
-          ? 'border-blue-500 bg-blue-50 text-blue-700'
-          : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'
+          ? 'border-ink-950 bg-primary-50 text-ink-950'
+          : 'border-paper-200 bg-white text-ink-700 hover:border-ink-950/30'
       )}>
       {children}
     </button>

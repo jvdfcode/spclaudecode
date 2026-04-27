@@ -66,7 +66,7 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
         aria-hidden="true"
         onClick={onClose}
         className={cn(
-          'fixed inset-0 z-40 bg-black/40 md:hidden transition-opacity duration-300',
+          'fixed inset-0 z-40 bg-ink-950/60 md:hidden transition-opacity duration-300',
           open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',
         )}
       />
