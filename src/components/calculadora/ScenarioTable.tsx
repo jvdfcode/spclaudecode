@@ -31,24 +31,24 @@ export default function ScenarioTable({ input, fees, targetMargin }: Props) {
   const recommendedIdx = scenarios.findIndex(s => s.marginPercent >= targetMargin * 100)
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+    <div className="rounded-[20px] border border-paper-200 bg-white overflow-hidden">
       {/* Cabeçalho — clicável para expandir/colapsar */}
       <button
         type="button"
         onClick={() => setExpanded(v => !v)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors text-left"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-paper-100 transition-colors text-left"
       >
         <div>
-          <h3 className="text-sm font-semibold text-gray-800">Simulador de Cenários</h3>
-          <p className="text-xs text-gray-400 mt-0.5">Variação de ±35% ao redor do preço base em passos de 5%</p>
+          <h3 className="text-sm font-extrabold text-ink-900">Simulador de Cenários</h3>
+          <p className="text-xs text-ink-500 mt-0.5">Variação de ±35% ao redor do preço base em passos de 5%</p>
         </div>
         <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-3 text-xs text-gray-400">
+          <div className="hidden sm:flex items-center gap-3 text-xs text-ink-500">
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-red-400" />Prejuízo</span>
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-yellow-400" />Atenção</span>
             <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-green-400" />Viável</span>
           </div>
-          <span className="text-xs text-blue-500 font-medium flex-shrink-0">
+          <span className="text-xs text-ink-950 font-semibold flex-shrink-0">
             {expanded ? '▲ Fechar' : '▼ Ver simulação'}
           </span>
         </div>
@@ -57,10 +57,10 @@ export default function ScenarioTable({ input, fees, targetMargin }: Props) {
       {/* Conteúdo expansível */}
       {expanded && (
         <>
-          <div className="overflow-x-auto border-t border-gray-100">
+          <div className="overflow-x-auto border-t border-paper-200">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 bg-gray-50 text-xs text-gray-400 uppercase tracking-wide">
+                <tr className="border-b border-paper-200 bg-paper-100 text-xs text-ink-500 uppercase tracking-wide">
                   <th className="px-4 py-3 text-left font-medium">Preço de Venda</th>
                   <th className="px-4 py-3 text-right font-medium">Lucro</th>
                   <th className="px-4 py-3 text-right font-medium">Margem</th>
@@ -68,7 +68,7 @@ export default function ScenarioTable({ input, fees, targetMargin }: Props) {
                   <th className="px-4 py-3 text-center font-medium w-32"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-paper-100">
                 {scenarios.map((s, idx) => {
                   const z = zoneStyle[s.classification]
                   const isCurrent = Math.abs(s.salePrice - input.salePrice) < 0.01
@@ -78,9 +78,9 @@ export default function ScenarioTable({ input, fees, targetMargin }: Props) {
                     <tr key={idx} className={cn(
                       'transition-colors',
                       z.row,
-                      isCurrent && 'ring-2 ring-inset ring-blue-400',
+                      isCurrent && 'ring-2 ring-inset ring-ink-950',
                     )}>
-                      <td className="px-4 py-2.5 font-medium text-gray-800 tabular-nums">
+                      <td className="px-4 py-2.5 font-medium text-ink-900 tabular-nums">
                         <div className="flex items-center gap-2">
                           <span className={cn('h-2 w-2 rounded-full flex-shrink-0', z.dot)} />
                           {formatBRL(s.salePrice)}
@@ -113,7 +113,7 @@ export default function ScenarioTable({ input, fees, targetMargin }: Props) {
               </tbody>
             </table>
           </div>
-          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 text-xs text-gray-400">
+          <div className="px-5 py-3 border-t border-paper-200 bg-paper-100 text-xs text-ink-500">
             ★ Recomendado = primeiro preço que atinge {formatPercent(targetMargin * 100)} de margem alvo
           </div>
         </>

@@ -17,27 +17,9 @@ const positionLabels = {
 } as const
 
 const optionCfg = {
-  economico: {
-    icon: '💰',
-    base: 'border-blue-200 bg-blue-50',
-    active: 'border-blue-500 ring-2 ring-blue-200 bg-blue-50',
-    header: 'text-blue-800',
-    badge: 'bg-blue-600',
-  },
-  competitivo: {
-    icon: '🎯',
-    base: 'border-green-200 bg-green-50',
-    active: 'border-green-500 ring-2 ring-green-200 bg-green-50',
-    header: 'text-green-800',
-    badge: 'bg-green-600',
-  },
-  premium: {
-    icon: '⭐',
-    base: 'border-orange-200 bg-orange-50',
-    active: 'border-orange-500 ring-2 ring-orange-200 bg-orange-50',
-    header: 'text-orange-800',
-    badge: 'bg-orange-600',
-  },
+  economico:  { icon: '💰', label: 'Econômico'  },
+  competitivo:{ icon: '🎯', label: 'Competitivo' },
+  premium:    { icon: '⭐', label: 'Premium'     },
 } as const
 
 export default function PositionOptions({ options, selected, onSelect }: Props) {
@@ -50,6 +32,9 @@ export default function PositionOptions({ options, selected, onSelect }: Props) 
       {options.map(option => {
         const cfg = optionCfg[option.id]
         const isSelected = selected === option.id
+        const marginGood = option.marginPercent >= 20
+        const marginWarn = option.marginPercent >= 0 && option.marginPercent < 20
+        const marginBad  = option.marginPercent < 0
 
         return (
           <button
@@ -58,34 +43,40 @@ export default function PositionOptions({ options, selected, onSelect }: Props) 
             aria-checked={isSelected}
             onClick={() => onSelect(option.id)}
             className={cn(
-              'rounded-xl border-2 p-4 text-left transition-all focus:outline-none focus:ring-2 focus:ring-blue-300',
-              isSelected ? cfg.active : cn(cfg.base, 'hover:border-opacity-60 cursor-pointer')
+              'relative rounded-[20px] border-2 p-4 text-left transition-all focus:outline-none overflow-hidden',
+              isSelected
+                ? 'border-ink-950 bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] shadow-[0_8px_24px_rgba(45,50,119,0.12)]'
+                : 'border-paper-200 bg-white hover:border-paper-200 hover:shadow-[0_4px_16px_rgba(45,50,119,0.06)] cursor-pointer'
             )}
           >
-            <div className="flex items-start justify-between mb-2">
+            {isSelected && (
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+            )}
+
+            <div className="flex items-start justify-between mb-3">
               <span className="text-xl" aria-hidden="true">{cfg.icon}</span>
               {isSelected && (
-                <span className={cn('text-[10px] font-bold text-white rounded-full px-2 py-0.5', cfg.badge)}>
+                <span className="text-[10px] font-extrabold text-gold-400 bg-ink-950 rounded-full px-2 py-0.5">
                   Selecionado
                 </span>
               )}
             </div>
 
-            <p className={cn('text-sm font-bold', cfg.header)}>{option.label}</p>
-            <p className="text-xs text-gray-500 mt-0.5 leading-snug">{option.description}</p>
+            <p className="text-sm font-extrabold text-ink-950">{option.label}</p>
+            <p className="text-xs text-ink-700 mt-0.5 leading-snug">{option.description}</p>
 
-            <div className="mt-3 space-y-1">
-              <p className="text-xl font-bold tabular-nums text-gray-900">
+            <div className="mt-3 space-y-0.5">
+              <p className="text-xl font-extrabold tabular-nums text-ink-950">
                 {formatBRL(option.suggestedPrice)}
               </p>
               <p className={cn(
-                'text-xs font-medium',
-                option.marginPercent >= 0 ? 'text-gray-600' : 'text-red-500'
+                'text-xs font-semibold',
+                marginGood ? 'text-profit-500' : marginWarn ? 'text-warn-500' : 'text-loss-500'
               )}>
                 Margem: {formatPercent(option.marginPercent)}
               </p>
               {option.marketPosition && (
-                <p className="text-[10px] text-gray-400 mt-0.5">
+                <p className="text-[10px] text-ink-500 mt-0.5">
                   {positionLabels[option.marketPosition]}
                 </p>
               )}
