@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { calculateViability } from '@/lib/calculations'
+import { trackFunnel } from '@/lib/analytics/events'
 import type { ListingType, ViabilityInput, ViabilityResult } from '@/types'
 import { captureLeadAction } from '@/app/calculadora-livre/actions'
 
@@ -70,6 +71,12 @@ export default function LeadMagnetForm() {
       }
       const r = calculateViability(input)
       setResult(r)
+      trackFunnel('lead_magnet_calculated', {
+        marginPercent: Number(r.metrics.marginPercent.toFixed(4)),
+        classification: r.classification,
+        listingType: r.input.listingType,
+        installments: r.input.installments,
+      })
     } catch (err) {
       toast.error('Não foi possível calcular. Verifique os valores informados.')
       console.error(err)
@@ -102,6 +109,10 @@ export default function LeadMagnetForm() {
       }
 
       setSubmitted(true)
+      trackFunnel('lead_captured', {
+        source: 'lead-magnet',
+        hasContext: Boolean(result),
+      })
       toast.success('Recebemos! Em instantes você vai receber o link no seu email.')
     })
   }
