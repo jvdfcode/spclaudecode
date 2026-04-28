@@ -1,11 +1,7 @@
+@import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
-@tailwind base;
 
 @custom-variant dark (&:is(.dark *));
-@tailwind components;
-@tailwind utilities;
 
 /* ============================================================
    HALO DESIGN SYSTEM v1.1.0 — Tokens canônicos
@@ -27,6 +23,53 @@
   --radius-2xl: var(--r-2xl);
   --radius-full: var(--r-pill);
 
+  /* ===== Halo v1.1 — tokens de cor expostos como classes Tailwind v4 =====
+     Para Tailwind v4, classe `bg-halo-orange` só existe se houver
+     `--color-halo-orange` aqui no @theme. Tokens raw vivem em :root abaixo. */
+
+  /* 5 âncoras */
+  --color-halo-black:  var(--halo-black);
+  --color-halo-navy:   var(--halo-navy);
+  --color-halo-orange: var(--halo-orange);
+  --color-halo-gray:   var(--halo-gray);
+  --color-halo-white:  var(--halo-white);
+
+  /* Escala Eclipse */
+  --color-halo-navy-90: var(--halo-navy-90);
+  --color-halo-navy-80: var(--halo-navy-80);
+  --color-halo-navy-60: var(--halo-navy-60);
+  --color-halo-navy-40: var(--halo-navy-40);
+  --color-halo-navy-20: var(--halo-navy-20);
+  --color-halo-navy-10: var(--halo-navy-10);
+
+  /* Escala Solar */
+  --color-halo-orange-100: var(--halo-orange-100);
+  --color-halo-orange-90:  var(--halo-orange-90);
+  --color-halo-orange-80:  var(--halo-orange-80);
+  --color-halo-orange-30:  var(--halo-orange-30);
+  --color-halo-orange-15:  var(--halo-orange-15);
+  --color-halo-orange-05:  var(--halo-orange-05);
+
+  /* Escala Mist */
+  --color-halo-gray-90: var(--halo-gray-90);
+  --color-halo-gray-70: var(--halo-gray-70);
+  --color-halo-gray-50: var(--halo-gray-50);
+  --color-halo-gray-30: var(--halo-gray-30);
+  --color-halo-gray-15: var(--halo-gray-15);
+  --color-halo-gray-05: var(--halo-gray-05);
+
+  /* Aliases semânticos diretos (uso em código antigo) */
+  --color-ink:         var(--ink);
+  --color-ink-soft:    var(--ink-soft);
+  --color-ink-inverse: var(--ink-inverse);
+  --color-line:        var(--line);
+  --color-line-soft:   var(--line-soft);
+  --color-canvas:      var(--bg);
+  --color-elevated:    var(--bg-elevated);
+  --color-eclipse:     var(--bg-inverse);
+  --color-accent:      var(--bg-accent);
+  --color-paper:       var(--bg);
+
   /* shadcn slots — apontam para Halo */
   --color-background: var(--bg);
   --color-foreground: var(--ink);
@@ -40,7 +83,6 @@
   --color-secondary-foreground: var(--ink-inverse);
   --color-muted: var(--halo-gray-15);
   --color-muted-foreground: var(--ink-soft);
-  --color-accent: var(--bg-accent);
   --color-accent-foreground: var(--ink);
   --color-destructive: var(--halo-navy);
   --color-border: var(--line);
