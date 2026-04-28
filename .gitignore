@@ -34,3 +34,4 @@ coverage/
 .aiox/sessions/
 .env*.local
 supabase/.temp/
+tests/output/
