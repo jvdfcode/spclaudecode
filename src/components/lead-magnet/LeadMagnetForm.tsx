@@ -166,7 +166,7 @@ export default function LeadMagnetForm() {
                 placeholder="50,00"
                 value={productCost}
                 onChange={(e) => setProductCost(e.target.value)}
-                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
+                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:border-halo-orange focus:ring-4 focus:ring-halo-orange-15 focus:bg-halo-orange-05"
               />
             </div>
           </div>
@@ -184,7 +184,7 @@ export default function LeadMagnetForm() {
                 placeholder="89,90"
                 value={salePrice}
                 onChange={(e) => setSalePrice(e.target.value)}
-                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
+                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:border-halo-orange focus:ring-4 focus:ring-halo-orange-15 focus:bg-halo-orange-05"
               />
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function LeadMagnetForm() {
                   aria-checked={checked}
                   onClick={() => setListingType(opt.value)}
                   className={
-                    'rounded-xl border-2 px-3 py-2 text-sm font-medium transition-all ' +
+                    'rounded-xl border-2 px-4 py-3 min-h-[44px] text-sm font-medium transition-all ' +
                     (checked
                       ? 'border-halo-navy bg-halo-navy text-halo-orange'
                       : 'border-halo-gray bg-white text-halo-navy-60 hover:border-halo-navy-60')
@@ -226,7 +226,7 @@ export default function LeadMagnetForm() {
             id="lm-installments"
             value={installments}
             onChange={(e) => setInstallments(Number(e.target.value))}
-            className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
+            className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:border-halo-orange focus:ring-4 focus:ring-halo-orange-15 focus:bg-halo-orange-05"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
@@ -238,7 +238,8 @@ export default function LeadMagnetForm() {
 
         <button
           type="submit"
-          className="btn-genie w-full rounded-xl bg-halo-navy px-5 py-3 text-sm font-extrabold text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98]"
+          aria-busy={false}
+          className="btn-genie w-full min-h-[44px] rounded-xl bg-halo-navy px-5 py-3 text-sm font-extrabold text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98]"
         >
           Calcular viabilidade
         </button>
@@ -330,7 +331,7 @@ export default function LeadMagnetForm() {
                   aria-invalid={Boolean(emailError) || undefined}
                   aria-describedby={emailError ? 'lm-email-error' : undefined}
                   disabled={pending}
-                  className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20 disabled:opacity-60"
+                  className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:border-halo-orange focus:ring-4 focus:ring-halo-orange-15 focus:bg-halo-orange-05 disabled:opacity-60"
                 />
                 {emailError && (
                   <span id="lm-email-error" className="block text-xs text-halo-navy">
@@ -338,7 +339,7 @@ export default function LeadMagnetForm() {
                   </span>
                 )}
               </div>
-              <label className="flex items-start gap-2 text-xs text-halo-navy-60">
+              <label className="flex items-start gap-2 min-h-[44px] text-xs text-halo-navy-60">
                 <input
                   type="checkbox"
                   checked={optin}
