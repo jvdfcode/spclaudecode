@@ -133,6 +133,7 @@ export const GenieButton = forwardRef<HTMLButtonElement, GenieButtonProps>(
       <button
         ref={ref}
         disabled={isDisabled}
+        aria-busy={loading}
         onClick={handleClick}
         className={cn(
           /* estrutura */

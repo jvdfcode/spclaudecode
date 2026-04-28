@@ -4,24 +4,30 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { fieldErrors, loginSchema } from '@/lib/validations/authSchemas'
 
 export default function LoginForm() {
   const router = useRouter()
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')
+  const [fieldErrs, setFieldErrs] = useState<Record<string, string>>({})
   const [loading, setLoading]   = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setFieldErrs({})
 
-    if (!email.trim()) { setError('Informe seu email.'); return }
-    if (!password)     { setError('Informe sua senha.'); return }
+    const parsed = loginSchema.safeParse({ email, password })
+    if (!parsed.success) {
+      setFieldErrs(fieldErrors(parsed))
+      return
+    }
 
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
     if (error) {
       setError('Email ou senha incorretos. Verifique e tente novamente.')
@@ -50,7 +56,14 @@ export default function LoginForm() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             disabled={loading}
+            aria-invalid={Boolean(fieldErrs.email) || undefined}
+            aria-describedby={fieldErrs.email ? 'email-error' : undefined}
           />
+          {fieldErrs.email && (
+            <span id="email-error" className="auth-strength-label" style={{ color: '#ef4444' }}>
+              {fieldErrs.email}
+            </span>
+          )}
         </div>
 
         <div className="auth-field">
@@ -69,7 +82,14 @@ export default function LoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             disabled={loading}
+            aria-invalid={Boolean(fieldErrs.password) || undefined}
+            aria-describedby={fieldErrs.password ? 'password-error' : undefined}
           />
+          {fieldErrs.password && (
+            <span id="password-error" className="auth-strength-label" style={{ color: '#ef4444' }}>
+              {fieldErrs.password}
+            </span>
+          )}
         </div>
 
         {error && (
@@ -81,7 +101,12 @@ export default function LoginForm() {
           </div>
         )}
 
-        <button type="submit" className="auth-btn" disabled={loading}>
+        <button
+          type="submit"
+          className="auth-btn"
+          disabled={loading}
+          aria-busy={loading}
+        >
           {loading ? (
             <>
               <span className="auth-btn-spinner" />
