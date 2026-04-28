@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface MobileDrawerProps {
   open: boolean
@@ -51,6 +52,7 @@ const navItems = [
 
 export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const pathname = usePathname()
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -58,6 +60,10 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [open, onClose])
+
+  // Focus trap + retorno de foco ao trigger ao fechar (DEBT-FE-NEW-2)
+  // Usa data-app-shell como parent inert (esconde o resto da árvore para SR/teclado).
+  useFocusTrap(panelRef, open, '[data-app-shell] > div:not([role="dialog"])')
 
   return (
     <>
@@ -73,9 +79,11 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
 
       {/* Painel lateral */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu de navegação"
+        tabIndex={-1}
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-64 flex flex-col md:hidden',
           'bg-white border-r border-paper-200 shadow-[1px_0_0_0_rgba(45,50,119,0.04)]',

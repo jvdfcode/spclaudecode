@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Manrope } from 'next/font/google'
 import { Toaster } from 'sonner'
+import SkipLink from '@/components/layout/SkipLink'
 import './globals.css'
 
 const manrope = Manrope({ subsets: ['latin'], variable: '--font-sans', weight: ['400', '500', '600', '700', '800'] })
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={manrope.variable}>
+        <SkipLink />
         {children}
         <Toaster richColors position="top-right" duration={3000} />
       </body>
