@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { CircleAlert, CircleCheckBig, CircleX } from 'lucide-react'
 import { toast } from 'sonner'
 import { calculateViability } from '@/lib/calculations'
 import { trackFunnel } from '@/lib/analytics/events'
+import { ProfitabilityBadge } from '@/components/ui/ProfitabilityBadge'
 import type { ListingType, ViabilityInput, ViabilityResult } from '@/types'
 import { captureLeadAction } from '@/app/calculadora-livre/actions'
 
@@ -117,16 +119,30 @@ export default function LeadMagnetForm() {
     })
   }
 
+  // Halo DS v1.1 §12.5 — viabilidade comunicada com 3 sinais simultâneos:
+  // cor (Solar/Eclipse), ícone (CircleCheckBig/Alert/X) e texto explícito.
   const classificationCopy = (() => {
     if (!result) return null
     const margin = result.metrics.marginPercent * 100
     if (result.classification === 'viable') {
-      return { tone: 'profit' as const, headline: `Margem de ${margin.toFixed(1)}% — viável.` }
+      return {
+        tone: 'profit' as const,
+        headline: `Margem de ${margin.toFixed(1)}% — viável.`,
+        icon: <CircleCheckBig size={20} strokeWidth={2.2} aria-hidden="true" />,
+      }
     }
     if (result.classification === 'attention') {
-      return { tone: 'warn' as const, headline: `Margem de ${margin.toFixed(1)}% — atenção.` }
+      return {
+        tone: 'warn' as const,
+        headline: `Margem de ${margin.toFixed(1)}% — atenção.`,
+        icon: <CircleAlert size={20} strokeWidth={2.2} aria-hidden="true" />,
+      }
     }
-    return { tone: 'loss' as const, headline: `Margem de ${margin.toFixed(1)}% — inviável.` }
+    return {
+      tone: 'loss' as const,
+      headline: `Margem de ${margin.toFixed(1)}% — inviável.`,
+      icon: <CircleX size={20} strokeWidth={2.2} aria-hidden="true" />,
+    }
   })()
 
   return (
@@ -237,15 +253,50 @@ export default function LeadMagnetForm() {
               ? 'border-halo-orange-30 bg-halo-orange-15'
               : classificationCopy.tone === 'warn'
               ? 'border-halo-orange-30 bg-halo-orange-05'
-              : 'border-halo-navy-20 bg-halo-gray-15')
+              : 'border-halo-navy bg-halo-navy text-halo-orange')
           }
         >
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-halo-navy-60">
-              Resultado
-            </p>
-            <p className="mt-1 text-2xl font-extrabold text-halo-navy">{classificationCopy.headline}</p>
-            <p className="mt-2 text-sm text-halo-navy-60">
+            <div className="flex items-center justify-between gap-3">
+              <p
+                className={
+                  'text-xs font-extrabold uppercase tracking-[0.18em] ' +
+                  (classificationCopy.tone === 'loss' ? 'text-halo-orange' : 'text-halo-navy-60')
+                }
+              >
+                Resultado
+              </p>
+              <ProfitabilityBadge classification={result.classification} />
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <span
+                className={
+                  'shrink-0 ' +
+                  (classificationCopy.tone === 'profit'
+                    ? 'text-halo-orange-80'
+                    : classificationCopy.tone === 'warn'
+                    ? 'text-halo-orange-100'
+                    : 'text-halo-orange')
+                }
+                aria-hidden="true"
+              >
+                {classificationCopy.icon}
+              </span>
+              <p
+                className={
+                  'text-2xl font-extrabold ' +
+                  (classificationCopy.tone === 'loss' ? 'text-halo-orange' : 'text-halo-navy')
+                }
+              >
+                {classificationCopy.headline}
+              </p>
+            </div>
+            <p
+              className={
+                'mt-2 text-sm ' +
+                (classificationCopy.tone === 'loss' ? 'text-halo-navy-20' : 'text-halo-navy-60')
+              }
+            >
               Lucro líquido por unidade: <strong>{brl(result.metrics.profit)}</strong> · ROI{' '}
               <strong>{(result.metrics.roiPercent * 100).toFixed(1)}%</strong>
             </p>
