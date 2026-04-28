@@ -46,28 +46,28 @@ function PlanCard({ plan, onClick }: { plan: PricingPlan; onClick: () => void })
       className={
         'relative rounded-2xl border-2 p-6 transition-all ' +
         (plan.highlight
-          ? 'border-ink-950 bg-white shadow-[0_8px_24px_rgba(45,50,119,0.12)]'
-          : 'border-paper-200 bg-white hover:border-ink-700')
+          ? 'border-halo-navy bg-white shadow-[0_8px_24px_rgba(45,50,119,0.12)]'
+          : 'border-halo-gray bg-white hover:border-halo-navy-60')
       }
     >
       {plan.highlight && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-ink-950 text-gold-400 text-[10px] font-extrabold uppercase tracking-[0.16em] px-3 py-1">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-halo-navy text-halo-orange text-[10px] font-extrabold uppercase tracking-[0.16em] px-3 py-1">
           Mais popular
         </span>
       )}
 
-      <h2 className="text-lg font-extrabold text-ink-950">{plan.name}</h2>
+      <h2 className="text-lg font-extrabold text-halo-navy">{plan.name}</h2>
       <div className="mt-3 flex items-baseline gap-1">
-        <span className="text-3xl font-extrabold text-ink-950 tabular-nums">{priceLabel}</span>
+        <span className="text-3xl font-extrabold text-halo-navy tabular-nums">{priceLabel}</span>
         {plan.monthlyPrice != null && plan.monthlyPrice > 0 && (
-          <span className="text-sm text-ink-500">/mês</span>
+          <span className="text-sm text-halo-navy-40">/mês</span>
         )}
       </div>
 
-      <ul className="mt-5 space-y-2 text-sm text-ink-700">
+      <ul className="mt-5 space-y-2 text-sm text-halo-navy-60">
         {plan.features.map((feat) => (
           <li key={feat} className="flex items-start gap-2">
-            <span className="mt-0.5 text-profit-500" aria-hidden="true">
+            <span className="mt-0.5 text-halo-orange-80" aria-hidden="true">
               ✓
             </span>
             <span>{feat}</span>
@@ -81,8 +81,8 @@ function PlanCard({ plan, onClick }: { plan: PricingPlan; onClick: () => void })
         className={
           'btn-genie mt-6 inline-flex w-full items-center justify-center rounded-xl px-5 py-2.5 text-sm font-extrabold transition-all ' +
           (plan.highlight
-            ? 'bg-ink-950 text-gold-400 shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:-translate-y-[2px]'
-            : 'border-2 border-ink-950 text-ink-950 hover:bg-ink-950 hover:text-white')
+            ? 'bg-halo-navy text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:-translate-y-[2px]'
+            : 'border-2 border-halo-navy text-halo-navy hover:bg-halo-navy hover:text-white')
         }
       >
         {plan.cta}

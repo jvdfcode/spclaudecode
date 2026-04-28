@@ -14,10 +14,10 @@ export default function SkipLink() {
         sr-only
         focus:not-sr-only
         focus:fixed focus:top-3 focus:left-3 focus:z-[100]
-        focus:rounded-lg focus:bg-ink-950 focus:px-4 focus:py-2
+        focus:rounded-lg focus:bg-halo-navy focus:px-4 focus:py-2
         focus:text-sm focus:font-semibold focus:text-white
         focus:shadow-lg focus:outline-none
-        focus:ring-2 focus:ring-gold-400 focus:ring-offset-2
+        focus:ring-2 focus:ring-halo-orange focus:ring-offset-2
       "
     >
       Pular para o conteúdo

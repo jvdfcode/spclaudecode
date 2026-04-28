@@ -13,19 +13,19 @@ export default async function KpisPage() {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-ink-700">
+        <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-halo-navy-60">
           SmartPreço · KPIs
         </p>
-        <h1 className="mt-1 text-2xl md:text-3xl font-extrabold text-ink-950">
+        <h1 className="mt-1 text-2xl md:text-3xl font-extrabold text-halo-navy">
           Funil de aquisição (últimos {kpis.windowDays} dias)
         </h1>
-        <p className="mt-1 text-xs text-ink-500">
+        <p className="mt-1 text-xs text-halo-navy-40">
           Atualizado em {new Date(kpis.generatedAt).toLocaleString('pt-BR')}
         </p>
       </header>
 
       <section aria-labelledby="aquisicao" className="space-y-3">
-        <h2 id="aquisicao" className="text-sm font-extrabold uppercase tracking-wide text-ink-700">
+        <h2 id="aquisicao" className="text-sm font-extrabold uppercase tracking-wide text-halo-navy-60">
           Aquisição
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -44,7 +44,7 @@ export default async function KpisPage() {
       </section>
 
       <section aria-labelledby="conversao" className="space-y-3">
-        <h2 id="conversao" className="text-sm font-extrabold uppercase tracking-wide text-ink-700">
+        <h2 id="conversao" className="text-sm font-extrabold uppercase tracking-wide text-halo-navy-60">
           Conversão
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -69,7 +69,7 @@ export default async function KpisPage() {
       </section>
 
       <section aria-labelledby="ab-test" className="space-y-3">
-        <h2 id="ab-test" className="text-sm font-extrabold uppercase tracking-wide text-ink-700">
+        <h2 id="ab-test" className="text-sm font-extrabold uppercase tracking-wide text-halo-navy-60">
           A/B test de pricing (cliques por variante)
         </h2>
         <div className="grid gap-4 md:grid-cols-3">
@@ -86,7 +86,7 @@ export default async function KpisPage() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-paper-200 bg-white p-6 text-sm text-ink-700 leading-relaxed">
+      <section className="rounded-2xl border border-halo-gray bg-white p-6 text-sm text-halo-navy-60 leading-relaxed">
         <p>
           Esses 4 KPIs são o baseline da Story MKT-001-5 (Bloco I — validação de mercado).
           Eles alimentam o output documental{' '}
@@ -119,13 +119,13 @@ function KpiCard({
       className={
         'rounded-2xl border-2 p-5 transition-all ' +
         (highlight
-          ? 'border-ink-950 bg-white shadow-[0_4px_14px_rgba(45,50,119,0.08)]'
-          : 'border-paper-200 bg-white')
+          ? 'border-halo-navy bg-white shadow-[0_4px_14px_rgba(45,50,119,0.08)]'
+          : 'border-halo-gray bg-white')
       }
     >
-      <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink-500">{label}</p>
-      <p className="mt-2 text-2xl font-extrabold tabular-nums text-ink-950">{value}</p>
-      {hint && <p className="mt-1 text-xs text-ink-700">{hint}</p>}
+      <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-halo-navy-40">{label}</p>
+      <p className="mt-2 text-2xl font-extrabold tabular-nums text-halo-navy">{value}</p>
+      {hint && <p className="mt-1 text-xs text-halo-navy-60">{hint}</p>}
     </div>
   )
 }

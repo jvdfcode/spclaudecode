@@ -90,8 +90,8 @@ export default function DecisionPanel({ input, result }: Props) {
     <div className="space-y-5">
       {/* Cabeçalho */}
       <div>
-        <h3 className="text-base font-extrabold text-ink-950">Decisão de Preço</h3>
-        <p className="text-xs text-ink-700 mt-0.5">
+        <h3 className="text-base font-extrabold text-halo-navy">Decisão de Preço</h3>
+        <p className="text-xs text-halo-navy-60 mt-0.5">
           Escolha uma estratégia de posicionamento com base no seu custo
           {summary.hasMarketData ? ' e no mercado real.' : '.'}
         </p>
@@ -99,7 +99,7 @@ export default function DecisionPanel({ input, result }: Props) {
 
       {/* Aviso sem dados de mercado */}
       {!summary.hasMarketData && (
-        <div className="rounded-[12px] border border-[#cfd4ff] bg-[#eef0fb] px-3 py-2.5 text-xs text-ink-950 flex items-start gap-2">
+        <div className="rounded-[12px] border border-[#cfd4ff] bg-[#eef0fb] px-3 py-2.5 text-xs text-halo-navy flex items-start gap-2">
           <span aria-hidden="true">💡</span>
           <span>
             Faça uma busca no <strong>Bloco Mercado</strong> para incluir dados reais da concorrência na análise.
@@ -112,8 +112,8 @@ export default function DecisionPanel({ input, result }: Props) {
 
       {/* Resumo da análise (visível quando há seleção) */}
       {selectedOption && (
-        <div className="rounded-[20px] border border-paper-200 bg-white p-4 space-y-3">
-          <p className="text-[10px] font-bold text-ink-500 uppercase tracking-widest">Resumo da análise</p>
+        <div className="rounded-[20px] border border-halo-gray bg-white p-4 space-y-3">
+          <p className="text-[10px] font-bold text-halo-navy-40 uppercase tracking-widest">Resumo da análise</p>
           <div className={cn(
             'grid gap-2 text-center',
             summary.hasMarketData && summary.marketMedian !== null ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2'
@@ -149,8 +149,8 @@ export default function DecisionPanel({ input, result }: Props) {
           className={cn(
             'w-full rounded-xl py-3 text-sm font-semibold transition-colors',
             selectedOption
-              ? 'bg-ink-950 text-gold-400 hover:bg-ink-900 cursor-pointer'
-              : 'bg-paper-100 text-ink-500 cursor-not-allowed'
+              ? 'bg-halo-navy text-halo-orange hover:bg-halo-black cursor-pointer'
+              : 'bg-halo-gray-15 text-halo-navy-40 cursor-not-allowed'
           )}
         >
           {selectedOption ? `Adotar preço ${selectedOption.label} →` : 'Selecione uma opção'}
@@ -159,10 +159,10 @@ export default function DecisionPanel({ input, result }: Props) {
 
       {/* Formulário de confirmação */}
       {(adoptState === 'form' || adoptState === 'saving' || adoptState === 'error') && selectedOption && (
-        <div className="rounded-[20px] border border-paper-200 bg-white p-4 space-y-3 shadow-[0_4px_16px_rgba(45,50,119,0.06)]">
-          <p className="text-sm font-semibold text-ink-900">
+        <div className="rounded-[20px] border border-halo-gray bg-white p-4 space-y-3 shadow-[0_4px_16px_rgba(45,50,119,0.06)]">
+          <p className="text-sm font-semibold text-halo-black">
             Adotar{' '}
-            <span className="font-extrabold text-ink-950">{formatBRL(selectedOption.suggestedPrice)}</span>
+            <span className="font-extrabold text-halo-navy">{formatBRL(selectedOption.suggestedPrice)}</span>
             {' '}— {selectedOption.label}
           </p>
 
@@ -207,15 +207,15 @@ export default function DecisionPanel({ input, result }: Props) {
               className={cn(
                 'flex-1 rounded-lg py-2 text-sm font-semibold transition-colors',
                 skuName.trim() && adoptState !== 'saving'
-                  ? 'bg-ink-950 text-gold-400 hover:bg-ink-900'
-                  : 'bg-paper-100 text-ink-500 cursor-not-allowed'
+                  ? 'bg-halo-navy text-halo-orange hover:bg-halo-black'
+                  : 'bg-halo-gray-15 text-halo-navy-40 cursor-not-allowed'
               )}
             >
               {adoptState === 'saving' ? 'Salvando...' : 'Confirmar adoção'}
             </button>
             <button
               onClick={() => { setAdoptState('idle'); setErrorMsg('') }}
-              className="px-4 rounded-[12px] border border-paper-200 text-sm text-ink-700 hover:bg-paper-100 transition-colors"
+              className="px-4 rounded-[12px] border border-halo-gray text-sm text-halo-navy-60 hover:bg-halo-gray-15 transition-colors"
             >
               Cancelar
             </button>
@@ -235,11 +235,11 @@ function SummaryItem({
   negative?: boolean
 }) {
   return (
-    <div className="rounded-[12px] border border-paper-200 bg-paper-100 p-2.5">
-      <p className="text-[10px] text-ink-500">{label}</p>
+    <div className="rounded-[12px] border border-halo-gray bg-halo-gray-15 p-2.5">
+      <p className="text-[10px] text-halo-navy-40">{label}</p>
       <p className={cn(
         'text-sm font-bold tabular-nums mt-0.5',
-        accent ? 'text-ink-950' : negative ? 'text-loss-500' : 'text-ink-900'
+        accent ? 'text-halo-navy' : negative ? 'text-halo-navy' : 'text-halo-black'
       )}>
         {value}
       </p>

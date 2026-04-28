@@ -41,16 +41,16 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="relative hidden md:flex h-full w-56 flex-col border-r border-paper-200 bg-white px-3 py-5 flex-shrink-0 shadow-[1px_0_0_0_rgba(45,50,119,0.04)]">
+    <aside className="relative hidden md:flex h-full w-56 flex-col border-r border-halo-gray bg-white px-3 py-5 flex-shrink-0 shadow-[1px_0_0_0_rgba(45,50,119,0.04)]">
       {/* Barra dourada no topo */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
 
       {/* Logo desktop */}
       <div className="mb-7 px-1 hidden md:flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 text-gold-400 text-sm flex-shrink-0 shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-halo-navy text-halo-orange text-sm flex-shrink-0 shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
           💰
         </div>
-        <span className="text-sm font-extrabold tracking-[-0.02em] text-ink-950">SmartPreço</span>
+        <span className="text-sm font-extrabold tracking-[-0.02em] text-halo-navy">SmartPreço</span>
       </div>
 
       <nav className="flex flex-1 flex-col gap-0.5" aria-label="Navegação principal">
@@ -59,8 +59,8 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="hidden md:block pt-4 border-t border-paper-200">
-        <p className="text-[10px] text-ink-500 text-center font-medium">SmartPreço</p>
+      <div className="hidden md:block pt-4 border-t border-halo-gray">
+        <p className="text-[10px] text-halo-navy-40 text-center font-medium">SmartPreço</p>
       </div>
     </aside>
   )

@@ -133,10 +133,10 @@ export default function CostForm() {
         <div className="space-y-2">
         <div className="rounded-[20px] border border-[#cfd4ff] bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.06)]">
           <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-950 text-xs font-extrabold text-gold-400">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-halo-navy text-xs font-extrabold text-halo-orange">
               3
             </span>
-            <span className="text-sm font-extrabold text-ink-950">Custos e precificação</span>
+            <span className="text-sm font-extrabold text-halo-navy">Custos e precificação</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Field
@@ -367,10 +367,10 @@ export default function CostForm() {
             <SaveSkuButton input={input} result={result} />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-paper-200 bg-paper-100/40 p-10 text-center gap-3">
+          <div className="flex flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-halo-gray bg-halo-gray-15/40 p-10 text-center gap-3">
             <span className="text-4xl">🧮</span>
-            <p className="text-sm font-extrabold text-ink-900">Calculadora pronta</p>
-            <p className="text-xs text-ink-500">Preencha o <strong>custo do produto</strong> e o <strong>preço de venda</strong> acima para ver o resultado</p>
+            <p className="text-sm font-extrabold text-halo-black">Calculadora pronta</p>
+            <p className="text-xs text-halo-navy-40">Preencha o <strong>custo do produto</strong> e o <strong>preço de venda</strong> acima para ver o resultado</p>
           </div>
         )}
       </div>
@@ -378,12 +378,12 @@ export default function CostForm() {
 
     {/* ─── Etapa 4: Cenários com preços reais do ML ─── */}
     {mlSummary && mlSummary.cleanListings > 0 && input.productCost > 0 && (
-      <div className="rounded-[20px] border border-paper-200 bg-white p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.04)]">
+      <div className="rounded-[20px] border border-halo-gray bg-white p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.04)]">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-950 text-xs font-extrabold text-gold-400">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-halo-navy text-xs font-extrabold text-halo-orange">
             4
           </span>
-          <span className="text-sm font-extrabold text-ink-950">Posicionamento no mercado</span>
+          <span className="text-sm font-extrabold text-halo-navy">Posicionamento no mercado</span>
         </div>
         <MlScenarioCards summary={mlSummary} costInput={input} />
       </div>
@@ -394,12 +394,12 @@ export default function CostForm() {
 
     {/* ─── Etapa 5: Decisão ─── */}
     {result && (
-      <div className="rounded-[20px] border border-paper-200 bg-white p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.04)]">
+      <div className="rounded-[20px] border border-halo-gray bg-white p-6 space-y-4 shadow-[0_4px_16px_rgba(45,50,119,0.04)]">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-ink-950 text-xs font-extrabold text-gold-400">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-halo-navy text-xs font-extrabold text-halo-orange">
             5
           </span>
-          <span className="text-sm font-extrabold text-ink-950">O que fazer com esse produto?</span>
+          <span className="text-sm font-extrabold text-halo-navy">O que fazer com esse produto?</span>
         </div>
         <DecisionPanel input={input} result={result} />
       </div>
@@ -414,19 +414,19 @@ function CollapsibleSection({ title, icon, open, onToggle, summary, children }: 
   title: string; icon: string; open: boolean; onToggle: () => void; summary: string; children: React.ReactNode
 }) {
   return (
-    <div className="rounded-[20px] border border-paper-200 bg-white overflow-hidden">
+    <div className="rounded-[20px] border border-halo-gray bg-white overflow-hidden">
       <button type="button" onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-paper-100 transition-colors">
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-halo-gray-15 transition-colors">
         <div className="flex items-center gap-2">
           <span>{icon}</span>
-          <span className="text-sm font-semibold text-ink-900">{title}</span>
+          <span className="text-sm font-semibold text-halo-black">{title}</span>
         </div>
         <div className="flex items-center gap-3">
-          {!open && <span className="text-xs text-ink-500 hidden sm:block">{summary}</span>}
-          <span className={cn('text-ink-500 transition-transform text-xs', open && 'rotate-180')}>▼</span>
+          {!open && <span className="text-xs text-halo-navy-40 hidden sm:block">{summary}</span>}
+          <span className={cn('text-halo-navy-40 transition-transform text-xs', open && 'rotate-180')}>▼</span>
         </div>
       </button>
-      {open && <div className="px-5 pb-5 space-y-4 border-t border-paper-200 pt-4">{children}</div>}
+      {open && <div className="px-5 pb-5 space-y-4 border-t border-halo-gray pt-4">{children}</div>}
     </div>
   )
 }
@@ -447,10 +447,10 @@ function Field({ label, hint, suffix, children }: {
 }) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-sm text-ink-700">
-        {label}{suffix && <span className="ml-1 text-xs text-ink-500">({suffix})</span>}
+      <Label className="text-sm text-halo-navy-60">
+        {label}{suffix && <span className="ml-1 text-xs text-halo-navy-40">({suffix})</span>}
       </Label>
-      {hint && <p className="text-xs text-ink-500 leading-snug">{hint}</p>}
+      {hint && <p className="text-xs text-halo-navy-40 leading-snug">{hint}</p>}
       {children}
     </div>
   )

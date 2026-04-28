@@ -22,18 +22,18 @@ export default async function PricingPage() {
   const table = pricingTableFor(variant)
 
   return (
-    <div className="min-h-screen bg-paper-50">
-      <header className="border-b border-paper-200 bg-white">
+    <div className="min-h-screen bg-halo-gray-05">
+      <header className="border-b border-halo-gray bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 text-gold-400 text-sm font-extrabold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-halo-navy text-halo-orange text-sm font-extrabold">
               SP
             </div>
-            <span className="text-sm font-extrabold tracking-[-0.02em] text-ink-950">SmartPreço</span>
+            <span className="text-sm font-extrabold tracking-[-0.02em] text-halo-navy">SmartPreço</span>
           </a>
           <a
             href="/login"
-            className="text-sm font-medium text-ink-700 hover:text-ink-950 transition-colors"
+            className="text-sm font-medium text-halo-navy-60 hover:text-halo-navy transition-colors"
           >
             Já tenho conta →
           </a>
@@ -42,15 +42,15 @@ export default async function PricingPage() {
 
       <main className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <section className="mb-12 text-center space-y-3">
-          <span className="inline-block rounded-full bg-ink-950 text-gold-400 text-[11px] font-extrabold uppercase tracking-[0.18em] px-3 py-1">
+          <span className="inline-block rounded-full bg-halo-navy text-halo-orange text-[11px] font-extrabold uppercase tracking-[0.18em] px-3 py-1">
             Posicionamento — Liderança em Produto
           </span>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-[-0.02em] text-ink-950">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-[-0.02em] text-halo-navy">
             O motor de decisão de preço mais
             <br className="hidden md:block" />
             preciso para o Mercado Livre Brasil
           </h1>
-          <p className="mx-auto max-w-xl text-sm md:text-base text-ink-700 leading-relaxed">
+          <p className="mx-auto max-w-xl text-sm md:text-base text-halo-navy-60 leading-relaxed">
             Comece grátis. Pague só quando precisar de SKUs ilimitados ou multi-conta.
             Sem cartão para testar.
           </p>
@@ -58,8 +58,8 @@ export default async function PricingPage() {
 
         <PricingTableClient table={table} />
 
-        <section className="mt-16 rounded-2xl border border-paper-200 bg-white p-8 space-y-4">
-          <h2 className="text-lg font-extrabold text-ink-950">Perguntas frequentes</h2>
+        <section className="mt-16 rounded-2xl border border-halo-gray bg-white p-8 space-y-4">
+          <h2 className="text-lg font-extrabold text-halo-navy">Perguntas frequentes</h2>
           <div className="grid gap-6 md:grid-cols-2 text-sm">
             <Faq
               q="Posso começar sem cartão?"
@@ -81,8 +81,8 @@ export default async function PricingPage() {
         </section>
       </main>
 
-      <footer className="mt-16 border-t border-paper-200 bg-white py-6">
-        <div className="mx-auto max-w-5xl px-6 text-center text-xs text-ink-500">
+      <footer className="mt-16 border-t border-halo-gray bg-white py-6">
+        <div className="mx-auto max-w-5xl px-6 text-center text-xs text-halo-navy-40">
           SmartPreço · v1.0 · variante de pricing: <span className="font-mono">{variant}</span>
         </div>
       </footer>
@@ -93,8 +93,8 @@ export default async function PricingPage() {
 function Faq({ q, a }: { q: string; a: string }) {
   return (
     <div>
-      <p className="font-semibold text-ink-950">{q}</p>
-      <p className="mt-1 text-ink-700 leading-relaxed">{a}</p>
+      <p className="font-semibold text-halo-navy">{q}</p>
+      <p className="mt-1 text-halo-navy-60 leading-relaxed">{a}</p>
     </div>
   )
 }

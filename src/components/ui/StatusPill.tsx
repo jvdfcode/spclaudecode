@@ -13,12 +13,12 @@ interface StatusPillProps {
 }
 
 const toneClasses: Record<NonNullable<StatusPillProps['tone']>, string> = {
-  neutral: 'border-paper-200 bg-paper-100 text-ink-900',
-  info:    'border-[#cfd4ff] bg-[#eef0fb] text-ink-950',
-  warn:    'border-warn-200 bg-warn-50 text-warn-500',
-  success: 'border-profit-200 bg-profit-50 text-profit-500',
-  danger:  'border-loss-200 bg-loss-50 text-loss-500',
-  brand:   'border-[#fff1a6] bg-[#fff9cc] text-ink-950',
+  neutral: 'border-halo-gray bg-halo-gray-15 text-halo-black',
+  info:    'border-[#cfd4ff] bg-[#eef0fb] text-halo-navy',
+  warn:    'border-halo-orange-30 bg-halo-orange-05 text-halo-orange-100',
+  success: 'border-halo-orange-30 bg-halo-orange-15 text-halo-orange-80',
+  danger:  'border-halo-navy-20 bg-halo-gray-15 text-halo-navy',
+  brand:   'border-[#fff1a6] bg-[#fff9cc] text-halo-navy',
 }
 
 export function StatusPill({

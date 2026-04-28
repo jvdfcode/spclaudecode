@@ -84,16 +84,16 @@ export default async function DashboardPage() {
         <WelcomeTour />
 
         {/* Header */}
-        <header className="relative overflow-hidden rounded-[28px] border border-paper-200 bg-white p-6 sm:p-8 shadow-[0_16px_40px_rgba(45,50,119,0.08)]">
-          <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+        <header className="relative overflow-hidden rounded-[28px] border border-halo-gray bg-white p-6 sm:p-8 shadow-[0_16px_40px_rgba(45,50,119,0.08)]">
+          <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
           <div className="absolute inset-y-0 right-0 w-[36%] bg-[radial-gradient(circle_at_center,rgba(255,230,0,0.14),transparent_62%)]" />
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-ink-700">
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.28em] text-halo-navy-60">
             Bem-vindo de volta
           </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.03em] text-ink-950 sm:text-4xl">
-            Olá, <span className="text-[#2d3277]">{name}</span>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-[-0.03em] text-halo-navy sm:text-4xl">
+            Olá, <span className="text-[var(--halo-navy)]">{name}</span>
           </h1>
-          <p className="mt-2 text-sm text-ink-700 leading-6">
+          <p className="mt-2 text-sm text-halo-navy-60 leading-6">
             {hasSkus
               ? `Você tem ${stats.total} SKU${stats.total !== 1 ? 's' : ''} no portfólio. Confira o resumo abaixo.`
               : 'O que vamos analisar hoje? Precifique com precisão e tome decisões baseadas em dados reais.'}
@@ -103,7 +103,7 @@ export default async function DashboardPage() {
         {/* Métricas do portfólio */}
         {hasSkus && (
           <section aria-label="Resumo do portfólio">
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-ink-700 mb-4">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-halo-navy-60 mb-4">
               Portfólio
             </p>
             <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
                 value={String(stats.total)}
                 label="Total de SKUs"
                 sub={null}
-                accent="text-ink-950"
+                accent="text-halo-navy"
               />
               <StatCard
                 value={String(stats.byStatus.viable + stats.byStatus.for_sale)}
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                 {(Object.entries(stats.byStatus) as [keyof typeof stats.byStatus, number][])
                   .filter(([, count]) => count > 0)
                   .map(([key, count]) => (
-                    <span key={key} className="inline-flex items-center gap-1 rounded-full bg-paper-100 px-2.5 py-1 text-[11px] font-semibold text-ink-700">
+                    <span key={key} className="inline-flex items-center gap-1 rounded-full bg-halo-gray-15 px-2.5 py-1 text-[11px] font-semibold text-halo-navy-60">
                       <span className={cn('h-1.5 w-1.5 rounded-full', statusCfg[key].dot)} />
                       {statusCfg[key].label}: {count}
                     </span>
@@ -165,25 +165,25 @@ export default async function DashboardPage() {
                 'interactive-panel group relative overflow-hidden flex flex-col gap-4 rounded-[24px] border p-6 transition-all',
                 accent
                   ? 'border-[#cfd4ff] bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] shadow-[0_12px_32px_rgba(45,50,119,0.10)]'
-                  : 'border-paper-200 bg-white shadow-[0_8px_24px_rgba(45,50,119,0.06)]',
+                  : 'border-halo-gray bg-white shadow-[0_8px_24px_rgba(45,50,119,0.06)]',
               ].join(' ')}
             >
               {accent && (
-                <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+                <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
               )}
               <div className={[
                 'flex h-11 w-11 items-center justify-center rounded-[14px] text-xl shadow-sm',
-                accent ? 'bg-ink-950 text-gold-400' : 'bg-paper-100 text-ink-700',
+                accent ? 'bg-halo-navy text-halo-orange' : 'bg-halo-gray-15 text-halo-navy-60',
               ].join(' ')}>
                 {icon}
               </div>
               <div className="flex-1">
-                <p className={['font-extrabold text-sm tracking-[-0.01em]', accent ? 'text-ink-950' : 'text-ink-900'].join(' ')}>
+                <p className={['font-extrabold text-sm tracking-[-0.01em]', accent ? 'text-halo-navy' : 'text-halo-black'].join(' ')}>
                   {label}
                 </p>
-                <p className="text-xs text-ink-700 mt-1 leading-5">{desc}</p>
+                <p className="text-xs text-halo-navy-60 mt-1 leading-5">{desc}</p>
               </div>
-              <span className={['text-lg transition-colors', accent ? 'text-ink-950 group-hover:text-[#2d3277]' : 'text-paper-200 group-hover:text-ink-700'].join(' ')}>
+              <span className={['text-lg transition-colors', accent ? 'text-halo-navy group-hover:text-[var(--halo-navy)]' : 'text-halo-gray group-hover:text-halo-navy-60'].join(' ')}>
                 →
               </span>
             </Link>
@@ -194,10 +194,10 @@ export default async function DashboardPage() {
         {hasSkus && recentSkus.length > 0 && (
           <section aria-label="SKUs recentes">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-ink-700">
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-halo-navy-60">
                 Recentes
               </p>
-              <Link href="/skus" className="text-xs font-semibold text-[#2d3277] hover:underline">
+              <Link href="/skus" className="text-xs font-semibold text-[var(--halo-navy)] hover:underline">
                 Ver todos →
               </Link>
             </div>
@@ -209,10 +209,10 @@ export default async function DashboardPage() {
                   <Link
                     key={sku.id}
                     href={`/skus/${sku.id}`}
-                    className="flex items-center gap-3 rounded-[16px] border border-paper-200 bg-white px-4 py-3 hover:shadow-sm transition-shadow"
+                    className="flex items-center gap-3 rounded-[16px] border border-halo-gray bg-white px-4 py-3 hover:shadow-sm transition-shadow"
                   >
                     <span className={cn('h-2 w-2 rounded-full flex-shrink-0', cfg.dot)} />
-                    <span className="flex-1 min-w-0 text-sm font-semibold text-ink-900 truncate">
+                    <span className="flex-1 min-w-0 text-sm font-semibold text-halo-black truncate">
                       {sku.name}
                     </span>
                     {margin !== null && (
@@ -220,7 +220,7 @@ export default async function DashboardPage() {
                         {formatPercent(margin)}
                       </span>
                     )}
-                    <span className="text-paper-300 text-sm flex-shrink-0">→</span>
+                    <span className="text-halo-white-300 text-sm flex-shrink-0">→</span>
                   </Link>
                 )
               })}
@@ -230,19 +230,19 @@ export default async function DashboardPage() {
 
         {/* Como funciona — apenas para novos usuários sem SKUs */}
         {!hasSkus && (
-          <div className="rounded-[24px] border border-paper-200 bg-white p-6 shadow-[0_8px_24px_rgba(45,50,119,0.06)]">
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-ink-700 mb-5">
+          <div className="rounded-[24px] border border-halo-gray bg-white p-6 shadow-[0_8px_24px_rgba(45,50,119,0.06)]">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.24em] text-halo-navy-60 mb-5">
               Como funciona o SmartPreço
             </p>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {steps.map(({ step, icon, title, desc }) => (
                 <div key={step} className="flex gap-3">
-                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-950 text-gold-400 text-xs font-extrabold flex-shrink-0 mt-0.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-halo-navy text-halo-orange text-xs font-extrabold flex-shrink-0 mt-0.5">
                     {step}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-ink-950">{icon} {title}</p>
-                    <p className="text-xs text-ink-700 mt-1 leading-5">{desc}</p>
+                    <p className="text-sm font-bold text-halo-navy">{icon} {title}</p>
+                    <p className="text-xs text-halo-navy-60 mt-1 leading-5">{desc}</p>
                   </div>
                 </div>
               ))}
@@ -264,15 +264,15 @@ function StatCard({
   dot?: string
 }) {
   return (
-    <div className="rounded-[20px] border border-paper-200 bg-white p-4 shadow-[0_4px_16px_rgba(45,50,119,0.05)]">
+    <div className="rounded-[20px] border border-halo-gray bg-white p-4 shadow-[0_4px_16px_rgba(45,50,119,0.05)]">
       <div className="flex items-center gap-1.5 mb-1">
         {dot && <span className={cn('h-2 w-2 rounded-full flex-shrink-0', dot)} />}
-        <p className="text-[11px] font-semibold text-ink-700 leading-none">{label}</p>
+        <p className="text-[11px] font-semibold text-halo-navy-60 leading-none">{label}</p>
       </div>
       <p className={cn('text-2xl font-extrabold tabular-nums tracking-[-0.03em]', accent)}>
         {value}
       </p>
-      {sub && <p className="text-[10px] text-ink-600 mt-0.5">{sub}</p>}
+      {sub && <p className="text-[10px] text-halo-black-600 mt-0.5">{sub}</p>}
     </div>
   )
 }

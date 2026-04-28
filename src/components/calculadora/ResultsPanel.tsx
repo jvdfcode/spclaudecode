@@ -16,21 +16,21 @@ interface Props {
 const cfg = {
   viable: {
     hint: 'Boa margem! Este produto é lucrativo nas condições informadas.',
-    barColor: 'bg-profit-500',
+    barColor: 'bg-halo-orange-80',
     metricTone: 'profit' as const,
-    metricColor: 'text-profit-500',
+    metricColor: 'text-halo-orange-80',
   },
   attention: {
     hint: 'Margem baixa. Qualquer variação de custo pode tornar inviável.',
-    barColor: 'bg-warn-500',
+    barColor: 'bg-halo-orange-100',
     metricTone: 'warn' as const,
-    metricColor: 'text-warn-500',
+    metricColor: 'text-halo-orange-100',
   },
   not_viable: {
     hint: 'Prejuízo nesse preço. Veja o Preço Mínimo Viável abaixo.',
-    barColor: 'bg-loss-500',
+    barColor: 'bg-halo-navy',
     metricTone: 'loss' as const,
-    metricColor: 'text-loss-500',
+    metricColor: 'text-halo-navy',
   },
 }
 
@@ -45,16 +45,16 @@ export default function ResultsPanel({ result }: Props) {
   const gapToViable = metrics.priceGapToViable
 
   return (
-    <div className="rounded-[28px] border border-paper-200 overflow-hidden shadow-[0_16px_40px_rgba(45,50,119,0.08)] bg-white">
+    <div className="rounded-[28px] border border-halo-gray overflow-hidden shadow-[0_16px_40px_rgba(45,50,119,0.08)] bg-white">
       {/* Barra gradiente + cabeçalho */}
-      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
       <div className="relative px-6 pt-6 pb-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-ink-700">
+            <p className="text-[11px] font-extrabold uppercase tracking-[0.22em] text-halo-navy-60">
               Resultado da análise
             </p>
-            <p className="mt-1 text-lg font-extrabold tracking-[-0.02em] text-ink-950">
+            <p className="mt-1 text-lg font-extrabold tracking-[-0.02em] text-halo-navy">
               {c.hint}
             </p>
           </div>
@@ -64,15 +64,15 @@ export default function ResultsPanel({ result }: Props) {
         {/* Barra de margem */}
         <div className="mt-5">
           <div className="flex justify-between text-[11px] mb-2 font-medium">
-            <span className="text-loss-500">Inviável &lt;0%</span>
-            <span className="text-warn-500">Atenção 10–19%</span>
-            <span className="text-profit-500">Viável ≥20%</span>
+            <span className="text-halo-navy">Inviável &lt;0%</span>
+            <span className="text-halo-orange-100">Atenção 10–19%</span>
+            <span className="text-halo-orange-80">Viável ≥20%</span>
           </div>
-          <div className="relative h-3 w-full rounded-full bg-paper-100 overflow-hidden border border-paper-200">
+          <div className="relative h-3 w-full rounded-full bg-halo-gray-15 overflow-hidden border border-halo-gray">
             <div className="absolute inset-0 flex">
-              <div className="w-[40%] bg-loss-50" />
-              <div className="w-[20%] bg-warn-50" />
-              <div className="w-[40%] bg-profit-50" />
+              <div className="w-[40%] bg-halo-gray-15" />
+              <div className="w-[20%] bg-halo-orange-05" />
+              <div className="w-[40%] bg-halo-orange-15" />
             </div>
             <div className="absolute top-0 bottom-0 w-px bg-white/80" style={{ left: '40%' }} />
             <div className="absolute top-0 bottom-0 w-px bg-white/80" style={{ left: '60%' }} />
@@ -113,7 +113,7 @@ export default function ResultsPanel({ result }: Props) {
       </div>
 
       {/* Preços de referência */}
-      <div className="mx-6 mb-5 rounded-[20px] border border-paper-200 divide-y divide-paper-200 overflow-hidden">
+      <div className="mx-6 mb-5 rounded-[20px] border border-halo-gray divide-y divide-halo-gray overflow-hidden">
         <PriceLine
           label="Preço Mínimo Viável"
           hint="Menor preço que cobre todos os custos"
@@ -132,14 +132,14 @@ export default function ResultsPanel({ result }: Props) {
         <div className="mx-6 mb-5 rounded-[20px] border border-[#cfd4ff] bg-[#eef0fb] p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-bold text-ink-950">Break-even mensal</p>
-              <p className="text-xs text-ink-700 mt-0.5">
+              <p className="text-sm font-bold text-halo-navy">Break-even mensal</p>
+              <p className="text-xs text-halo-navy-60 mt-0.5">
                 Unidades para cobrir R${input.monthlyFixedCost?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} de custo fixo
               </p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-extrabold text-ink-950 tabular-nums">{metrics.breakEvenUnits}</p>
-              <p className="text-xs text-ink-700">unidades/mês</p>
+              <p className="text-3xl font-extrabold text-halo-navy tabular-nums">{metrics.breakEvenUnits}</p>
+              <p className="text-xs text-halo-navy-60">unidades/mês</p>
             </div>
           </div>
         </div>
@@ -147,10 +147,10 @@ export default function ResultsPanel({ result }: Props) {
 
       {/* Alerta inviável */}
       {isNotViable && gapToViable > 0 && (
-        <div className="mx-6 mb-5 rounded-[20px] bg-loss-50 border border-loss-200 p-4">
-          <p className="text-sm font-bold text-loss-500">Para ser viável, aumente o preço em:</p>
-          <p className="text-2xl font-extrabold text-loss-500 mt-1 tabular-nums">{formatBRL(gapToViable)}</p>
-          <p className="text-xs text-loss-500/70 mt-1">
+        <div className="mx-6 mb-5 rounded-[20px] bg-halo-gray-15 border border-halo-navy-20 p-4">
+          <p className="text-sm font-bold text-halo-navy">Para ser viável, aumente o preço em:</p>
+          <p className="text-2xl font-extrabold text-halo-navy mt-1 tabular-nums">{formatBRL(gapToViable)}</p>
+          <p className="text-xs text-halo-navy/70 mt-1">
             {formatBRL(input.salePrice)} atual → mínimo {formatBRL(metrics.minimumViablePrice)}
           </p>
         </div>
@@ -160,7 +160,7 @@ export default function ResultsPanel({ result }: Props) {
       <div className="px-6 pb-6">
         <button
           onClick={() => setShowBreakdown(!showBreakdown)}
-          className="w-full rounded-[16px] border border-paper-200 py-2.5 text-sm text-ink-700 hover:bg-paper-100 hover:text-ink-950 transition-colors flex items-center justify-center gap-2 font-medium"
+          className="w-full rounded-[16px] border border-halo-gray py-2.5 text-sm text-halo-navy-60 hover:bg-halo-gray-15 hover:text-halo-navy transition-colors flex items-center justify-center gap-2 font-medium"
         >
           {showBreakdown ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           {showBreakdown ? 'Ocultar' : 'Ver'} detalhamento de custos
@@ -181,14 +181,14 @@ function PriceLine({ label, hint, value, emphasized }: {
   return (
     <div className={cn('flex items-center justify-between px-4 py-3 gap-4', emphasized && 'bg-[#eef0fb]')}>
       <div className="min-w-0">
-        <p className={cn('text-sm', emphasized ? 'font-bold text-ink-950' : 'font-medium text-ink-700')}>
+        <p className={cn('text-sm', emphasized ? 'font-bold text-halo-navy' : 'font-medium text-halo-navy-60')}>
           {label}
         </p>
-        <p className="text-xs text-ink-500 truncate">{hint}</p>
+        <p className="text-xs text-halo-navy-40 truncate">{hint}</p>
       </div>
       <span className={cn(
         'text-sm tabular-nums shrink-0',
-        emphasized ? 'font-extrabold text-ink-950 text-base' : 'font-semibold text-ink-900',
+        emphasized ? 'font-extrabold text-halo-navy text-base' : 'font-semibold text-halo-black',
       )}>
         {value}
       </span>

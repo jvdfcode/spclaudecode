@@ -191,7 +191,7 @@ export default function SkuCardMenu({ id, name, notes, redirectOnDelete }: Props
             <button
               onClick={handleEdit}
               disabled={saving || !editName.trim()}
-              className="rounded-lg bg-ink-950 px-4 py-2 text-sm font-semibold text-white hover:bg-ink-800 disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-halo-navy px-4 py-2 text-sm font-semibold text-white hover:bg-halo-navy-800 disabled:opacity-50 transition-colors"
             >
               {saving ? 'Salvando...' : 'Salvar'}
             </button>

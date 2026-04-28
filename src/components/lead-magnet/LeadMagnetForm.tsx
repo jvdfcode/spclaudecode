@@ -134,15 +134,15 @@ export default function LeadMagnetForm() {
       <form
         onSubmit={handleCalculate}
         aria-label="Calculadora de viabilidade Mercado Livre"
-        className="rounded-2xl border border-paper-200 bg-white p-6 shadow-[0_2px_8px_rgba(45,50,119,0.06)] space-y-5"
+        className="rounded-2xl border border-halo-gray bg-white p-6 shadow-[0_2px_8px_rgba(45,50,119,0.06)] space-y-5"
       >
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-1.5">
-            <label htmlFor="lm-cost" className="text-xs font-semibold text-ink-700 uppercase tracking-wide">
+            <label htmlFor="lm-cost" className="text-xs font-semibold text-halo-navy-60 uppercase tracking-wide">
               Custo do produto
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-500">R$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-halo-navy-40">R$</span>
               <input
                 id="lm-cost"
                 type="text"
@@ -150,17 +150,17 @@ export default function LeadMagnetForm() {
                 placeholder="50,00"
                 value={productCost}
                 onChange={(e) => setProductCost(e.target.value)}
-                className="w-full rounded-xl border border-paper-200 bg-white pl-9 pr-3 py-2.5 text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-ink-950/20"
+                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
               />
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="lm-sale" className="text-xs font-semibold text-ink-700 uppercase tracking-wide">
+            <label htmlFor="lm-sale" className="text-xs font-semibold text-halo-navy-60 uppercase tracking-wide">
               Preço de venda
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-500">R$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-halo-navy-40">R$</span>
               <input
                 id="lm-sale"
                 type="text"
@@ -168,14 +168,14 @@ export default function LeadMagnetForm() {
                 placeholder="89,90"
                 value={salePrice}
                 onChange={(e) => setSalePrice(e.target.value)}
-                className="w-full rounded-xl border border-paper-200 bg-white pl-9 pr-3 py-2.5 text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-ink-950/20"
+                className="w-full rounded-xl border border-halo-gray bg-white pl-9 pr-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
               />
             </div>
           </div>
         </div>
 
         <fieldset className="space-y-2">
-          <legend className="text-xs font-semibold text-ink-700 uppercase tracking-wide">
+          <legend className="text-xs font-semibold text-halo-navy-60 uppercase tracking-wide">
             Tipo de anúncio
           </legend>
           <div className="grid grid-cols-3 gap-2">
@@ -191,8 +191,8 @@ export default function LeadMagnetForm() {
                   className={
                     'rounded-xl border-2 px-3 py-2 text-sm font-medium transition-all ' +
                     (checked
-                      ? 'border-ink-950 bg-ink-950 text-gold-400'
-                      : 'border-paper-200 bg-white text-ink-700 hover:border-ink-700')
+                      ? 'border-halo-navy bg-halo-navy text-halo-orange'
+                      : 'border-halo-gray bg-white text-halo-navy-60 hover:border-halo-navy-60')
                   }
                 >
                   {opt.label}
@@ -203,14 +203,14 @@ export default function LeadMagnetForm() {
         </fieldset>
 
         <div className="space-y-1.5">
-          <label htmlFor="lm-installments" className="text-xs font-semibold text-ink-700 uppercase tracking-wide">
+          <label htmlFor="lm-installments" className="text-xs font-semibold text-halo-navy-60 uppercase tracking-wide">
             Parcelamento
           </label>
           <select
             id="lm-installments"
             value={installments}
             onChange={(e) => setInstallments(Number(e.target.value))}
-            className="w-full rounded-xl border border-paper-200 bg-white px-3 py-2.5 text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-ink-950/20"
+            className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20"
           >
             {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
               <option key={n} value={n}>
@@ -222,7 +222,7 @@ export default function LeadMagnetForm() {
 
         <button
           type="submit"
-          className="btn-genie w-full rounded-xl bg-ink-950 px-5 py-3 text-sm font-extrabold text-gold-400 shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98]"
+          className="btn-genie w-full rounded-xl bg-halo-navy px-5 py-3 text-sm font-extrabold text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98]"
         >
           Calcular viabilidade
         </button>
@@ -234,18 +234,18 @@ export default function LeadMagnetForm() {
           className={
             'rounded-2xl border-2 p-6 space-y-4 ' +
             (classificationCopy.tone === 'profit'
-              ? 'border-profit-200 bg-profit-50'
+              ? 'border-halo-orange-30 bg-halo-orange-15'
               : classificationCopy.tone === 'warn'
-              ? 'border-warn-200 bg-warn-50'
-              : 'border-loss-200 bg-loss-50')
+              ? 'border-halo-orange-30 bg-halo-orange-05'
+              : 'border-halo-navy-20 bg-halo-gray-15')
           }
         >
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-ink-700">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-halo-navy-60">
               Resultado
             </p>
-            <p className="mt-1 text-2xl font-extrabold text-ink-950">{classificationCopy.headline}</p>
-            <p className="mt-2 text-sm text-ink-700">
+            <p className="mt-1 text-2xl font-extrabold text-halo-navy">{classificationCopy.headline}</p>
+            <p className="mt-2 text-sm text-halo-navy-60">
               Lucro líquido por unidade: <strong>{brl(result.metrics.profit)}</strong> · ROI{' '}
               <strong>{(result.metrics.roiPercent * 100).toFixed(1)}%</strong>
             </p>
@@ -261,8 +261,8 @@ export default function LeadMagnetForm() {
           </div>
 
           {!submitted ? (
-            <form onSubmit={handleCaptureLead} className="space-y-3 pt-3 border-t border-paper-200">
-              <p className="text-sm text-ink-950 font-semibold">
+            <form onSubmit={handleCaptureLead} className="space-y-3 pt-3 border-t border-halo-gray">
+              <p className="text-sm text-halo-navy font-semibold">
                 Quer ver isso para os seus 50 SKUs? É grátis no MVP.
               </p>
               <div className="space-y-1.5">
@@ -279,20 +279,20 @@ export default function LeadMagnetForm() {
                   aria-invalid={Boolean(emailError) || undefined}
                   aria-describedby={emailError ? 'lm-email-error' : undefined}
                   disabled={pending}
-                  className="w-full rounded-xl border border-paper-200 bg-white px-3 py-2.5 text-sm text-ink-950 focus:outline-none focus:ring-2 focus:ring-ink-950/20 disabled:opacity-60"
+                  className="w-full rounded-xl border border-halo-gray bg-white px-3 py-2.5 text-sm text-halo-navy focus:outline-none focus:ring-2 focus:ring-halo-navy/20 disabled:opacity-60"
                 />
                 {emailError && (
-                  <span id="lm-email-error" className="block text-xs text-loss-500">
+                  <span id="lm-email-error" className="block text-xs text-halo-navy">
                     {emailError}
                   </span>
                 )}
               </div>
-              <label className="flex items-start gap-2 text-xs text-ink-700">
+              <label className="flex items-start gap-2 text-xs text-halo-navy-60">
                 <input
                   type="checkbox"
                   checked={optin}
                   onChange={(e) => setOptin(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-paper-200"
+                  className="mt-0.5 h-4 w-4 rounded border-halo-gray"
                   required
                   disabled={pending}
                 />
@@ -305,7 +305,7 @@ export default function LeadMagnetForm() {
                 type="submit"
                 disabled={pending}
                 aria-busy={pending}
-                className="btn-genie w-full rounded-xl bg-ink-950 px-5 py-2.5 text-sm font-extrabold text-gold-400 shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98] disabled:opacity-60 disabled:hover:translate-y-0"
+                className="btn-genie w-full rounded-xl bg-halo-navy px-5 py-2.5 text-sm font-extrabold text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] transition-all hover:-translate-y-[2px] active:scale-[0.98] disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 {pending ? 'Enviando…' : 'Quero o portfólio completo (grátis)'}
               </button>
@@ -313,7 +313,7 @@ export default function LeadMagnetForm() {
           ) : (
             <div
               role="status"
-              className="rounded-xl border border-profit-200 bg-white p-4 text-sm text-ink-950"
+              className="rounded-xl border border-halo-orange-30 bg-white p-4 text-sm text-halo-navy"
             >
               ✓ Recebido! Em instantes você vai receber o link no email{' '}
               <strong>{email}</strong>. Não esqueça de checar a caixa de spam.
@@ -327,9 +327,9 @@ export default function LeadMagnetForm() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-white border border-paper-200 p-3">
-      <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-ink-500">{label}</p>
-      <p className="mt-1 text-sm font-extrabold tabular-nums text-ink-950">{value}</p>
+    <div className="rounded-xl bg-white border border-halo-gray p-3">
+      <p className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-halo-navy-40">{label}</p>
+      <p className="mt-1 text-sm font-extrabold tabular-nums text-halo-navy">{value}</p>
     </div>
   )
 }

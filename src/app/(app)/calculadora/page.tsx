@@ -16,8 +16,8 @@ export default function CalculadoraPage() {
           tagline="Mercado Livre Brasil"
           description="Preencha os custos para ver margem, lucro e viabilidade em tempo real. Simule cenários e compare com o mercado."
           aside={
-            <div className="text-xs text-ink-700 leading-5">
-              <p className="font-bold text-ink-950">Análise em tempo real</p>
+            <div className="text-xs text-halo-navy-60 leading-5">
+              <p className="font-bold text-halo-navy">Análise em tempo real</p>
               Resultados calculados a cada mudança
             </div>
           }

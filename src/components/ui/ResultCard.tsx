@@ -10,10 +10,10 @@ interface ResultCardProps {
 }
 
 const toneClasses: Record<NonNullable<ResultCardProps['tone']>, string> = {
-  default: 'bg-white text-ink-950',
-  profit:  'bg-profit-50 text-profit-500',
-  warn:    'bg-warn-50 text-warn-500',
-  loss:    'bg-loss-50 text-loss-500',
+  default: 'bg-white text-halo-navy',
+  profit:  'bg-halo-orange-15 text-halo-orange-80',
+  warn:    'bg-halo-orange-05 text-halo-orange-100',
+  loss:    'bg-halo-gray-15 text-halo-navy',
 }
 
 export function ResultCard({
@@ -26,7 +26,7 @@ export function ResultCard({
   return (
     <article
       className={cn(
-        'interactive-panel flex flex-col justify-between rounded-[24px] border border-paper-200 shadow-[0_14px_28px_rgba(45,50,119,0.05)]',
+        'interactive-panel flex flex-col justify-between rounded-[24px] border border-halo-gray shadow-[0_14px_28px_rgba(45,50,119,0.05)]',
         compact ? 'min-h-[140px] p-4 sm:p-5' : 'min-h-[156px] p-5 sm:p-6',
         toneClasses[tone],
       )}
