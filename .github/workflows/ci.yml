@@ -113,7 +113,7 @@ jobs:
           version: latest
 
       - name: Generate types from remote schema
-        run: supabase gen types typescript --project-id ltpdqavqhraphoyusmdi > /tmp/supabase.gen.ts
+        run: supabase gen types typescript --project-id ${{ secrets.SUPABASE_PROJECT_ID }} > /tmp/supabase.gen.ts
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
