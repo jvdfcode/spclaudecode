@@ -1,10 +1,43 @@
 import type { Metadata } from 'next'
-import { Manrope } from 'next/font/google'
+import {
+  Bricolage_Grotesque,
+  Instrument_Serif,
+  JetBrains_Mono,
+} from 'next/font/google'
 import { Toaster } from 'sonner'
 import SkipLink from '@/components/layout/SkipLink'
 import './globals.css'
 
-const manrope = Manrope({ subsets: ['latin'], variable: '--font-sans', weight: ['400', '500', '600', '700', '800'] })
+// Halo DS v1.1 — tipografia (§4.1)
+// `--font-display` e `--font-body` apontam para Bricolage Grotesque com
+// pesos e features distintos (§4.1.1). Crítico (display: swap).
+const bricolageDisplay = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-display',
+  display: 'swap',
+})
+const bricolageBody = Bricolage_Grotesque({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-body',
+  display: 'swap',
+})
+// Instrument Serif: editorial em hero. NÃO bloqueia LCP (display: optional).
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'optional',
+})
+// JetBrains Mono: dados, KPIs, labels mono.
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -30,8 +63,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR">
-      <body className={manrope.variable}>
+    <html
+      lang="pt-BR"
+      className={`${bricolageDisplay.variable} ${bricolageBody.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}
+    >
+      <body>
         <SkipLink />
         {children}
         <Toaster richColors position="top-right" duration={3000} />
