@@ -35,31 +35,75 @@ async function refreshToken(refreshToken: string): Promise<TokenResponse | null>
   }
 }
 
-// Retorna access_token válido ou null se não conectado / falha no refresh
+/**
+ * Retorna access_token válido ou null se não conectado / falha no refresh.
+ *
+ * Resolve DEBT-DB-C3 (race condition no refresh): adquire advisory lock por
+ * usuário antes de decidir se faz refresh, e relê o estado pós-lock. Se
+ * outra instância já fez refresh enquanto este request esperava o lock, a
+ * releitura retorna o token novo sem chamar a API ML novamente.
+ *
+ * Requer: migration 009 (`acquire_user_lock`); supabase deve ter user_id
+ * resolvível (auth.uid em RLS, ou single-row para service role).
+ */
 export async function getMlAccessToken(supabase: SupabaseClient): Promise<string | null> {
-  const { data } = await supabase
+  const initial = await supabase
     .from('ml_tokens')
-    .select('access_token, refresh_token, expires_at')
+    .select('user_id, access_token, refresh_token, expires_at')
     .single()
 
-  if (!data) return null
-  const row = data as TokenRow
+  if (!initial.data) return null
+  const row = initial.data as TokenRow & { user_id: string }
 
-  // Token ainda válido por mais de 5 min
+  // Token ainda válido por mais de 5 min — caminho rápido sem lock
   if (new Date(row.expires_at) > new Date(Date.now() + 5 * 60 * 1000)) {
     return row.access_token
   }
 
-  // Refresh
+  // Adquire advisory lock por usuário; segura concorrentes na mesma transação
+  const { error: lockError } = await supabase.rpc('acquire_user_lock', {
+    p_user_id: row.user_id,
+    p_scope: 'ml_token_refresh',
+  })
+
+  if (lockError) {
+    console.error(
+      JSON.stringify({
+        ts: Date.now(),
+        msg: 'ml_token_refresh lock error',
+        error: lockError.message,
+      }),
+    )
+    // Fallback sem lock — race ainda possível, mas melhor que falhar tudo
+    return row.access_token
+  }
+
+  // Após o lock, relê — pode ter sido renovado por outro request
+  const reread = await supabase
+    .from('ml_tokens')
+    .select('access_token, refresh_token, expires_at')
+    .single()
+
+  if (reread.data) {
+    const fresh = reread.data as TokenRow
+    if (new Date(fresh.expires_at) > new Date(Date.now() + 5 * 60 * 1000)) {
+      return fresh.access_token
+    }
+  }
+
+  // Ainda expirando — este request é o vencedor do lock, faz refresh
   const refreshed = await refreshToken(row.refresh_token)
   if (!refreshed) return null
 
-  await supabase.from('ml_tokens').update({
-    access_token: refreshed.access_token,
-    refresh_token: refreshed.refresh_token,
-    expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
-    updated_at: new Date().toISOString(),
-  })
+  await supabase
+    .from('ml_tokens')
+    .update({
+      access_token: refreshed.access_token,
+      refresh_token: refreshed.refresh_token,
+      expires_at: new Date(Date.now() + refreshed.expires_in * 1000).toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', row.user_id)
 
   return refreshed.access_token
 }
