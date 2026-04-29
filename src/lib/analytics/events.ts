@@ -1,30 +1,25 @@
 /**
- * Tracking de eventos do funil (Story MKT-001-5).
+ * Tracking de eventos do funil (Story MKT-001-5 + PROD-001-13).
  *
- * Implementação minimalista: emite via `navigator.sendBeacon` para um
- * endpoint interno `/api/track`, que persiste no Supabase. Quando o
- * Vercel Analytics estiver instalado, o mesmo evento também é enviado
- * via `window.va?.track()` para o dashboard nativo.
- *
+ * Emite via `navigator.sendBeacon` para `/api/track` (persiste em funnel_events)
+ * e via `@vercel/analytics` track() para o dashboard nativo.
  * Não falha em SSR (verifica `window`); não bloqueia render.
  */
+
+import { track } from '@vercel/analytics'
 
 export type FunnelEventName =
   | 'lead_magnet_calculated'
   | 'lead_captured'
   | 'pricing_viewed'
   | 'pricing_plan_clicked'
+  | 'calculo_iniciado'
+  | 'resultado_exibido'
+  | 'cta_clicado'
+  | 'email_submetido'
 
 export interface FunnelEventPayload {
-  // payload livre — KPIs baseline do dashboard MKT-001-5 leem o que precisarem
   [key: string]: string | number | boolean | null | undefined
-}
-
-declare global {
-  interface Window {
-    // Vercel Analytics injecta `window.va` quando ativo
-    va?: { track: (name: string, props?: Record<string, unknown>) => void }
-  }
 }
 
 const ENDPOINT = '/api/track'
@@ -35,9 +30,9 @@ const ENDPOINT = '/api/track'
 export function trackFunnel(name: FunnelEventName, payload: FunnelEventPayload = {}): void {
   if (typeof window === 'undefined') return
 
-  // 1) Vercel Analytics (se instalado)
+  // 1) Vercel Analytics
   try {
-    window.va?.track(name, payload)
+    track(name, payload as Record<string, string>)
   } catch {
     // ignora — analytics nunca pode quebrar a UI
   }
@@ -49,7 +44,6 @@ export function trackFunnel(name: FunnelEventName, payload: FunnelEventPayload =
       const blob = new Blob([body], { type: 'application/json' })
       navigator.sendBeacon(ENDPOINT, blob)
     } else {
-      // fallback fetch — keepalive permite envio mesmo após unload
       fetch(ENDPOINT, {
         method: 'POST',
         body,

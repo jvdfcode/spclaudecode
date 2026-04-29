@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import LeadMagnetForm from '@/components/lead-magnet/LeadMagnetForm'
 
@@ -50,7 +51,9 @@ export default function CalculadoraLivrePage() {
           </p>
         </section>
 
-        <LeadMagnetForm />
+        <Suspense fallback={null}>
+          <LeadMagnetForm />
+        </Suspense>
 
         <section className="mt-12 grid gap-4 md:grid-cols-3 text-center">
           <div className="rounded-2xl border border-halo-gray bg-white p-5">

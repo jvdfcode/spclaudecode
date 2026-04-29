@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useRef } from 'react'
 import { CircleAlert, CircleCheckBig, CircleX } from 'lucide-react'
 import { toast } from 'sonner'
 import { calculateViability } from '@/lib/calculations'
 import { trackFunnel } from '@/lib/analytics/events'
+import { useUtmParams } from '@/hooks/useUtmParams'
 import { ProfitabilityBadge } from '@/components/ui/ProfitabilityBadge'
 import type { ListingType, ViabilityInput, ViabilityResult } from '@/types'
 import { captureLeadAction } from '@/app/calculadora-livre/actions'
@@ -36,6 +37,9 @@ function brl(n: number): string {
 }
 
 export default function LeadMagnetForm() {
+  const utmParams = useUtmParams()
+  const ctaTrackedRef = useRef(false)
+
   const [productCost, setProductCost] = useState('')
   const [salePrice, setSalePrice] = useState('')
   const [listingType, setListingType] = useState<ListingType>('classic')
@@ -63,6 +67,9 @@ export default function LeadMagnetForm() {
       return
     }
 
+    // PROD-001-13: calculo_iniciado
+    trackFunnel('calculo_iniciado', { ...utmParams })
+
     try {
       const input: ViabilityInput = {
         ...baseInput,
@@ -73,12 +80,20 @@ export default function LeadMagnetForm() {
       }
       const r = calculateViability(input)
       setResult(r)
-      trackFunnel('lead_magnet_calculated', {
+
+      // PROD-001-13: resultado_exibido + lead_magnet_calculated (retrocompat)
+      const resultPayload = {
+        ...utmParams,
         marginPercent: Number(r.metrics.marginPercent.toFixed(4)),
         classification: r.classification,
         listingType: r.input.listingType,
         installments: r.input.installments,
-      })
+      }
+      trackFunnel('resultado_exibido', resultPayload)
+      trackFunnel('lead_magnet_calculated', resultPayload)
+
+      // Resetar flag de CTA para novo cálculo
+      ctaTrackedRef.current = false
     } catch (err) {
       toast.error('Não foi possível calcular. Verifique os valores informados.')
       console.error(err)
@@ -111,10 +126,12 @@ export default function LeadMagnetForm() {
       }
 
       setSubmitted(true)
-      trackFunnel('lead_captured', {
-        source: 'lead-magnet',
-        hasContext: Boolean(result),
-      })
+
+      // PROD-001-13: email_submetido + lead_captured (retrocompat)
+      const capturePayload = { ...utmParams, source: 'lead-magnet', hasContext: Boolean(result) }
+      trackFunnel('email_submetido', capturePayload)
+      trackFunnel('lead_captured', capturePayload)
+
       toast.success('Recebemos! Em instantes você vai receber o link no seu email.')
     })
   }
@@ -328,6 +345,12 @@ export default function LeadMagnetForm() {
                   placeholder="seu@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => {
+                    if (!ctaTrackedRef.current) {
+                      ctaTrackedRef.current = true
+                      trackFunnel('cta_clicado', { ...utmParams })
+                    }
+                  }}
                   aria-invalid={Boolean(emailError) || undefined}
                   aria-describedby={emailError ? 'lm-email-error' : undefined}
                   disabled={pending}
@@ -350,7 +373,17 @@ export default function LeadMagnetForm() {
                 />
                 <span>
                   Aceito receber o link de acesso por email. Não envio spam — apenas o link e
-                  ocasionais novidades sobre precificação no ML. Posso descadastrar a qualquer momento (LGPD).
+                  ocasionais novidades sobre precificação no ML. Posso descadastrar a qualquer momento.{' '}
+                  <a
+                    href="/privacidade"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Ler política de privacidade (abre em nova aba)"
+                    className="underline hover:text-halo-navy"
+                  >
+                    Política de Privacidade
+                  </a>{' '}
+                  (LGPD).
                 </span>
               </label>
               <button
