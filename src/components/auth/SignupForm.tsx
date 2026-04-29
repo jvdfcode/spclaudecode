@@ -47,9 +47,11 @@ export default function SignupForm() {
 
     setLoading(true)
     const supabase = createClient()
+    const redirectTo = `${process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin}/auth/callback?next=/dashboard`
     const { data, error } = await supabase.auth.signUp({
       email: parsed.data.email,
       password: parsed.data.password,
+      options: { emailRedirectTo: redirectTo },
     })
 
     if (error) {
