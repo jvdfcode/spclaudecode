@@ -36,10 +36,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // Rota protegida sem sessão → redireciona para /login
+  // Rota protegida sem sessão → redireciona para /login.
+  // Nota: /calculadora-livre é pública (Lead Magnet) — não pode entrar no
+  // startsWith('/calculadora') sem exclusão explícita.
   const isProtectedRoute =
     pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/calculadora') ||
+    (pathname.startsWith('/calculadora') && !pathname.startsWith('/calculadora-livre')) ||
     pathname.startsWith('/skus') ||
     pathname.startsWith('/mercado')
 

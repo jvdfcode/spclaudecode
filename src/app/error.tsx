@@ -1,5 +1,6 @@
 'use client'
 
+import * as Sentry from '@sentry/nextjs'
 import { useEffect } from 'react'
 
 interface Props {
@@ -9,6 +10,10 @@ interface Props {
 
 export default function GlobalError({ error, reset }: Props) {
   useEffect(() => {
+    Sentry.captureException(error, {
+      tags: { source: 'global-error-boundary' },
+      extra: { digest: error.digest },
+    })
     console.error('[SmartPreço] Erro global:', error.digest ?? 'sem digest')
   }, [error])
 

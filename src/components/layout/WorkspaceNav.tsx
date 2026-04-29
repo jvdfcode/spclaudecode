@@ -30,7 +30,7 @@ export function WorkspaceNav() {
 
   return (
     <nav
-      className="flex items-end gap-1 border-b border-paper-200 px-1 mb-6"
+      className="flex items-end gap-1 border-b border-halo-gray px-1 mb-6"
       aria-label="Navegação do workspace"
     >
       {tabs.map(({ href, label, icon }) => {
@@ -42,12 +42,12 @@ export function WorkspaceNav() {
             className={cn(
               'relative flex items-center gap-2 px-4 py-3 text-sm font-semibold transition-all duration-200 rounded-t-[12px] -mb-px border border-b-0',
               isActive
-                ? 'bg-white border-paper-200 text-ink-950 shadow-[0_-4px_12px_rgba(45,50,119,0.06)]'
-                : 'border-transparent text-ink-700 hover:text-ink-950 hover:bg-paper-100',
+                ? 'bg-white border-halo-gray text-halo-navy shadow-[0_-4px_12px_rgba(45,50,119,0.06)]'
+                : 'border-transparent text-halo-navy-60 hover:text-halo-navy hover:bg-halo-gray-15',
             )}
           >
             {isActive && (
-              <span className="absolute inset-x-0 top-0 h-0.5 rounded-t-[12px] bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+              <span className="absolute inset-x-0 top-0 h-0.5 rounded-t-[12px] bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
             )}
             <span className="text-base">{icon}</span>
             <span className="text-xs sm:text-sm">{label}</span>

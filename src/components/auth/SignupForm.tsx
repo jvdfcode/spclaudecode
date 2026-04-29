@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { fieldErrors, signupSchema } from '@/lib/validations/authSchemas'
 
 function strengthOf(password: string): { score: number; label: string; color: string; width: string } {
   if (!password) return { score: 0, label: '', color: '#e2e8f0', width: '0%' }
@@ -26,6 +27,7 @@ export default function SignupForm() {
   const [password, setPassword]       = useState('')
   const [confirmPassword, setConfirm] = useState('')
   const [error, setError]             = useState('')
+  const [fieldErrs, setFieldErrs]     = useState<Record<string, string>>({})
   const [loading, setLoading]         = useState(false)
   const [emailSent, setEmailSent]     = useState(false)
 
@@ -35,14 +37,20 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setFieldErrs({})
 
-    if (!email.trim())               { setError('Informe seu email.'); return }
-    if (password.length < 6)         { setError('A senha deve ter pelo menos 6 caracteres.'); return }
-    if (password !== confirmPassword) { setError('As senhas não coincidem.'); return }
+    const parsed = signupSchema.safeParse({ email, password, confirmPassword })
+    if (!parsed.success) {
+      setFieldErrs(fieldErrors(parsed))
+      return
+    }
 
     setLoading(true)
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({
+      email: parsed.data.email,
+      password: parsed.data.password,
+    })
 
     if (error) {
       setError(
@@ -109,7 +117,14 @@ export default function SignupForm() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
             disabled={loading}
+            aria-invalid={Boolean(fieldErrs.email) || undefined}
+            aria-describedby={fieldErrs.email ? 'signup-email-error' : undefined}
           />
+          {fieldErrs.email && (
+            <span id="signup-email-error" className="auth-strength-label" style={{ color: '#ef4444' }}>
+              {fieldErrs.email}
+            </span>
+          )}
         </div>
 
         <div className="auth-field">
@@ -123,7 +138,14 @@ export default function SignupForm() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"
             disabled={loading}
+            aria-invalid={Boolean(fieldErrs.password) || undefined}
+            aria-describedby={fieldErrs.password ? 'signup-password-error' : 'signup-password-strength'}
           />
+          {fieldErrs.password && (
+            <span id="signup-password-error" className="auth-strength-label" style={{ color: '#ef4444' }}>
+              {fieldErrs.password}
+            </span>
+          )}
           {password && (
             <>
               <div className="auth-strength-bar-wrap">
@@ -133,6 +155,7 @@ export default function SignupForm() {
                 />
               </div>
               <span
+                id="signup-password-strength"
                 className="auth-strength-label"
                 style={{ color: strength.color === '#e2e8f0' ? '#94a3b8' : strength.color }}
               >
@@ -154,10 +177,14 @@ export default function SignupForm() {
             onChange={(e) => setConfirm(e.target.value)}
             autoComplete="new-password"
             disabled={loading}
+            aria-invalid={Boolean(fieldErrs.confirmPassword || confirmMismatch) || undefined}
+            aria-describedby={
+              fieldErrs.confirmPassword || confirmMismatch ? 'confirm-password-error' : undefined
+            }
           />
-          {confirmMismatch && (
-            <span className="auth-strength-label" style={{ color: '#ef4444' }}>
-              As senhas não coincidem
+          {(fieldErrs.confirmPassword || confirmMismatch) && (
+            <span id="confirm-password-error" className="auth-strength-label" style={{ color: '#ef4444' }}>
+              {fieldErrs.confirmPassword ?? 'As senhas não coincidem'}
             </span>
           )}
         </div>
@@ -171,7 +198,7 @@ export default function SignupForm() {
           </div>
         )}
 
-        <button type="submit" className="auth-btn" disabled={loading}>
+        <button type="submit" className="auth-btn" disabled={loading} aria-busy={loading}>
           {loading ? (
             <>
               <span className="auth-btn-spinner" />

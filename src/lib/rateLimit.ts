@@ -9,10 +9,9 @@ export interface RateLimitResult {
 
 /**
  * Converte qualquer string (ex.: IP) em UUID v4-like deterministico.
- * Usado para rate limit de usuarios anonimos onde user_id e requerido como uuid.
+ * Usado para rate limit de usuarios anonimos onde user_id é requerido como uuid.
  */
 export function stringToUuid(input: string): string {
-  // Hash djb2 simples
   let h1 = 0x9dc5811c
   let h2 = 0x6d4e4b1a
   for (let i = 0; i < input.length; i++) {
@@ -21,7 +20,6 @@ export function stringToUuid(input: string): string {
     h2 = Math.imul(h2 ^ c, 0x6c62272e) >>> 0
   }
   const toHex = (n: number, len: number) => n.toString(16).padStart(len, '0').slice(0, len)
-  // Formato: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx (version 4 like)
   const p1 = toHex(h1, 8)
   const p2 = toHex((h2 >>> 16) & 0xffff, 4)
   const p3 = '4' + toHex((h2 >>> 8) & 0x0fff, 3)
@@ -30,6 +28,16 @@ export function stringToUuid(input: string): string {
   return `${p1}-${p2}-${p3}-${p4}-${p5}`
 }
 
+/**
+ * Verifica e registra uso atômicamente via RPC `rate_limit_check_and_insert`
+ * (migration 009). A RPC adquire `pg_advisory_xact_lock(user_id || endpoint)`,
+ * conta a janela e insere a linha dentro da mesma transação. Resolve
+ * DEBT-DB-H3 (race condition count-then-insert em ambiente serverless).
+ *
+ * Sempre insere a linha — mesmo sobre o limite — para que tentativas
+ * subsequentes vejam a contagem real. O retorno indica se a tentativa
+ * atual está dentro do limite.
+ */
 export async function checkRateLimit(
   userId: string,
   endpoint: string,
@@ -37,28 +45,32 @@ export async function checkRateLimit(
   windowSeconds = 60,
 ): Promise<RateLimitResult> {
   const supabase = createServiceSupabase()
-  const windowStart = new Date(Date.now() - windowSeconds * 1000).toISOString()
 
-  const { count, error } = await supabase
-    .from('rate_limit_log')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', userId)
-    .eq('endpoint', endpoint)
-    .gte('created_at', windowStart)
+  const { data, error } = await supabase.rpc('rate_limit_check_and_insert', {
+    p_user_id: userId,
+    p_endpoint: endpoint,
+    p_window_seconds: windowSeconds,
+  })
 
-  if (error) {
+  if (error || !data) {
     // Fail open: não bloqueia usuário se o DB estiver indisponível
-    console.error(JSON.stringify({ ts: Date.now(), msg: 'rate_limit count error', error: error.message }))
+    console.error(
+      JSON.stringify({
+        ts: Date.now(),
+        msg: 'rate_limit rpc error',
+        error: error?.message ?? 'no data',
+      }),
+    )
     return { ok: true, limit, remaining: limit }
   }
 
-  const current = count ?? 0
+  const row = Array.isArray(data) ? data[0] : data
+  const previous = Number(row?.current_count ?? 0)
+  const totalAfterInsert = previous + 1
 
-  if (current >= limit) {
+  if (totalAfterInsert > limit) {
     return { ok: false, limit, remaining: 0, retryAfter: windowSeconds }
   }
 
-  await supabase.from('rate_limit_log').insert({ user_id: userId, endpoint })
-
-  return { ok: true, limit, remaining: limit - current - 1 }
+  return { ok: true, limit, remaining: limit - totalAfterInsert }
 }

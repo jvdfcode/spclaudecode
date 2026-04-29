@@ -45,38 +45,38 @@ export default function PositionOptions({ options, selected, onSelect }: Props) 
             className={cn(
               'relative rounded-[20px] border-2 p-4 text-left transition-all focus:outline-none overflow-hidden',
               isSelected
-                ? 'border-ink-950 bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] shadow-[0_8px_24px_rgba(45,50,119,0.12)]'
-                : 'border-paper-200 bg-white hover:border-paper-200 hover:shadow-[0_4px_16px_rgba(45,50,119,0.06)] cursor-pointer'
+                ? 'border-halo-navy bg-[linear-gradient(135deg,#eef0fb_0%,#f5f6ff_100%)] shadow-[0_8px_24px_rgba(45,50,119,0.12)]'
+                : 'border-halo-gray bg-white hover:border-halo-gray hover:shadow-[0_4px_16px_rgba(45,50,119,0.06)] cursor-pointer'
             )}
           >
             {isSelected && (
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
             )}
 
             <div className="flex items-start justify-between mb-3">
               <span className="text-xl" aria-hidden="true">{cfg.icon}</span>
               {isSelected && (
-                <span className="text-[10px] font-extrabold text-gold-400 bg-ink-950 rounded-full px-2 py-0.5">
+                <span className="text-[10px] font-extrabold text-halo-orange bg-halo-navy rounded-full px-2 py-0.5">
                   Selecionado
                 </span>
               )}
             </div>
 
-            <p className="text-sm font-extrabold text-ink-950">{option.label}</p>
-            <p className="text-xs text-ink-700 mt-0.5 leading-snug">{option.description}</p>
+            <p className="text-sm font-extrabold text-halo-navy">{option.label}</p>
+            <p className="text-xs text-halo-navy-60 mt-0.5 leading-snug">{option.description}</p>
 
             <div className="mt-3 space-y-0.5">
-              <p className="text-xl font-extrabold tabular-nums text-ink-950">
+              <p className="text-xl font-extrabold tabular-nums text-halo-navy">
                 {formatBRL(option.suggestedPrice)}
               </p>
               <p className={cn(
                 'text-xs font-semibold',
-                marginGood ? 'text-profit-500' : marginWarn ? 'text-warn-500' : 'text-loss-500'
+                marginGood ? 'text-halo-orange-80' : marginWarn ? 'text-halo-orange-100' : 'text-halo-navy'
               )}>
                 Margem: {formatPercent(option.marginPercent)}
               </p>
               {option.marketPosition && (
-                <p className="text-[10px] text-ink-500 mt-0.5">
+                <p className="text-[10px] text-halo-navy-40 mt-0.5">
                   {positionLabels[option.marketPosition]}
                 </p>
               )}

@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useFocusTrap } from '@/hooks/useFocusTrap'
 
 interface MobileDrawerProps {
   open: boolean
@@ -51,6 +52,7 @@ const navItems = [
 
 export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
   const pathname = usePathname()
+  const panelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -58,6 +60,10 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
   }, [open, onClose])
+
+  // Focus trap + retorno de foco ao trigger ao fechar (DEBT-FE-NEW-2)
+  // Usa data-app-shell como parent inert (esconde o resto da árvore para SR/teclado).
+  useFocusTrap(panelRef, open, '[data-app-shell] > div:not([role="dialog"])')
 
   return (
     <>
@@ -73,25 +79,27 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
 
       {/* Painel lateral */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="Menu de navegação"
+        tabIndex={-1}
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-64 flex flex-col md:hidden',
-          'bg-white border-r border-paper-200 shadow-[1px_0_0_0_rgba(45,50,119,0.04)]',
+          'bg-white border-r border-halo-gray shadow-[1px_0_0_0_rgba(45,50,119,0.04)]',
           'transition-transform duration-300 ease-out',
           open ? 'translate-x-0' : '-translate-x-full',
         )}
       >
         {/* Barra dourada no topo */}
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,#FFE600_0%,#2D3277_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-0.5 bg-[linear-gradient(90deg,var(--halo-orange)_0%,var(--halo-navy)_100%)]" />
 
         {/* Logo */}
         <div className="px-4 pt-6 pb-5 flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink-950 text-gold-400 text-sm flex-shrink-0 shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-halo-navy text-halo-orange text-sm flex-shrink-0 shadow-[0_4px_12px_rgba(45,50,119,0.18)]">
             💰
           </div>
-          <span className="text-sm font-extrabold tracking-[-0.02em] text-ink-950">SmartPreço</span>
+          <span className="text-sm font-extrabold tracking-[-0.02em] text-halo-navy">SmartPreço</span>
         </div>
 
         {/* Nav */}
@@ -106,13 +114,13 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
                   className={cn(
                     'group flex items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-semibold transition-all duration-200',
                     isActive
-                      ? 'bg-ink-950 text-white shadow-[0_4px_12px_rgba(45,50,119,0.22)]'
-                      : 'text-ink-700 hover:bg-paper-100 hover:text-ink-950',
+                      ? 'bg-halo-navy text-white shadow-[0_4px_12px_rgba(45,50,119,0.22)]'
+                      : 'text-halo-navy-60 hover:bg-halo-gray-15 hover:text-halo-navy',
                   )}
                 >
                   <span className={cn(
                     'transition-colors',
-                    isActive ? 'text-gold-400' : 'text-ink-700 group-hover:text-ink-950',
+                    isActive ? 'text-halo-orange' : 'text-halo-navy-60 group-hover:text-halo-navy',
                   )}>
                     {item.icon}
                   </span>
@@ -123,8 +131,8 @@ export default function MobileDrawer({ open, onClose }: MobileDrawerProps) {
           })}
         </nav>
 
-        <div className="px-4 py-4 border-t border-paper-200">
-          <p className="text-[10px] text-ink-500 text-center font-medium">SmartPreço · v1.0</p>
+        <div className="px-4 py-4 border-t border-halo-gray">
+          <p className="text-[10px] text-halo-navy-40 text-center font-medium">SmartPreço · v1.0</p>
         </div>
       </div>
     </>

@@ -38,7 +38,7 @@ export default async function SkusPage({ searchParams }: Props) {
           />
           <Link
             href="/calculadora"
-            className="btn-genie shrink-0 inline-flex items-center justify-center gap-2 rounded-[14px] bg-ink-950 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:shadow-[0_6px_20px_rgba(45,50,119,0.36)] transition-all duration-[220ms] ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-[2px] active:scale-[0.96] mt-6"
+            className="btn-genie shrink-0 inline-flex items-center justify-center gap-2 rounded-[14px] bg-halo-navy px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:shadow-[0_6px_20px_rgba(45,50,119,0.36)] transition-all duration-[220ms] ease-[cubic-bezier(.34,1.56,.64,1)] hover:-translate-y-[2px] active:scale-[0.96] mt-6"
           >
             + Nova Análise
           </Link>
@@ -62,22 +62,22 @@ export default async function SkusPage({ searchParams }: Props) {
 
 function EmptySkus({ hasFilter }: { hasFilter: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-paper-200 bg-white py-16 text-center gap-4">
+    <div className="flex flex-col items-center justify-center rounded-[24px] border-2 border-dashed border-halo-gray bg-white py-16 text-center gap-4">
       <span className="text-5xl">📦</span>
       {hasFilter ? (
         <>
-          <p className="text-sm font-bold text-ink-950">Nenhum SKU encontrado com esses filtros</p>
-          <p className="text-xs text-ink-700">Tente ajustar o filtro de status ou a busca</p>
+          <p className="text-sm font-bold text-halo-navy">Nenhum SKU encontrado com esses filtros</p>
+          <p className="text-xs text-halo-navy-60">Tente ajustar o filtro de status ou a busca</p>
         </>
       ) : (
         <>
-          <p className="text-sm font-bold text-ink-950">Nenhum produto salvo ainda</p>
-          <p className="text-xs text-ink-700 max-w-xs">
+          <p className="text-sm font-bold text-halo-navy">Nenhum produto salvo ainda</p>
+          <p className="text-xs text-halo-navy-60 max-w-xs">
             Use a calculadora para analisar um produto e clique em &ldquo;Salvar como SKU&rdquo;
           </p>
           <Link
             href="/calculadora"
-            className="mt-2 rounded-[12px] bg-ink-950 px-5 py-2.5 text-sm font-bold text-white hover:bg-ink-900 transition-colors"
+            className="mt-2 rounded-[12px] bg-halo-navy px-5 py-2.5 text-sm font-bold text-white hover:bg-halo-black transition-colors"
           >
             Ir para a Calculadora
           </Link>

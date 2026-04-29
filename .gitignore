@@ -8,6 +8,7 @@ out/
 build/
 
 # Environment — NUNCA commitar
+.env
 .env.local
 .env.*.local
 
@@ -34,3 +35,4 @@ coverage/
 .aiox/sessions/
 .env*.local
 supabase/.temp/
+tests/output/

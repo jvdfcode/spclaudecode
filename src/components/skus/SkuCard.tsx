@@ -29,7 +29,7 @@ export default function SkuCard({ sku }: Props) {
     )}>
       <div className="flex items-start justify-between gap-2">
         <Link href={`/skus/${sku.id}`} className="flex-1 min-w-0">
-          <h3 className="text-sm font-semibold text-ink-900 leading-tight line-clamp-2 hover:text-ink-950 transition-colors">
+          <h3 className="text-sm font-semibold text-gray-800 leading-tight line-clamp-2 hover:text-halo-navy transition-colors">
             {sku.name}
           </h3>
         </Link>
