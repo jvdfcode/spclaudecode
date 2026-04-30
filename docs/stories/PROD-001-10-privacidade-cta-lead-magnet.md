@@ -1,7 +1,7 @@
 # Story PROD-001-10 — Publicar /privacidade e ativar CTA Lead Magnet
 
 **Epic:** EPIC-PROD-001
-**Status:** Draft
+**Status:** Done
 **Owner:** Pedro Emilio
 **Severidade origem:** B5
 **Esforço estimado:** 2 SP

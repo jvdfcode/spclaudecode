@@ -1,7 +1,7 @@
 # Story PROD-001-13 — Instrumentar 4 eventos de funil + UTM
 
 **Epic:** EPIC-PROD-001
-**Status:** Draft
+**Status:** Done
 **Owner:** Pedro Emilio (executor: @dev Dex via handoff)
 **Severidade origem:** — (nova story v2, input Thiago Finch)
 **Esforço estimado:** 2-3 SP
