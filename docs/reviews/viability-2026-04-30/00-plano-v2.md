@@ -1,5 +1,11 @@
 # Plano v2 — Análise de Viabilidade SmartPreço (absorve mesa redonda 7 personas)
 
+> ⚠️ **SUPERSEDED — esta versão foi substituída por `00-plano-v3.md` em 2026-05-01.**
+> **Razão:** import da squad MeliDev (`squads/melidev/`, commit `4eba5ef`) permitiu trocar "spawn anônimo subagent_type=analyst" por chamada formal a `@melidev-chief` que rota nos 3 specialists ortogonais (`@melidev`, `@meli-strategist`, `@meli-ops`) com `[SOURCE:]` obrigatório por finding. Resolve definitivamente o veto Pedro Valério ("owner anônimo não é auditável").
+> **Conteúdo preservado** abaixo para auditoria histórica do roundtable de 7 personas e das 8 mudanças obrigatórias absorvidas.
+
+---
+
 **Data:** 2026-04-30
 **Versão:** v2 (absorve roundtable adversarial completo)
 **Origem do feedback:**
