@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-01
+**Última atualização:** 2026-05-01 (sessão tarde — VIAB-R1-1 implementado)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -22,7 +22,7 @@
 |------|:------:|-------|---------|---------------|
 | **EPIC-PROD-001** — Caminho à produção | ✅ Done | Pedro Emilio + @pm | 13/13 | — |
 | **EPIC-MKT-001** — Validação de mercado | 🟡 InProgress | Pedro Emilio | 5 (entrevistas ICP MKT-001-2 pendentes) | R2 do roadmap (5 entrevistas, 7.5h em 14 dias) |
-| **EPIC-VIAB-R1** — Recomendações 30 dias | 🟡 Draft | Pedro Emilio (executor: @dev) | 3 (Draft) | `@po *validate-story-draft VIAB-R1-1` |
+| **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (1/3) | Pedro Emilio (executor: @dev) | VIAB-R1-1 InReview, R1-2/R1-3 Draft | Apply migration 012 + smoke prod; depois R1-2 e R1-3 |
 | **EPIC-TD-001** — Debt paydown H1 | 📋 Backlog | — | — | — |
 
 ---
@@ -56,7 +56,7 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 
 | # | Achado | Story relacionada | Status |
 |---|--------|-------------------|:------:|
-| F2 | Race condition OAuth ATIVA (`acquire_user_lock` inacessível) | VIAB-R1-1 | 🟡 Draft |
+| F2 | Race condition OAuth ATIVA (`acquire_user_lock` inacessível) | VIAB-R1-1 | 🟢 InReview (apply migration pendente) |
 | M6 | Home `/` redireciona pra `/dashboard` — sem landing pública | VIAB-R1-2 | 🟡 Draft |
 | M1 | ICP é demografia genérica, zero entrevistas | R2 (não delegável) | 📋 Backlog |
 | F3 | Scraping HTML + ML lançou calculadora oficial 2026 | VIAB-R1-3 | 🟡 Draft |
@@ -65,13 +65,15 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 
 ## Próximos passos imediatos (priorizados)
 
-### Bloqueador (custo zero)
-1. **`@devops *push`** — publicar 4 commits desta sessão em `origin/main`
+### Apply em prod (Pedro/devops)
+1. **Aplicar migration 012** no Supabase prod (`jvdfcode`) — `supabase db push` ou via dashboard
+2. **Regenerar tipos** Supabase (não é estritamente necessário — migration 012 não altera schema, apenas permissions)
+3. **Smoke test manual** — conectar conta ML de teste, verificar refresh OK e Sentry sem `lock_error`
+4. **Monitorar Sentry 48h** — DoD final de VIAB-R1-1
 
 ### Sprint imediato (próxima sessão)
-2. **`@po *validate-story-draft VIAB-R1-1`** — transição Draft → Ready
-3. **`@dev *develop-story VIAB-R1-1`** — implementar fix race condition (P0 ATIVA)
-4. Mesmo workflow para VIAB-R1-2 e VIAB-R1-3
+5. **VIAB-R1-2** (landing pública) — `@po *validate-story-draft VIAB-R1-2` → @dev
+6. **VIAB-R1-3** (backoff ML API) — mesmo workflow
 
 ### Trabalho humano (Pedro, não delegável)
 5. **Agendar 5 entrevistas ICP** (R2, ~7.5h em 14 dias) — destrava todas as decisões mercadológicas
