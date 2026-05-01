@@ -1,0 +1,123 @@
+# =============================================================================
+# MeliDev Squad — Mercado Livre Specialist Squad
+# =============================================================================
+# Created: 2026-04-30
+# Focus: Mercado Livre Brasil — integração técnica, estratégia comercial, compliance
+# =============================================================================
+
+metadata:
+  score: 9.0
+  name: melidev
+  display_name: "MeliDev Squad"
+  version: "1.0.0"
+  domain: marketplace-mercado-livre
+  created_at: "2026-04-30"
+  last_updated: "2026-04-30"
+  status: active
+  author: "Pedro Emilio Ferreira <pedroemilio@orange.casa>"
+  license: MIT
+  honesty_disclosure: |
+    Todos os specialist agents deste squad são SPECIALIST AGENTS DE DOMÍNIO,
+    não clones biográficos de pessoas reais. Nicho público brasileiro de
+    "expert ML" tem material insuficiente para mind clone autêntico
+    (regra @oalanicolas: "se entrar cocô, sai cocô"). Por isso, agents são
+    ancorados em fontes oficiais + materiais públicos curados, com
+    [SOURCE:] verificável em toda heurística.
+
+description: |
+  Squad focado em Mercado Livre Brasil.
+  Cobre os 3 domínios ortogonais que vendedor real enfrenta:
+  - Técnico: integração API ML (OAuth, items, orders, webhooks, Ads via API)
+  - Comercial: estratégia de listing, Buy Box, Mercado Ads, logística
+  - Compliance: reputação, mediações, suspensões, CDC, jurisprudência
+
+objectives:
+  - Reduzir tempo de integração técnica com a API do ML em projetos novos
+  - Otimizar listing e ranqueamento orgânico via heurísticas ancoradas
+  - Defender seller contra punições, mediações e suspensões indevidas
+  - Toda recomendação com [SOURCE:] verificável — zero cocô na curadoria
+
+key_capabilities:
+  - OAuth 2.0 ML + token lifecycle + multi-seller token isolation
+  - Items/Orders/Shipments/Notifications API
+  - Webhook reliability (500ms SLA, idempotência, missed_feeds)
+  - Listing optimization: título, atributos, categoria, variations
+  - Buy Box diagnosis e recovery
+  - Mercado Ads (Product Ads + Brand Ads) — ACOS, bid optimization
+  - Reputação ML: cores, métricas, janela 60 dias
+  - Mediações e claims defensiva
+  - Recurso administrativo + judicial contra suspensões
+  - CDC + Marco Civil aplicados a marketplace
+
+tier_system:
+  orchestrator:
+    name: "Orchestration"
+    purpose: "Routing user requests to the right specialist"
+    agents:
+      - melidev-chief
+  tier_1_specialists:
+    name: "Specialists"
+    purpose: "Orthogonal domain expertise"
+    agents:
+      - melidev
+      - meli-strategist
+      - meli-ops
+
+agents:
+  - id: melidev-chief
+    name: MeliDev Chief
+    role: "MeliDev Squad Orchestrator"
+    file: agents/melidev-chief.md
+    tier: orchestrator
+    description: "Roteia pedidos sobre Mercado Livre para o specialist correto."
+
+  - id: melidev
+    name: MeliDev
+    role: "Senior Marketplace Integration Engineer — Mercado Livre API"
+    file: agents/melidev.md
+    tier: 1
+    description: "Integração técnica com API ML — OAuth, items, orders, webhooks, rate limit, error handling."
+
+  - id: meli-strategist
+    name: MeliStrategist
+    role: "Marketplace Growth & Listing Strategist — Mercado Livre"
+    file: agents/meli-strategist.md
+    tier: 1
+    description: "Estratégia de listing, Buy Box, Mercado Ads, logística (Full/Flex/Coleta), kit/variations."
+
+  - id: meli-ops
+    name: MeliOps
+    role: "Marketplace Compliance & Operations Specialist — Mercado Livre"
+    file: agents/meli-ops.md
+    tier: 1
+    description: "Reputação, mediações, suspensões, recurso administrativo/judicial, CDC + Marco Civil."
+
+workflows: []
+
+tasks: []
+
+templates: []
+
+checklists: []
+
+routing_matrix:
+  - trigger: "API, OAuth, webhook, endpoint, código, integração, SDK, rate limit, refresh token"
+    routes_to: "@melidev"
+  - trigger: "vender mais, anúncio, título, Buy Box, Mercado Ads, campanha, kit, variação, Full vs Flex, ranqueamento, ACOS"
+    routes_to: "@meli-strategist"
+  - trigger: "reputação, suspensão, mediação, claim, infração, advertência, recurso, CDC, bloqueio, dinheiro retido, advogado"
+    routes_to: "@meli-ops"
+  - trigger: "Pedido cruzado (ex: criar anúncio via API que ranqueie melhor)"
+    routes_to: "Pipeline: @meli-strategist → @melidev"
+  - trigger: "Mercado Pago, Shopee, Amazon, Magalu, outros marketplaces"
+    routes_to: "Out of scope — handoff externo ou aviso de squad ausente"
+
+handoff_external:
+  - to: "@dev"
+    when: "Implementação real de código no projeto smartpreço"
+  - to: "@architect"
+    when: "Decisão arquitetural macro (filas, storage, escala multi-tenant)"
+  - to: "@devops"
+    when: "git push, deploy, secrets rotation (regra constitucional AIOX)"
+  - to: "squad-creator-pro/@oalanicolas"
+    when: "Usuário tem material denso de pessoa real e quer mind clone biográfico"

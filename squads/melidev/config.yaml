@@ -1,0 +1,73 @@
+name: melidev
+version: 1.0.0
+slashPrefix: ML
+title: MeliDev Squad — Mercado Livre Specialist
+description: Squad focado em Mercado Livre Brasil (integração API, estratégia de listing/Ads, compliance/reputação). Specialist agents de domínio com fontes ancoradas em [SOURCE:] verificáveis.
+author: Pedro Emilio Ferreira <pedroemilio@orange.casa>
+icon: 🛒
+type: specialist
+entry_agent: melidev-chief
+independence: true
+independence_details: |
+  Squad consultivo — não escreve código no projeto, sugere com [SOURCE:].
+  Implementação real é delegada para @dev / @architect / @devops.
+  Funciona com ou sem o squad-creator-pro instalado (referências externas
+  são suavizadas para handoff opcional).
+
+dependencies:
+  optional:
+    - name: API Mercado Livre
+      version: v1
+      description: developers.mercadolivre.com.br — fonte canônica
+    - name: Central de Vendedores ML
+      version: '2026'
+      description: política oficial de seller (reputação, infrações, Buy Box)
+    - name: Mercado Ads
+      version: '2026'
+      description: ads.mercadolivre.com.br/docs — Product Ads e Brand Ads
+
+metadata:
+  version: 1.0.0
+  score: 9.0
+  last_verified_sources: '2026-04-30'
+
+tier_system:
+  orchestrator:
+    description: Routes user requests to the right specialist
+    agent: melidev-chief
+  tier_1_specialists:
+    description: Domain specialists — orthogonal expertise
+    agents:
+      - melidev
+      - meli-strategist
+      - meli-ops
+
+agents:
+  - melidev-chief
+  - melidev
+  - meli-strategist
+  - meli-ops
+
+tasks: []
+
+templates: []
+
+checklists: []
+
+workflows: []
+
+tags:
+  - mercado-livre
+  - marketplace
+  - meli
+  - api-integration
+  - oauth
+  - webhooks
+  - listing-optimization
+  - mercado-ads
+  - buy-box
+  - reputation
+  - compliance
+  - cdc
+  - marketplace-jurisprudence
+  - brazil

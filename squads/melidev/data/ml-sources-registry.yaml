@@ -1,0 +1,244 @@
+# =============================================================================
+# MeliDev Squad — Consolidated Sources Registry
+# =============================================================================
+# Purpose: Single source-of-truth for all [SOURCE:] tags used by squad agents.
+# Update last_verified when re-validating URLs against current state.
+# Generated: 2026-04-30
+# =============================================================================
+
+metadata:
+  version: "1.0.0"
+  generated: "2026-04-30"
+  last_verified: "2026-04-30"
+  honesty_clause: |
+    Sources são reais e verificadas. Se algum link quebrar ou política mudar,
+    o agent deve flaggar [STALE-SOURCE] e pedir re-validação ao usuário.
+
+# =============================================================================
+# OFICIAL — Mercado Livre canonical
+# =============================================================================
+
+sources:
+  ML-OFFICIAL:
+    name: "Documentação oficial Mercado Livre Developers"
+    base_url: "https://developers.mercadolivre.com.br"
+    api_base: "https://api.mercadolibre.com"
+    auth_base: "https://auth.mercadolibre.com.ar"
+    type: "Doc oficial API"
+    used_by: [melidev]
+    last_verified: "2026-04-30"
+    key_endpoints:
+      auth_pt: "https://developers.mercadolivre.com.br/pt_br/autenticacao-e-autorizacao"
+      auth_en: "https://developers.mercadolivre.com.br/en_us/authentication-and-authorization"
+      access_token: "https://developers.mercadolivre.com.br/pt_br/obtencao-do-access-token"
+      register_app: "https://developers.mercadolivre.com.br/en_us/register-your-application"
+      notifications_pt: "https://developers.mercadolivre.com.br/pt_br/produto-receba-notificacoes"
+      notifications_en: "https://developers.mercadolivre.com.br/en_us/products-receive-notifications"
+      api_docs_pt: "https://developers.mercadolivre.com.br/pt_br/api-docs-pt-br"
+      start_testing: "https://developers.mercadolivre.com.br/en_us/start-testing"
+    key_facts:
+      - "access_token expires_in: 21600s (6h)"
+      - "rate limit: 1500 req/min/seller — exceeded returns 429 with empty body"
+      - "webhook handler must respond HTTP 200 in <500ms (fallback disables topic above this)"
+      - "missed_feeds: notif considered lost after 8th retry (~1h)"
+      - "redirect_uri must match EXACTLY what's registered in Mis Aplicaciones"
+
+  ML-CENTRAL:
+    name: "Central de Vendedores Mercado Livre"
+    base_url: "https://www.mercadolivre.com.br/ajuda"
+    partners_portal: "https://centraldepartners.mercadolivre.com.br"
+    type: "Política oficial seller"
+    used_by: [meli-strategist, meli-ops]
+    last_verified: "2026-04-30"
+    key_topics:
+      reputacao: "https://www.mercadolivre.com.br/ajuda/como-funciona-a-reputacao-como-vendedor_1382"
+      buy_box: "Critérios oficiais de Buy Box (ranking + reputação + frete + Full)"
+      infracoes: "Tipos de advertência, suspensão temporária e definitiva"
+      logistica: "Mercado Envios — Full vs Flex vs Coleta vs Tradicional"
+    key_facts:
+      - "Reputação 60 dias rolling: cores verde claro/verde escuro/amarelo/laranja/vermelho"
+      - "Buy Box requer reputação verde + frete competitivo + variação atrativa"
+      - "Resposta a pergunta tem prazo de 24h — atraso impacta reputação"
+      - "Cancelamento por falta de estoque é infração grave"
+      - "Atributos completos (100%) impactam ranqueamento orgânico"
+
+  ML-ADS-DOC:
+    name: "Documentação Mercado Ads"
+    base_url: "https://ads.mercadolivre.com.br/docs"
+    type: "Doc oficial Mercado Ads"
+    used_by: [meli-strategist]
+    last_verified: "2026-04-30"
+    key_topics:
+      product_ads: "Campanhas CPC para anúncios"
+      brand_ads: "Brand awareness com display"
+      acos: "Advertising Cost of Sales — métrica core de eficiência"
+
+# =============================================================================
+# DEV / TÉCNICO — referências curadas para melidev
+# =============================================================================
+
+  ICARO-EBOOK:
+    name: "Ícaro Jobs — Dominando a API do Mercado Livre"
+    url: "https://github.com/icarojobs/dominando-api-mercado-livre"
+    type: "Ebook + repo (PT-BR, único material estruturado em português)"
+    used_by: [melidev]
+    last_verified: "2026-04-30"
+    classification: "OURO único"
+
+  FIAMON-S3:
+    name: "Julio Fiamoncini — Como integrar a API do Mercado Livre"
+    url: "https://dev.to/fiamon/como-integrar-a-api-do-mercado-livre-3ikn"
+    type: "Post Dev.to (refresh token strategy + S3)"
+    used_by: [melidev]
+    last_verified: "2026-04-30"
+    classification: "MISTO"
+
+  DSC-LIB:
+    name: "Discovery Tecnologia — dsc-mercado-livre"
+    url: "https://github.com/discovery-tecnologia/dsc-mercado-livre"
+    type: "SDK PHP open-source"
+    used_by: [melidev]
+    last_verified: "2026-04-30"
+    classification: "BRONZE"
+
+  FIDELIS-SDK:
+    name: "Lucas Fidelis — mercadolivre-php-sdk"
+    url: "https://github.com/LucasFidelis/mercadolivre-php-sdk"
+    type: "SDK PHP wrapper"
+    used_by: [melidev]
+    last_verified: "2026-04-30"
+    classification: "BRONZE"
+
+# =============================================================================
+# COMERCIAL / CRESCIMENTO — referências curadas para meli-strategist
+# =============================================================================
+
+  GUSTAVO-LUCAS:
+    name: "Gustavo Lucas — Mentor ML e ex-Animafest"
+    url: "https://gustavolucas.net/"
+    type: "Mentoria 1-to-1 + cursos (~10 anos expertise)"
+    used_by: [meli-strategist]
+    last_verified: "2026-04-30"
+    classification: "OURO ativo (único caso consolidado PT-BR)"
+    track_record: "Vendeu Animafest (Disney/Marvel holding 2016), Top Partner Tiny ERP, Consultor Certificado Meli"
+
+  PARROS-CASE:
+    name: "Raphael Parros — Caso histórico R$7M em 1 ano (2017)"
+    url: "https://exame.com/pme/quem-e-o-maior-vendedor-brasileiro-do-ano-no-mercado-livre/"
+    type: "Reportagem Exame — case documentado"
+    used_by: [meli-strategist]
+    last_verified: "2026-04-30"
+    classification: "OURO histórico (inativo como criador público)"
+    track_record: "Maior vendedor Brasil 2017 (Prêmio Histórias que Inspiram), RP SOM"
+
+# =============================================================================
+# COMPLIANCE / JURÍDICO — referências para meli-ops
+# =============================================================================
+
+  TARCISIO:
+    name: "Prof. Dr. Tarcísio Teixeira — Comércio Eletrônico"
+    url: "https://www.tarcisioteixeira.com.br/"
+    book: "Comércio Eletrônico (Marco Civil + regulamentação Brasil)"
+    type: "Livro + artigos Migalhas"
+    used_by: [meli-ops]
+    last_verified: "2026-04-30"
+    classification: "OURO — fundamentação jurídica densa"
+    credentials: "Doutor em Direito Empresarial (USP), professor"
+    key_articles:
+      - "https://www.migalhas.com.br/depeso/292554/marketplace---briefing-de-sua-responsabilidade"
+
+  BIANCA-MURTA:
+    name: "Adv. Bianca Murta — Especialista suspensão ML"
+    url: "https://www.bmurta.com/"
+    blog: "https://www.bmurta.com/blog/advogado-especialista-em-mercado-livre"
+    type: "Blog técnico com decisões judiciais aplicáveis"
+    used_by: [meli-ops]
+    last_verified: "2026-04-30"
+    classification: "OURO — prática jurídica focada"
+    credentials: "OAB-SP nº 483.460, especialista em desbloqueio + dinheiro retido ML"
+
+  CDC:
+    name: "Código de Defesa do Consumidor — Lei 8.078/90"
+    url: "https://www.planalto.gov.br/ccivil_03/leis/l8078compilado.htm"
+    type: "Base legal canônica brasileira"
+    used_by: [meli-ops]
+    last_verified: "2026-04-30"
+    key_articles:
+      - "Art 18: vícios de qualidade (30 dias)"
+      - "Art 26: prazos decadenciais"
+      - "Art 49: arrependimento de 7 dias em compras à distância"
+
+  MARCO-CIVIL:
+    name: "Marco Civil da Internet — Lei 12.965/14"
+    url: "https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l12965.htm"
+    type: "Base legal — responsabilidade de intermediador"
+    used_by: [meli-ops]
+    last_verified: "2026-04-30"
+    key_articles:
+      - "Art 18-19: responsabilidade civil de provedores"
+
+  STJ-JURIS:
+    name: "Jurisprudência STJ sobre marketplace"
+    url: "https://www.jusbrasil.com.br/jurisprudencia/busca?q=mercado+livre"
+    type: "Decisões consolidadas STJ + TJDFT"
+    used_by: [meli-ops]
+    last_verified: "2026-04-30"
+    classification: "MISTO (recurso estruturado, não pessoa)"
+    key_concept: "Responsabilidade SOLIDÁRIA do marketplace (jurisprudência majoritária)"
+
+# =============================================================================
+# META — last resort
+# =============================================================================
+
+  INFERRED:
+    name: "Inferência de pattern geral / boas práticas"
+    note: "Não está documentado oficialmente. SEMPRE flaggar e pedir validação."
+    used_by: [melidev, meli-strategist, meli-ops]
+    rule: "Se possível promover para uma fonte real, fazer. Senão, manter [INFERRED]."
+
+  LEGAL-DISCLAIMER:
+    name: "Disclaimer obrigatório em meli-ops"
+    text: |
+      Esta orientação é informativa e baseada em política oficial ML + CDC + Marco Civil
+      + jurisprudência STJ. NÃO substitui consulta a advogado em casos concretos.
+      Para suspensão definitiva ou retenção de saldo >R$5k, consulte especialista
+      (ex: [BIANCA-MURTA]) antes de agir.
+    used_by: [meli-ops]
+    triggers:
+      - "*claim-defense"
+      - "*suspension-recourse"
+      - Qualquer pergunta com "advogado", "ação judicial", "indenização"
+
+  ML-POLICY-CHANGES:
+    name: "Aviso de volatilidade de política ML"
+    text: |
+      Política ML pode mudar sem aviso. Validar no Central de Vendedores
+      (https://www.mercadolivre.com.br/ajuda) no momento da decisão concreta.
+      last_verified de [ML-CENTRAL]: 2026-04-30.
+    used_by: [meli-strategist, meli-ops]
+
+# =============================================================================
+# Hierarquia de fontes (precedência para resolução de conflitos)
+# =============================================================================
+
+precedence:
+  tier_1_canonical:
+    - ML-OFFICIAL
+    - ML-CENTRAL
+    - ML-ADS-DOC
+  tier_2_legal:
+    - CDC
+    - MARCO-CIVIL
+    - STJ-JURIS
+  tier_3_curated:
+    - TARCISIO
+    - BIANCA-MURTA
+    - GUSTAVO-LUCAS
+    - ICARO-EBOOK
+    - FIAMON-S3
+    - PARROS-CASE
+  tier_4_supplementary:
+    - DSC-LIB
+    - FIDELIS-SDK
+  tier_5_last_resort:
+    - INFERRED  # sempre com pedido de validação
