@@ -1,8 +1,12 @@
+import * as Sentry from '@sentry/nextjs'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { MlListing, MlRawResponse } from '@/types'
 
 const ML_TOKEN_URL = 'https://api.mercadolibre.com/oauth/token'
 const ML_SEARCH_URL = 'https://api.mercadolibre.com/sites/MLB/search'
+
+const REFRESH_MAX_ATTEMPTS = 2
+const REFRESH_BACKOFF_MS = [1000, 2000] as const
 
 interface TokenRow {
   access_token: string
@@ -16,23 +20,43 @@ interface TokenResponse {
   expires_in: number
 }
 
+async function postRefreshToken(refreshToken: string): Promise<TokenResponse | null> {
+  const res = await fetch(ML_TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+    body: new URLSearchParams({
+      grant_type: 'refresh_token',
+      client_id: process.env.ML_APP_ID!,
+      client_secret: process.env.ML_CLIENT_SECRET!,
+      refresh_token: refreshToken,
+    }),
+  })
+  if (!res.ok) return null
+  return await res.json() as TokenResponse
+}
+
+/**
+ * Refresh token com retry e backoff (resolve F2 Finding 4 — falha transiente).
+ * 2 tentativas com 1s/2s entre elas. Falhas terminais (refresh_token inválido)
+ * retornam null na 1ª tentativa; falhas transientes (rede, 500 ML) tentam de novo.
+ */
 async function refreshToken(refreshToken: string): Promise<TokenResponse | null> {
-  try {
-    const res = await fetch(ML_TOKEN_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
-      body: new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: process.env.ML_APP_ID!,
-        client_secret: process.env.ML_CLIENT_SECRET!,
-        refresh_token: refreshToken,
-      }),
-    })
-    if (!res.ok) return null
-    return await res.json() as TokenResponse
-  } catch {
-    return null
+  for (let attempt = 0; attempt < REFRESH_MAX_ATTEMPTS; attempt++) {
+    try {
+      const result = await postRefreshToken(refreshToken)
+      if (result) return result
+      if (attempt < REFRESH_MAX_ATTEMPTS - 1) {
+        await new Promise(resolve => setTimeout(resolve, REFRESH_BACKOFF_MS[attempt]))
+      }
+    } catch (err) {
+      if (attempt === REFRESH_MAX_ATTEMPTS - 1) {
+        Sentry.captureException(err, { tags: { component: 'ml_token_refresh' } })
+        return null
+      }
+      await new Promise(resolve => setTimeout(resolve, REFRESH_BACKOFF_MS[attempt]))
+    }
   }
+  return null
 }
 
 /**
@@ -43,8 +67,9 @@ async function refreshToken(refreshToken: string): Promise<TokenResponse | null>
  * outra instância já fez refresh enquanto este request esperava o lock, a
  * releitura retorna o token novo sem chamar a API ML novamente.
  *
- * Requer: migration 009 (`acquire_user_lock`); supabase deve ter user_id
- * resolvível (auth.uid em RLS, ou single-row para service role).
+ * Requer: migrations 009 (`acquire_user_lock`) + 012 (GRANT EXECUTE para
+ * `authenticated`); supabase deve ter user_id resolvível (auth.uid em RLS,
+ * ou single-row para service role).
  */
 export async function getMlAccessToken(supabase: SupabaseClient): Promise<string | null> {
   const initial = await supabase
@@ -67,15 +92,17 @@ export async function getMlAccessToken(supabase: SupabaseClient): Promise<string
   })
 
   if (lockError) {
-    console.error(
-      JSON.stringify({
-        ts: Date.now(),
-        msg: 'ml_token_refresh lock error',
-        error: lockError.message,
-      }),
-    )
-    // Fallback sem lock — race ainda possível, mas melhor que falhar tudo
-    return row.access_token
+    // [VIAB-R1-1] Após migration 012 conceder GRANT EXECUTE para `authenticated`,
+    // permission denied não deve mais ocorrer. Qualquer erro aqui é sinal de
+    // regressão (migration revertida, role mudado) — capturamos e falhamos
+    // explicitamente em vez de mascarar com fallback sem lock (que reintroduz
+    // a race condition F2).
+    Sentry.captureMessage('ml_token_refresh lock acquisition failed', {
+      level: 'error',
+      tags: { component: 'ml_token_refresh', kind: 'lock_error' },
+      extra: { error: lockError.message, code: lockError.code },
+    })
+    return null
   }
 
   // Após o lock, relê — pode ter sido renovado por outro request
