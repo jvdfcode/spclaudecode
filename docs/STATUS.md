@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-02 (sequência triplo end-to-end: VIAB-R1-3 implementado + Letzee/GoSmarter mapeados + EPIC-VIAB-R3 criado + agente strategist-swot-canvas)
+**Última atualização:** 2026-05-02 (quádruplo end-to-end: VIAB-R3-1 + R3-2 implementados + SWOT/Canvas/BP via @strategist + comparativo SmartPreço vs Letzee 8 personas)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -23,7 +23,7 @@
 | **EPIC-PROD-001** — Caminho à produção | ✅ Done | Pedro Emilio + @pm | 13/13 | — |
 | **EPIC-MKT-001** — Validação de mercado | 🟢 InReview parcial | Pedro Emilio | MKT-001-2 v1 SINTÉTICA executada (10 entrevistas sintéticas + Método B + C) | Validar ≥3 findings com vendedor real (mês 2-3) |
 | **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (4/4) ✅ | Pedro Emilio (executor: @dev) | R1-1, R1-2, R1-2.1, R1-3 InReview | Apply migration 012 prod + review preview Vercel + smoke 48h |
-| **EPIC-VIAB-R3** — Trial 14d + Headline + Concorrência | 🟡 Draft (3 stories) | Pedro Emilio | R3-1, R3-2, R3-3 Draft | Próxima sessão @dev após R1 em prod |
+| **EPIC-VIAB-R3** — Trial 14d + Headline + Concorrência | 🟢 InReview (2/3) | Pedro Emilio (executor: @dev) | R3-1 + R3-2 InReview · R3-3 Draft | Apply migration 013 + promote /precos prod + R3-3 (bloco concorrência) |
 | **EPIC-TD-001** — Debt paydown H1 | 📋 Backlog | — | — | — |
 
 ---
@@ -77,10 +77,16 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 6. **Plantar 1 post útil em 1 grupo FB ML** ("Vendedores ML BR" 60k — canal #1 confirmado pela tripla)
 7. **Decisão de pricing definitivo R$39 vs R$49** aguarda 3+ entrevistas reais (não bloqueia VIAB-R1-3)
 
-### Sprint imediato (próxima sessão @dev)
-5. **VIAB-R3-1** (Trial 14d) — depende R1 em prod; maior impacto comercial direto
-6. **VIAB-R3-2** (headline /precos) — paralelo a R3-1, sem dependência
-7. **VIAB-R3-3** (bloco concorrência /precos) — paralelo, depende R3-2 estar OK
+### P0 do painel comparativo Letzee (8/8 personas votam unânime)
+5. **Aplicar Certificação App ML** (developers.mercadolivre.com.br) — 4-8 semanas, P0 não-negociável
+6. **Decisão founder full-time vs vender tese** — 90 dias gate Nardon
+7. **Plantar 1 post útil no FB "Vendedores ML BR" 60k** — esta semana, custo zero
+8. **Migrar scraping HTML → API oficial ML** após cert (VIAB-R1-3.1 backlog)
+
+### Sprint próxima sessão (após Pedro decisões)
+9. **VIAB-R3-3** (bloco concorrência /precos) — última story do EPIC-VIAB-R3
+10. **PROD-002** (cert ML) — criar story dedicada
+11. **PROD-003** (Chrome Extension MVP) — paridade Letzee point-of-decision
 
 ### Trabalho humano (Pedro, não delegável)
 5. **Agendar 5 entrevistas ICP** (R2, ~7.5h em 14 dias) — destrava todas as decisões mercadológicas
