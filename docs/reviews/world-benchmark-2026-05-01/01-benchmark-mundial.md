@@ -194,6 +194,50 @@
 
 ---
 
+### 1.11 Letzee (Brasil — Mercado Livre) — DESCOBERTO VIA MÉTODO B (2026-05-02)
+
+- **URL:** https://letzee.ai
+- **Pricing entry USD:** ~$12 (R$ 59/mês entry, "plano Clareza" até R$ 50k de faturamento; escala por faturamento — "plano Escala" R$ 99; tiers superiores não publicados)
+- **Trial:** 15 dias grátis sem cartão
+- **ICP:** Vendedores ML com R$ 10-200k/mês buscando margem real e DRE; mesmo ICP do SmartPreço
+- **Diferencial em 1 frase:** "Clareza total sobre os números do seu negócio em marketplaces — margem de contribuição real, DRE e ROAS/ACOS automático por anúncio/SKU/conta."
+- **Stack inferido:** SaaS web + Chrome Extension (rating 5.0/5)
+- **Funding/empresa:** Bootstrapped provável (sem funding público). CNPJ 57.607.992/0001-37 (~2024). Aceleradoras: InovAtiva Brasil + Sebrae SP (Spark+Start+Speed — primeira startup a completar os 3). 500+ sellers ativos. Certificação App Mercado Livre (dez/2025).
+- **Marketplaces:** Mercado Livre (único atual). Shopify e Amazon "[ROADMAP]" para 2026.
+- **Margin calculator:** Sim (core do produto)
+- **Repricing:** Não
+- **Features adicionais:** IA resposta ao cliente; Chrome extension injeta margem na página ML
+- **last_verified:** 2026-05-02
+- **Threat level vs SmartPreço:** **HIGH** — concorrente direto no mesmo ICP e categoria de dor
+
+[SOURCE: https://letzee.ai/]
+[SOURCE: https://letzee.ai/precos/]
+[SOURCE: https://www.linkedin.com/in/vitorcrovador/]
+
+---
+
+### 1.12 GoSmarter (Brasil — Multi-marketplace) — DESCOBERTO VIA MÉTODO B (2026-05-02)
+
+- **URL:** https://gosmarter.com.br
+- **Pricing entry USD:** **$0 (gratuito permanente)** | Básico ~$26 (R$ 129/mês) | Profissional ~$40 (R$ 199) | Premium ~$60 (R$ 299). Desconto anual 20%. (Taxa cambial usada: R$ 5.00/USD)
+- **Pricing consultoria** (produto separado, NÃO mapeado neste benchmark): R$ 500-15.000+/mês — serviço de gestão, não SaaS
+- **ICP extensão:** Vendedores ML iniciantes a intermediários (extensão Chrome free atrai entry; paid tiers para sellers em crescimento)
+- **Diferencial em 1 frase:** "Única extensão com Score IA + otimizador + clonador + remoção de fundo — tudo gratuito."
+- **Stack inferido:** Chrome Extension (rating 4.6/5, 11 reviews) + SaaS web; CNPJ 59.657.722/0001-66 (fev/2025, ~15 meses)
+- **Funding/empresa:** Time 70+ especialistas (ex-ML/Shopee/Amazon). Discrepância de números reportados: site alega "50.000+ vendedores", Chrome Web Store mostra 527 usuários, outra página alega "1.000+ sellers" — provável que "50k" inclua audiência blog + consultoria + extensão. **DIVERGENTE** [PUBLIC-DATA]
+- **Marketplaces:** Extensão foca ML; consultoria gerencia 11 marketplaces (não confundir).
+- **Margin calculator:** Sim (calculadora de lucro integrada na extensão free)
+- **Repricing:** Não
+- **Features:** Score IA 0-100, otimizador anúncios, clonador, remoção fundo, SEO keywords, monitoramento concorrentes (paid)
+- **last_verified:** 2026-05-02
+- **Threat level vs SmartPreço:** **MEDIUM** — overlap parcial (calculadora free); core é otimização listing + Score IA, não margin calculator dedicado
+
+[SOURCE: https://gosmarter.com.br/]
+[SOURCE: https://gosmarter.com.br/extensao-para-vendedores-mercado-livre/]
+[SOURCE: https://www.econodata.com.br/consulta-empresa/59657722000166-gosmarter-tecnologia-e-inovacao-ltda]
+
+---
+
 ## 2. Tabela Comparativa
 
 | Dimensao | SmartPreco | Helium 10 | Jungle Scout | Sellerboard | Prisync | Repricer.com | Seller Snap | Pricefx | Nubimetrics | Split Dragon | Competera |
@@ -214,13 +258,23 @@
 
 ## 3. Analise Estrategica
 
-### 3.1 Posicionamento Global SmartPreco
+### 3.1 Posicionamento Global SmartPreco (atualizado 2026-05-02)
 
-SmartPreco ocupa o **tier ultra-entry** do mercado global — a $8/mes (R$39), e o SaaS de pricing/margin MAIS BARATO de todos os 10 concorrentes analisados. O unico que se aproxima e o Sellerboard ($15/mes), que e 87% mais caro e nao suporta Mercado Livre.
+SmartPreco ocupa o **tier ultra-entry** do mercado global entre **SaaS PAGOS dedicados** — a $8/mes (R$39), é o SaaS de pricing/margin pago **mais barato de todos os 12 concorrentes** analisados (10 globais + 2 BR descobertos via Método B).
 
-**Posicao:** Nicho vertical ultra-acessivel para vendedores Mercado Livre Brasil. Nao e mid-tier, nao e enterprise. E o "Nubank" do pricing — simples, barato, focado.
+**Qualificação importante (descoberta via Método B):** **GoSmarter** oferece calculadora de lucro **gratuita** integrada à extensão Chrome (free tier permanente) — tecnicamente $0 < $8 do SmartPreço. SmartPreço NÃO é mais "o mais barato do mundo" para a feature isolada de calculadora; é o **SaaS pago dedicado mais barato**, que é categoria diferente.
 
-O concorrente direto mais proximo e o **Nubimetrics** (~$100/mes), que custa 12.5x mais que o SmartPreco no entry tier. Porem, Nubimetrics e uma plataforma de market intelligence completa (pesquisa de demanda, monitoramento de concorrencia, analytics de negocio), enquanto SmartPreco e focado exclusivamente em calculo de margem/pricing.
+**Concorrentes diretos no mercado brasileiro (mesmo ICP):**
+- **Letzee** — R$ 59/mês entry (~$12 USD). Concorrente HIGH: mesma narrativa "margem real" + DRE + Chrome Extension. Certificação ML + Sebrae aceleradoras. 500+ sellers.
+- **GoSmarter free + paid R$ 129+** — Concorrente MEDIUM: calculadora free é gateway; paid tiers focam em otimização listing.
+- **Nubimetrics** (~$100/mes) — concorrente indireto: market intelligence completa, não margin calc dedicado.
+
+**Posição refinada:** Nicho vertical ultra-acessível PAGO para vendedores ML. SmartPreço a R$39 fica entre GoSmarter free (concorrência por SEO orgânico) e Letzee R$59 (concorrência direta no mid-tier). Janela competitiva: ~12-18 meses antes de Letzee + GoSmarter consolidarem narrativas e SmartPreço perder vantagem de preço.
+
+**Posicionamento defensável (3 diferenciais):**
+1. **Calcular ANTES de anunciar** (Letzee/Hunter Hub monitoram pós-publicação; GoSmarter mostra na página ML após anúncio existir)
+2. **Especialização pura em margem ML** (não tenta ser suite completa como GoSmarter ou Letzee)
+3. **Atualização automática de regras ML** (vs planilhas/extensões estáticas)
 
 ### 3.2 Tres Licoes Aplicaveis de Players Estabelecidos
 
@@ -249,11 +303,17 @@ Helium 10 ja cobre Amazon (13 markets), Walmart e TikTok Shop. A Assembly/Pacvue
 **Risco 2 — Mercado Livre lancar/expandir calculadora oficial nativa**
 Ja identificado no relatorio de viabilidade (F3): ML lancou calculadora oficial gratuita em 2026. Se ML integrar isso diretamente no Seller Center com precisao suficiente, SmartPreco perde a feature core. **Mitigacao:** diferenciar pela profundidade (cenarios de simulacao, comparativo entre Free/Classic/Premium, historico de margem) que uma calculadora nativa simples nao oferece. Posicionar como "o que a calculadora do ML NAO mostra" — margem liquida real apos todos os custos ocultos.
 
+**Risco 3 (NOVO 2026-05-02) — Letzee capturar narrativa "margem real ML" no mercado BR**
+Letzee tem produto maduro (1+ ano), certificação App Mercado Livre (dez/2025), aceleradoras Sebrae (Spark+Start+Speed), 500+ sellers ativos e Chrome Extension 5.0/5. Posicionamento direto: "margem real + DRE + ROAS por SKU". Se Letzee acelerar conteúdo + Mercado Ads, pode capturar a narrativa que SmartPreço também busca (Variante D MeliDev: "calcule comissão Classic/Premium..."). **Mitigação:** SmartPreço diferencia em (a) "calcular ANTES de anunciar" — Letzee monitora pós-publicação; (b) preço entry mais agressivo (R$39 vs R$59); (c) lead magnet `/calculadora-livre` com loop viral sem cadastro (Letzee exige login). Janela: 6-12 meses para construir comunidade.
+
+**Risco 4 (NOVO 2026-05-02) — GoSmarter capturar SEO orgânico via free tier**
+GoSmarter tem extensão Chrome gratuita com calculadora integrada + Score IA — exatamente o tipo de funcionalidade que vendedores buscam via Google ("calculadora mercado livre grátis"). 50k+ vendedores reportados (não verificável; 527 Chrome Web Store). Se GoSmarter dominar SEO de "calculadora ML grátis", SmartPreço perde top of funnel orgânico. **Mitigação:** SmartPreço diferencia em (a) profundidade — calculadora dedicada vs feature secundária no GoSmarter; (b) atualização automática de regras ML (GoSmarter free não promete isso); (c) lead magnet com captura de email para nutrir trial → paid. Não competir em SEO de "grátis" — competir em "preciso e atualizado".
+
 ---
 
 ## 4. Veredito (1 frase)
 
-**SmartPreco e o SaaS de margin calculator mais barato do mundo ($8/mes) em um nicho que nenhum player global cobre (Mercado Livre), mas sua sobrevivencia depende de construir comunidade e narrativa ANTES que Helium 10/Pacvue entre no LATAM ou que a calculadora nativa do ML se torne "good enough".**
+**SmartPreco e o SaaS de margin calculator PAGO mais barato do mundo ($8/mes) em um nicho que nenhum player global cobre (Mercado Livre), mas — atualizado 2026-05-02 — agora compete diretamente com Letzee R$59 (concorrente HIGH BR com certificação ML) e GoSmarter R$0 free tier (concorrente MEDIUM com calculadora integrada). Sobrevivência depende de construir comunidade + narrativa ANTES que (a) Helium 10/Pacvue entre no LATAM, (b) calc oficial ML se torne "good enough", OU (c) Letzee/GoSmarter consolidem narrativa de margem real no mercado brasileiro.**
 
 ---
 
@@ -261,13 +321,16 @@ Ja identificado no relatorio de viabilidade (F3): ML lancou calculadora oficial 
 
 | Segmento | Faixa Entry (USD/mes) | Exemplo |
 |----------|----------------------|---------|
-| Ultra-entry (margin calc) | $8-19 | SmartPreco ($8), Sellerboard ($15) |
-| Entry (product research) | $25-49 | AMZScout ($30), Jungle Scout ($29), Split Dragon ($25) |
+| **Free tier permanente** | **$0** | **GoSmarter (extensão Chrome free com calculadora)** |
+| Ultra-entry (margin calc PAGO) | $8-19 | SmartPreco ($8), **Letzee ($12)**, Sellerboard ($15) |
+| Entry (product research) | $25-49 | AMZScout ($30), Jungle Scout ($29), Split Dragon ($25), **GoSmarter Básico ($26)** |
 | Mid-tier (suite completa) | $79-199 | Repricer.com ($79), Helium 10 ($99), Prisync ($99), Nubimetrics (~$100) |
 | Enterprise repricing | $100-500 | Seller Snap ($100-500) |
 | Enterprise pricing | >$1.000 | Pricefx (>$2.000), Competera (>$1.000) |
 
-SmartPreco esta no **tier mais baixo do mundo** — abaixo ate do Sellerboard, que e o benchmark de "profit analytics barato".
+SmartPreco está no **tier mais baixo de SaaS PAGO dedicado**. Concorrência atualizada: Letzee R$59 (~$12) é o competidor direto no mesmo tier; GoSmarter free permanente cria pressão por baixo via SEO orgânico.
+
+**Taxa cambial usada:** R$ 5.00/USD (média mai/2026).
 
 ---
 
