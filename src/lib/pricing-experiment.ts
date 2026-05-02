@@ -7,7 +7,7 @@
  * (declarar posicionamento).
  */
 
-export type PricingVariant = 'A' | 'B' | 'C'
+export type PricingVariant = 'A' | 'B' | 'C' | 'D'
 
 export interface PricingPlan {
   id: 'free' | 'pro' | 'agency'
@@ -29,28 +29,45 @@ const VARIANT_PRICES: Record<PricingVariant, number> = {
   A: 39,
   B: 49,
   C: 59,
+  D: 49, // Variante D — Trial 14d Pro completo + fallback Free 1 SKU pós-expiração [VIAB-R3-1]
 }
+
+/**
+ * Variante D usa Trial 14d em vez de Free tier eterno como onboarding.
+ * Endereça M4 finding (Free tier viola padrão de mercado — 0/3 concorrentes BR usam).
+ */
+export const TRIAL_VARIANT: PricingVariant = 'D'
+export const TRIAL_DURATION_DAYS = 14
 
 export const PRICING_COOKIE = 'sp_exp_pricing'
 
 export function pricingTableFor(variant: PricingVariant): PricingTable {
   const proPrice = VARIANT_PRICES[variant]
+  const isTrialVariant = variant === 'D'
   return {
     variantId: variant,
     proPrice,
     plans: [
       {
         id: 'free',
-        name: 'Free',
+        name: isTrialVariant ? 'Trial 14d' : 'Free',
         monthlyPrice: 0,
-        features: [
-          'Calculadora completa',
-          'Até 5 SKUs no portfólio',
-          'Análise de mercado: 10 buscas/mês',
-          'Histórico de cálculos por SKU',
-        ],
-        cta: 'Começar grátis',
-        href: '/cadastro',
+        features: isTrialVariant
+          ? [
+              'Pro completo grátis por 14 dias',
+              'Sem cartão',
+              'SKUs ilimitados durante trial',
+              'Análise de mercado ilimitada',
+              'Após expirar: Free 1 SKU',
+            ]
+          : [
+              'Calculadora completa',
+              'Até 5 SKUs no portfólio',
+              'Análise de mercado: 10 buscas/mês',
+              'Histórico de cálculos por SKU',
+            ],
+        cta: isTrialVariant ? 'Começar trial 14d grátis' : 'Começar grátis',
+        href: isTrialVariant ? '/cadastro?trial=14' : '/cadastro',
       },
       {
         id: 'pro',
@@ -91,13 +108,32 @@ export function pricingTableFor(variant: PricingVariant): PricingTable {
  * uniforme se cookie não existe ou é inválido.
  */
 export function variantFromCookie(cookieValue: string | undefined): PricingVariant {
-  if (cookieValue === 'A' || cookieValue === 'B' || cookieValue === 'C') {
+  if (cookieValue === 'A' || cookieValue === 'B' || cookieValue === 'C' || cookieValue === 'D') {
     return cookieValue
   }
-  // Distribuição estável usando contador interno (não-determinística por
-  // request, OK para v0 — em produção, hash do user-id daria estabilidade).
+  // Distribuição uniforme entre 4 variantes. v0 não-determinístico — em produção,
+  // hash do user-id (deterministicVariantFromUserId) garante estabilidade por usuário.
   const r = Math.random()
-  if (r < 1 / 3) return 'A'
-  if (r < 2 / 3) return 'B'
-  return 'C'
+  if (r < 0.25) return 'A'
+  if (r < 0.5) return 'B'
+  if (r < 0.75) return 'C'
+  return 'D'
+}
+
+/**
+ * Bucket determinístico por user_id usando hash simples (FNV-1a) para A/B test
+ * de Free eterno (variantes A/B/C agrupadas) vs Trial 14d (variante D).
+ * Garante estabilidade da atribuição entre sessões e dispositivos do mesmo usuário.
+ *
+ * @param userId UUID do usuário (auth.users.id)
+ * @returns 'D' (trial) se hash impar, 'B' (Free R$49 — variante mais estável) se par
+ */
+export function deterministicVariantFromUserId(userId: string): PricingVariant {
+  let hash = 0x811c9dc5
+  for (let i = 0; i < userId.length; i++) {
+    hash ^= userId.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  // 50/50 split entre Trial (D) e Free B (controle)
+  return (hash & 1) === 1 ? 'D' : 'B'
 }

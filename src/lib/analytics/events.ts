@@ -24,6 +24,16 @@ export type FunnelEventName =
   | 'home_section_view'
   // VIAB-R1-2.1 — tracking de exibição do email gate
   | 'calc_email_capture_shown'
+  // VIAB-R3-1 — Trial 14d
+  | 'trial_started'
+  | 'trial_day_3'
+  | 'trial_day_7'
+  | 'trial_day_14'
+  | 'trial_to_paid'
+  | 'trial_expired'
+  // VIAB-R3-2 — Pricing page CTAs
+  | 'pricing_cta_trial_click'
+  | 'pricing_cta_calc_click'
 
 export interface FunnelEventPayload {
   [key: string]: string | number | boolean | null | undefined

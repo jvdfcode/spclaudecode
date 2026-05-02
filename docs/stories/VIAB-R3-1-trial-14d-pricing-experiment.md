@@ -1,7 +1,7 @@
 # VIAB-R3-1 — Trial 14d híbrido via pricing-experiment.ts
 
 **Epic:** EPIC-VIAB-R3 (Trial 14d + Headline + Concorrência)
-**Status:** Draft
+**Status:** InReview (código implementado + 21/21 tests + build PASS em 2026-05-02; drip email out-of-scope → VIAB-R3-1.1 paralela)
 **Severidade:** ALTA — Free tier eterno viola padrão de mercado (M4 — Alfredo Soares); 4-6× MRR mês 1 estimado
 **Sprint:** SPRINT-2026-05-12 (proposto, após VIAB-R1 todo em prod)
 **Owner:** Pedro Emilio (executor: @dev)
@@ -133,3 +133,32 @@ Painel de 6 personas (Top 5 ações, item #4): Trial 14d híbrido recebeu 4/6 vo
 | Data | Autor | Mudança |
 |------|-------|---------|
 | 2026-05-02 | Orion (@aiox-master) | Story criada como parte do EPIC-VIAB-R3 |
+| 2026-05-02 | Orion (papel @po) | Validação 10/10 — Draft → Ready |
+| 2026-05-02 | Orion (papel @dev) | Migration 013 + endpoint /api/trial/status + variante D + TrialBanner + UpgradeGate + 6 eventos + 12 tests |
+| 2026-05-02 | Orion (papel @qa) | typecheck + lint + 21/21 tests + build PASS — transição → InReview |
+
+---
+
+## File List (alterações desta story)
+
+### Criados
+- `supabase/migrations/013_trials_table.sql` (+ rollback) — tabela trials + RLS + trigger auto-expires_at
+- `src/app/api/trial/status/route.ts` — GET retorna estado, POST inicia trial (idempotente)
+- `src/components/trial/TrialBanner.tsx` — banner client com dias restantes
+- `src/components/trial/UpgradeGate.tsx` — card fallback quando trial expirado
+- `tests/unit/pricing-experiment.test.ts` — 12 tests novos (variante D, deterministic bucket, constantes)
+
+### Modificados
+- `src/lib/pricing-experiment.ts`:
+  - PricingVariant adiciona 'D'
+  - VARIANT_PRICES['D'] = 49
+  - TRIAL_VARIANT + TRIAL_DURATION_DAYS exportados
+  - pricingTableFor adapta plano free → "Trial 14d" para variante D
+  - variantFromCookie aceita D + distribuição uniforme entre 4
+  - deterministicVariantFromUserId (FNV-1a hash, 50/50 B vs D)
+- `src/lib/analytics/events.ts` — 8 eventos novos (6 trial + 2 pricing)
+- `tests/unit/lib/pricing-experiment.test.ts` — atualiza assertions para incluir D
+
+### Out-of-scope — VIAB-R3-1.1 paralela
+- Drip email (day-3, day-10, day-13) — infra Resend/Sendgrid ausente no projeto
+- Cron de expiração automática — pode ser self-check no endpoint via campo `expired`
