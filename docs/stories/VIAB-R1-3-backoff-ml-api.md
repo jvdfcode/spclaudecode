@@ -1,7 +1,7 @@
 # VIAB-R1-3 — Backoff exponencial em ML API + plano fallback documentado
 
 **Epic:** EPIC-VIAB-R1 (Recomendações 30 dias do relatório de viabilidade 2026-04-30)
-**Status:** Draft
+**Status:** InReview (código implementado + CI gates PASS em 2026-05-02)
 **Severidade:** ALTA — viola VB006 [ML-OFFICIAL]; risco de plataforma documentado mas não mitigado
 **Sprint:** SPRINT-2026-05-05 (proposto)
 **Owner:** Pedro Emilio (executor: @dev)
@@ -117,3 +117,21 @@ A análise de viabilidade da squad MeliDev (`@melidev *explain rate-limit-and-po
 | Data | Autor | Mudança |
 |------|-------|---------|
 | 2026-05-01 | Orion (aiox-master) | Story criada a partir de F3 Cenário B + 4 gaps críticos |
+| 2026-05-02 | Orion (papel @po) | Validação 10/10 — Draft → Ready (GO) |
+| 2026-05-02 | Orion (papel @dev) | Implementação: utils/exponential-backoff.ts + ml-api.ts refactor + ml-platform-risk-fallback.md |
+| 2026-05-02 | Orion (papel @qa) | typecheck + lint + 6/6 vitest tests PASS + build PASS — transição → InReview |
+
+---
+
+## File List (alterações desta story)
+
+### Criados
+- `src/lib/utils/exponential-backoff.ts` — função `withBackoff` com retry 5×429/3×5xx + jitter + Sentry capture
+- `tests/unit/exponential-backoff.test.ts` — 6 testes Vitest cobrindo: success 1ª, retry-then-success, exhaustion 429, exhaustion 500, 4xx no-retry, network error
+- `docs/architecture/ml-platform-risk-fallback.md` — 3 cenários A/B/C documentados + sinais de alerta + checklist trimestral
+
+### Modificados
+- `src/lib/ml-api.ts`:
+  - Import `withBackoff`
+  - `searchMlApi` envolvido em `withBackoff` com endpoint `'ml_search'`
+  - JSDoc atualizado documentando F3 gaps endereçados

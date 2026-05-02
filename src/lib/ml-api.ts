@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { MlListing, MlRawResponse } from '@/types'
+import { withBackoff } from '@/lib/utils/exponential-backoff'
 
 const ML_TOKEN_URL = 'https://api.mercadolibre.com/oauth/token'
 const ML_SEARCH_URL = 'https://api.mercadolibre.com/sites/MLB/search'
@@ -135,20 +136,41 @@ export async function getMlAccessToken(supabase: SupabaseClient): Promise<string
   return refreshed.access_token
 }
 
-// Busca anúncios via API oficial com token de usuário
+/**
+ * Busca anúncios via API oficial com token de usuário.
+ *
+ * [VIAB-R1-3] Envolve fetch em `withBackoff` para retentar 429 (rate limit ML)
+ * e 5xx (server error). Em exhaustion, lança Error preservando comportamento
+ * do caller (`ml-search/route.ts:73` já trata via try/catch + fallback
+ * client-side).
+ *
+ * Resolve F3 Cenário B (4 gaps críticos da viabilidade 2026-04-30):
+ *   1. ✅ Backoff exponencial em 429 (era throw em qualquer não-200)
+ *   2. ✅ Sentry capture (`ml_api_rate_limited` + `ml_api_exhausted`)
+ *   3. ⏳ Eliminação scraping HTML — backlog (VIAB-R1-3.1)
+ *   4. ✅ Plano fallback documentado (`docs/architecture/ml-platform-risk-fallback.md`)
+ */
 export async function searchMlApi(q: string, accessToken: string): Promise<MlListing[]> {
   const url = new URL(ML_SEARCH_URL)
   url.searchParams.set('q', q)
   url.searchParams.set('limit', '50')
 
-  const res = await fetch(url.toString(), {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    next: { revalidate: 0 },
-  })
+  const result = await withBackoff(
+    () => fetch(url.toString(), {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      next: { revalidate: 0 },
+    }),
+    { endpoint: 'ml_search' },
+  )
 
-  if (!res.ok) throw new Error(`ML API ${res.status}`)
+  if (!result.ok) {
+    throw new Error(
+      `ML API ${result.status ?? 'unknown'} after ${result.attempts} attempt(s)` +
+      (result.exhausted ? ' (exhausted)' : ''),
+    )
+  }
 
-  const data = await res.json() as MlRawResponse
+  const data = await result.value.json() as MlRawResponse
   return (data.results ?? []).map(r => ({
     id: r.id,
     title: r.title,
