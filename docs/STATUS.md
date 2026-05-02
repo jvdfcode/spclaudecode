@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-02 (painel de 6 personas — nota consolidada 3.85/10)
+**Última atualização:** 2026-05-02 (ICP v1 SINTÉTICA via tripla triangulação — destrava R3/VIAB-R1-3)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -21,7 +21,7 @@
 | Epic | Status | Owner | Stories | Próximo passo |
 |------|:------:|-------|---------|---------------|
 | **EPIC-PROD-001** — Caminho à produção | ✅ Done | Pedro Emilio + @pm | 13/13 | — |
-| **EPIC-MKT-001** — Validação de mercado | 🟡 InProgress | Pedro Emilio | 5 (entrevistas ICP MKT-001-2 pendentes) | R2 do roadmap (5 entrevistas, 7.5h em 14 dias) |
+| **EPIC-MKT-001** — Validação de mercado | 🟢 InReview parcial | Pedro Emilio | MKT-001-2 v1 SINTÉTICA executada (10 entrevistas sintéticas + Método B + C) | Validar ≥3 findings com vendedor real (mês 2-3) |
 | **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (3/4) | Pedro Emilio (executor: @dev) | R1-1, R1-2, R1-2.1 InReview · R1-3 Draft | Apply migration 012 prod + review preview Vercel da landing |
 | **EPIC-TD-001** — Debt paydown H1 | 📋 Backlog | — | — | — |
 
@@ -58,7 +58,7 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 |---|--------|-------------------|:------:|
 | F2 | Race condition OAuth ATIVA (`acquire_user_lock` inacessível) | VIAB-R1-1 | 🟢 InReview (apply migration pendente) |
 | M6 | Home `/` redireciona pra `/dashboard` — sem landing pública | VIAB-R1-2 + R1-2.1 | 🟢 InReview (preview Vercel pendente) |
-| M1 | ICP é demografia genérica, zero entrevistas | R2 (não delegável) | 📋 Backlog |
+| M1 | ICP é demografia genérica, zero entrevistas | MKT-001-2 v1 sintética + R2 real | 🟢 InReview parcial (sintético OK, real pendente) |
 | F3 | Scraping HTML + ML lançou calculadora oficial 2026 | VIAB-R1-3 | 🟡 Draft |
 
 ---
@@ -71,9 +71,10 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 3. **Smoke test manual** — conectar conta ML, verificar refresh OK + Sentry sem `lock_error`
 4. **Monitorar Sentry 48h** — DoD final de VIAB-R1-1
 
-### Trabalho humano P0 (Pedro, não-delegável) — votado por 6/6 personas
-5. **Agendar 5 entrevistas ICP nesta semana** (Tallis: "eu fazia 5 num dia" — não 14 dias)
-6. **Plantar 1 post útil em 1 grupo FB ML** (Raduan)
+### Trabalho humano P0 (Pedro)
+5. **Validar ICP v1 sintética com ≥3 vendedores reais** (mês 2-3) — 7 findings priorizados em `docs/business/ICP-validation-2026-Q2.md` seção 8
+6. **Plantar 1 post útil em 1 grupo FB ML** ("Vendedores ML BR" 60k — canal #1 confirmado pela tripla)
+7. **Decisão de pricing definitivo R$39 vs R$49** aguarda 3+ entrevistas reais (não bloqueia VIAB-R1-3)
 
 ### Sprint imediato (próxima sessão)
 5. **VIAB-R1-3** (backoff ML API) — mesmo workflow @po → @dev → @qa

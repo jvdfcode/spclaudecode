@@ -1,8 +1,8 @@
 # Story MKT-001-2 — 10 Entrevistas ICP com Roteiro PWR
 
 **Epic:** EPIC-MKT-001
-**Status:** Draft
-**Owner sugerido:** [OWNER: ?] (preencher na sprint planning — preferencialmente fundador ou PM)
+**Status:** InReview parcial — v1 SINTÉTICA executada em 2026-05-02; entrevistas reais permanecem como próximo passo
+**Owner sugerido:** Pedro Emilio (validação real após) · v1 sintética executada por Orion (@aiox-master)
 **Persona-origem do roundtable:** Raduan + Nardon + Tallis
 **Esforço estimado:** 10–14 dias (paralelo a MKT-001-1 e MKT-001-3)
 
@@ -76,3 +76,62 @@ Esta story define o roteiro de entrevistas (7 dimensões PWR + WTP explícito), 
 ---
 
 *Story gerada por @pm (Morgan) — EPIC-MKT-001 — Roundtable 2026-04-27*
+
+---
+
+## v1 SINTÉTICA executada em 2026-05-02
+
+Pedro Emilio decidiu não executar entrevistas reais nesta fase. Orion (@aiox-master) executou via **triangulação de 3 métodos**:
+
+### Método A — 10 entrevistas sintéticas via personas
+- 10 transcripts em `docs/business/interviews/01..10-*.md`, cada um com banner `[SYNTHETIC v1]`
+- Diversidade calibrada: 1 anti-ICP baixo (Felipe), 4 sub-perfil "Marlene" (R$8-22k), 4 sub-perfil "Ricardo" (R$35-130k), 1 enterprise fronteira (Bruno T R$180k)
+- ICP fit final: **5★ + 4✓ + 1✗** (dentro do critério ≥6 fit ★/✓)
+
+### Método B — Pesquisa de campo via WebFetch
+- `docs/business/interviews/00-pesquisa-campo-2026-05-02.md` (293 linhas)
+- 10+ citações REAIS de Capterra/G2/YouTube/comunidades públicas
+- 2 concorrentes não mapeados antes: **Letzee** (R$59-99) e **GoSmarter** (free-R$129+)
+- Comunidades nominalmente identificadas: GFV (multiplataforma), JoomPulse WhatsApp, "Vendedores ML BR" 60k
+
+### Método C — Squad MeliDev ICP defensável
+- `docs/business/interviews/00-melidev-icp-proxy-2026-05-02.md`
+- ICP nomeado: **Ricardo Tavares de Oliveira**, 34a, Duque de Caxias-RJ, Acessórios Celular, R$38k/mês
+- WTP modal R$49 ancorado em [GUSTAVO-LUCAS] + [PARROS-CASE]
+- Anti-ICP: Wellington (Goiânia, R$1.8k/mês, reputação amarela)
+
+### Triangulação convergiu em 6 dimensões críticas
+1. ICP central R$15-130k/mês
+2. WTP modal R$49
+3. Hero feature = simulador Free/Classic/Premium + alerta de mudança de taxa
+4. Canal #1 = grupo FB "Vendedores do Mercado Livre Brasil" (60k+)
+5. Anti-ICP <R$10k/mês (header qualificador filtra)
+6. Diferencial = "calcular ANTES de anunciar" vs Hunter Hub (spy pós-publicação)
+
+### Output consolidado
+`docs/business/ICP-validation-2026-Q2.md` — totalmente preenchido com banner v1 SINTÉTICA + 7 findings priorizados para validação real (próximo passo, mês 2-3).
+
+### ACs status (v1)
+- [x] AC1 — 10 entrevistas (sintéticas) com diversidade calibrada
+- [x] AC2 — transcripts em `interviews/` seguindo TEMPLATE.md
+- [x] AC3 — documento síntese publicado
+- [x] AC4 — WTP explícito (R$49 modal)
+- [ ] AC5 — revisão Pedro **pendente** (ele aprovou execução; precisa revisar output)
+
+### Próximo passo (mês 2-3)
+Validar **≥3 findings** da seção 8 do ICP-validation com **vendedores reais** antes de decisões irreversíveis (pricing definitivo, headline em A/B test, canal #1 prioritário). Findings priorizados:
+1. WTP R$49 (não R$19, não R$99) — 3 entrevistas reais sub-D/sub-E
+2. Hero feature simulador tipo de anúncio — 1 entrevista real
+3. Canal #1 FB — postar 1 thread orgânica e medir CTR
+4. Gap calc taxa fixa R$6,75 — 1 entrevista real reproduz erro
+
+Story permanece **InReview parcial** até validação real.
+
+---
+
+## Change Log
+
+| Data | Autor | Mudança |
+|------|-------|---------|
+| 2026-04-27 | @pm Morgan | Story criada — Roundtable 2026-04-27 |
+| 2026-05-02 | Orion (@aiox-master) | v1 SINTÉTICA executada via tripla triangulação (A+B+C); transição Draft → InReview parcial |
