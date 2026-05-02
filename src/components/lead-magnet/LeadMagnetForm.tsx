@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useRef } from 'react'
+import { useState, useTransition, useRef, useEffect } from 'react'
 import { CircleAlert, CircleCheckBig, CircleX } from 'lucide-react'
 import { toast } from 'sonner'
 import { calculateViability } from '@/lib/calculations'
@@ -39,6 +39,7 @@ function brl(n: number): string {
 export default function LeadMagnetForm() {
   const utmParams = useUtmParams()
   const ctaTrackedRef = useRef(false)
+  const captureShownRef = useRef(false)
 
   const [productCost, setProductCost] = useState('')
   const [salePrice, setSalePrice] = useState('')
@@ -52,6 +53,17 @@ export default function LeadMagnetForm() {
   const [emailError, setEmailError] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [pending, startTransition] = useTransition()
+
+  // VIAB-R1-2.1 — instrumentar exibição do email gate (form de captura aparece
+  // após `result` ser setado e antes de `submitted`). Idempotente por cálculo
+  // via captureShownRef; flag é resetada em handleCalculate para permitir
+  // tracking em recálculos.
+  useEffect(() => {
+    if (!result || submitted) return
+    if (captureShownRef.current) return
+    captureShownRef.current = true
+    trackFunnel('calc_email_capture_shown', { ...utmParams })
+  }, [result, submitted, utmParams])
 
   function handleCalculate(e: React.FormEvent) {
     e.preventDefault()
@@ -92,8 +104,9 @@ export default function LeadMagnetForm() {
       trackFunnel('resultado_exibido', resultPayload)
       trackFunnel('lead_magnet_calculated', resultPayload)
 
-      // Resetar flag de CTA para novo cálculo
+      // Resetar flags para novo cálculo
       ctaTrackedRef.current = false
+      captureShownRef.current = false
     } catch (err) {
       toast.error('Não foi possível calcular. Verifique os valores informados.')
       console.error(err)

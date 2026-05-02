@@ -65,8 +65,8 @@ export default function CalculadoraLivrePage() {
             <p className="mt-1 text-xs text-halo-navy-60">para descobrir sua margem real</p>
           </div>
           <div className="rounded-2xl border border-halo-gray bg-white p-5">
-            <p className="text-2xl font-extrabold text-halo-navy">+R$ 0,00</p>
-            <p className="mt-1 text-xs text-halo-navy-60">é o que você está deixando na mesa hoje</p>
+            <p className="text-2xl font-extrabold text-halo-navy">Sem cartão</p>
+            <p className="mt-1 text-xs text-halo-navy-60">e sem instalação</p>
           </div>
         </section>
       </main>
