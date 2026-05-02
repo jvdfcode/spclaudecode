@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-02 (VIAB-R1-2 + VIAB-R1-2.1 implementados após debate de 3 specialists)
+**Última atualização:** 2026-05-02 (painel de 6 personas — nota consolidada 3.85/10)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -11,7 +11,7 @@
 
 **Produção:** ativa em https://smartpreco.app (SSL emitido em 2026-04-30 via PROD-001-14)
 **Branch principal:** `main` (4 commits ahead de `origin/main` em 2026-05-01 — pendente push via `@devops`)
-**Última pontuação mundial:** **4.2/10** (painel multi-agente — `docs/reviews/world-benchmark-2026-05-01/02-pontuacao-mundial.md`)
+**Última pontuação mundial:** **3.85/10** (painel 6 personas 2026-05-02 — `docs/reviews/painel-6-personas-2026-05-02/01-pontuacao-painel.md`); painel anterior 4.2/10 (4 agentes)
 **Última pontuação interna:** 5.0/10 funcional + 5.0/10 mercadológico (squad MeliDev — `docs/reviews/viability-2026-04-30/01-meli-viability.md`)
 
 ---
@@ -65,11 +65,15 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 
 ## Próximos passos imediatos (priorizados)
 
-### Apply em prod (Pedro/devops)
-1. **Aplicar migration 012** no Supabase prod (`jvdfcode`) — `supabase db push` ou via dashboard
-2. **Regenerar tipos** Supabase (não é estritamente necessário — migration 012 não altera schema, apenas permissions)
-3. **Smoke test manual** — conectar conta ML de teste, verificar refresh OK e Sentry sem `lock_error`
+### Apply em prod (Pedro/devops) — URGENTE pelo painel 6 personas
+1. **Aplicar migration 012** no Supabase prod (`jvdfcode`) — race condition F2 ATIVA
+2. **Promote VIAB-R1-2** para prod após review do preview Vercel
+3. **Smoke test manual** — conectar conta ML, verificar refresh OK + Sentry sem `lock_error`
 4. **Monitorar Sentry 48h** — DoD final de VIAB-R1-1
+
+### Trabalho humano P0 (Pedro, não-delegável) — votado por 6/6 personas
+5. **Agendar 5 entrevistas ICP nesta semana** (Tallis: "eu fazia 5 num dia" — não 14 dias)
+6. **Plantar 1 post útil em 1 grupo FB ML** (Raduan)
 
 ### Sprint imediato (próxima sessão)
 5. **VIAB-R1-3** (backoff ML API) — mesmo workflow @po → @dev → @qa
