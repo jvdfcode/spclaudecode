@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-02 (ICP v1 SINTÉTICA via tripla triangulação — destrava R3/VIAB-R1-3)
+**Última atualização:** 2026-05-02 (sequência triplo end-to-end: VIAB-R1-3 implementado + Letzee/GoSmarter mapeados + EPIC-VIAB-R3 criado + agente strategist-swot-canvas)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -22,7 +22,8 @@
 |------|:------:|-------|---------|---------------|
 | **EPIC-PROD-001** — Caminho à produção | ✅ Done | Pedro Emilio + @pm | 13/13 | — |
 | **EPIC-MKT-001** — Validação de mercado | 🟢 InReview parcial | Pedro Emilio | MKT-001-2 v1 SINTÉTICA executada (10 entrevistas sintéticas + Método B + C) | Validar ≥3 findings com vendedor real (mês 2-3) |
-| **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (3/4) | Pedro Emilio (executor: @dev) | R1-1, R1-2, R1-2.1 InReview · R1-3 Draft | Apply migration 012 prod + review preview Vercel da landing |
+| **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (4/4) ✅ | Pedro Emilio (executor: @dev) | R1-1, R1-2, R1-2.1, R1-3 InReview | Apply migration 012 prod + review preview Vercel + smoke 48h |
+| **EPIC-VIAB-R3** — Trial 14d + Headline + Concorrência | 🟡 Draft (3 stories) | Pedro Emilio | R3-1, R3-2, R3-3 Draft | Próxima sessão @dev após R1 em prod |
 | **EPIC-TD-001** — Debt paydown H1 | 📋 Backlog | — | — | — |
 
 ---
@@ -59,7 +60,7 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 | F2 | Race condition OAuth ATIVA (`acquire_user_lock` inacessível) | VIAB-R1-1 | 🟢 InReview (apply migration pendente) |
 | M6 | Home `/` redireciona pra `/dashboard` — sem landing pública | VIAB-R1-2 + R1-2.1 | 🟢 InReview (preview Vercel pendente) |
 | M1 | ICP é demografia genérica, zero entrevistas | MKT-001-2 v1 sintética + R2 real | 🟢 InReview parcial (sintético OK, real pendente) |
-| F3 | Scraping HTML + ML lançou calculadora oficial 2026 | VIAB-R1-3 | 🟡 Draft |
+| F3 | Scraping HTML + ML lançou calculadora oficial 2026 | VIAB-R1-3 | 🟢 InReview (backoff implementado; eliminação scraping → R1-3.1 backlog) |
 
 ---
 
@@ -76,9 +77,10 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 6. **Plantar 1 post útil em 1 grupo FB ML** ("Vendedores ML BR" 60k — canal #1 confirmado pela tripla)
 7. **Decisão de pricing definitivo R$39 vs R$49** aguarda 3+ entrevistas reais (não bloqueia VIAB-R1-3)
 
-### Sprint imediato (próxima sessão)
-5. **VIAB-R1-3** (backoff ML API) — mesmo workflow @po → @dev → @qa
-6. **R3** (após R1+R2) — Trial 14d via pricing-experiment.ts + reescrever headline /precos
+### Sprint imediato (próxima sessão @dev)
+5. **VIAB-R3-1** (Trial 14d) — depende R1 em prod; maior impacto comercial direto
+6. **VIAB-R3-2** (headline /precos) — paralelo a R3-1, sem dependência
+7. **VIAB-R3-3** (bloco concorrência /precos) — paralelo, depende R3-2 estar OK
 
 ### Trabalho humano (Pedro, não delegável)
 5. **Agendar 5 entrevistas ICP** (R2, ~7.5h em 14 dias) — destrava todas as decisões mercadológicas
