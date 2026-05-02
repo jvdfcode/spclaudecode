@@ -1,16 +1,18 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { cookies } from 'next/headers'
 import PricingTableClient from '@/components/pricing/PricingTableClient'
+import PricingTracking from '@/components/pricing/PricingTracking'
 import { PRICING_COOKIE, pricingTableFor, variantFromCookie } from '@/lib/pricing-experiment'
 
 export const metadata: Metadata = {
-  title: 'Planos e preços — SmartPreço',
+  title: 'Pare de precificar no escuro — SmartPreço para vendedores Mercado Livre',
   description:
-    'Free para começar, Pro para o portfólio completo, Agency para multi-conta ML. Sem cartão para testar.',
+    'Vendedores ML perdem entre R$ 500 e R$ 1.500/mês com erro de pricing. Por R$ 39/mês, você para de perder.',
   openGraph: {
-    title: 'Planos SmartPreço — precificação inteligente para vendedores ML',
+    title: 'Pare de precificar no escuro',
     description:
-      'Free, Pro e Agency. Comece grátis e suba quando precisar de SKUs ilimitados.',
+      'Veja exatamente onde sua margem está vazando — e corrija hoje. Calculadora de margem real para Mercado Livre Brasil.',
     type: 'website',
     locale: 'pt_BR',
   },
@@ -40,20 +42,67 @@ export default async function PricingPage() {
         </div>
       </header>
 
+      <PricingTracking />
+
       <main className="mx-auto max-w-5xl px-6 py-12 md:py-16">
-        <section className="mb-12 text-center space-y-3">
-          <span className="inline-block rounded-full bg-halo-navy text-halo-orange text-[11px] font-extrabold uppercase tracking-[0.18em] px-3 py-1">
-            Posicionamento — Liderança em Produto
-          </span>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-[-0.02em] text-halo-navy">
-            O motor de decisão de preço mais
+        <section className="mb-12 text-center space-y-5">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-[-0.02em] text-halo-navy leading-tight">
+            Pare de precificar no escuro.
             <br className="hidden md:block" />
-            preciso para o Mercado Livre Brasil
+            Veja exatamente onde sua margem está vazando — e corrija hoje.
           </h1>
-          <p className="mx-auto max-w-xl text-sm md:text-base text-halo-navy-60 leading-relaxed">
-            Comece grátis. Pague só quando precisar de SKUs ilimitados ou multi-conta.
-            Sem cartão para testar.
+          <p className="mx-auto max-w-2xl text-base md:text-lg text-halo-navy-80 leading-relaxed">
+            Vendedores ML perdem entre <strong>R$ 500 e R$ 1.500/mês</strong> com erro de pricing.<sup>*</sup>
+            Por R$ 39/mês, você para de perder.
           </p>
+
+          {/* 3 stat cards above-the-fold (estilo VIAB-R1-2) */}
+          <div className="grid gap-4 md:grid-cols-3 max-w-3xl mx-auto pt-4">
+            <div className="rounded-2xl border border-halo-gray bg-white p-5">
+              <p
+                className="text-3xl font-extrabold text-halo-navy tabular-nums"
+                style={{ fontFamily: 'var(--font-instrument-serif, Georgia, serif)' }}
+              >
+                R$ 39
+              </p>
+              <p className="mt-1 text-xs text-halo-navy-60">por mês — plano entry</p>
+            </div>
+            <div className="rounded-2xl border border-halo-orange-30 bg-halo-orange-05 p-5">
+              <p
+                className="text-3xl font-extrabold text-halo-orange tabular-nums"
+                style={{ fontFamily: 'var(--font-instrument-serif, Georgia, serif)' }}
+              >
+                R$ 500–1.500
+              </p>
+              <p className="mt-1 text-xs text-halo-navy-80">perda média/mês evitada<sup>*</sup></p>
+            </div>
+            <div className="rounded-2xl border border-halo-gray bg-white p-5">
+              <p
+                className="text-3xl font-extrabold text-halo-navy tabular-nums"
+                style={{ fontFamily: 'var(--font-instrument-serif, Georgia, serif)' }}
+              >
+                30s
+              </p>
+              <p className="mt-1 text-xs text-halo-navy-60">para descobrir sua margem real</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <Link
+              href="/cadastro?trial=14&utm_source=precos&utm_medium=cta_primary"
+              data-track="pricing_cta_trial_click"
+              className="inline-flex items-center justify-center rounded-xl bg-halo-navy px-6 py-3 text-sm font-extrabold text-halo-orange shadow-[0_4px_14px_rgba(45,50,119,0.28)] hover:-translate-y-[2px] active:scale-[0.98] transition-all"
+            >
+              Começar trial 14d grátis →
+            </Link>
+            <Link
+              href="/calculadora-livre?utm_source=precos&utm_medium=cta_secondary"
+              data-track="pricing_cta_calc_click"
+              className="inline-flex items-center justify-center rounded-xl border border-halo-gray bg-white px-6 py-3 text-sm font-bold text-halo-navy hover:border-halo-navy transition-colors"
+            >
+              Calcular grátis primeiro
+            </Link>
+          </div>
         </section>
 
         <PricingTableClient table={table} />
@@ -82,8 +131,16 @@ export default async function PricingPage() {
       </main>
 
       <footer className="mt-16 border-t border-halo-gray bg-white py-6">
-        <div className="mx-auto max-w-5xl px-6 text-center text-xs text-halo-navy-40">
-          SmartPreço · v1.0 · variante de pricing: <span className="font-mono">{variant}</span>
+        <div className="mx-auto max-w-5xl px-6 text-center text-xs text-halo-navy-40 space-y-2">
+          <p>
+            <sup>*</sup> Faixa baseada em política ML + custos típicos de cancelamento e mediação.
+            Sua perda real depende do mix de SKUs.
+          </p>
+          <p>
+            SmartPreço · v1.0 ·{' '}
+            <Link href="/privacidade" className="underline hover:text-halo-navy">Política de privacidade</Link>
+            {' · '}variante: <span className="font-mono">{variant}</span>
+          </p>
         </div>
       </footer>
     </div>

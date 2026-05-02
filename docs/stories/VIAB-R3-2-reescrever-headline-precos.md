@@ -1,7 +1,7 @@
 # VIAB-R3-2 — Reescrever headline `/precos` com Loss Aversion
 
 **Epic:** EPIC-VIAB-R3 (Trial 14d + Headline + Concorrência)
-**Status:** Draft
+**Status:** InReview (código + CI gates PASS em 2026-05-02)
 **Severidade:** ALTA — headline atual 3/10 (Finch); destrói trabalho que a landing nova (`/`) constrói
 **Sprint:** SPRINT-2026-05-12 (proposto, paralelo a R3-1)
 **Owner:** Pedro Emilio (executor: @dev)
@@ -135,3 +135,23 @@
 | Data | Autor | Mudança |
 |------|-------|---------|
 | 2026-05-02 | Orion (@aiox-master) | Story criada como parte do EPIC-VIAB-R3 |
+| 2026-05-02 | Orion (@po+@dev+@qa) | Implementação completa: headline Variante D + 3 stat cards + PricingTracking + asterisco-disclaimer + remover badge interno. typecheck + lint + build PASS. → InReview |
+
+---
+
+## File List
+
+### Criados
+- `src/components/pricing/PricingTracking.tsx` — client island com delegação de click para `pricing_cta_trial_click` e `pricing_cta_calc_click`
+
+### Modificados
+- `src/app/precos/page.tsx`:
+  - Headline H1 substituída pela Variante D-pricing
+  - Sub-headline com faixa "R$ 500-1.500/mês" + sup ref
+  - **Removido** badge "Posicionamento — Liderança em Produto"
+  - 3 stat cards above-the-fold (R$39 / R$500-1.500 / 30s)
+  - 2 CTAs: "Começar trial 14d grátis" + "Calcular grátis primeiro"
+  - Footer com asterisco-disclaimer + link /privacidade
+  - Metadata atualizada (`<title>`, `og:title`, `og:description`)
+
+Build: `/precos` continua server-rendered (ƒ), 2.15 kB JS / 162 kB First Load.
