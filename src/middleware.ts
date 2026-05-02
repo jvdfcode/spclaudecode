@@ -32,7 +32,8 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Usuário logado tentando acessar /login ou /cadastro → redireciona para /dashboard
-  if (user && (pathname === '/login' || pathname === '/cadastro')) {
+  // (também aplica para `/` — landing pública faz sentido apenas para anônimos)
+  if (user && (pathname === '/' || pathname === '/login' || pathname === '/cadastro')) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 

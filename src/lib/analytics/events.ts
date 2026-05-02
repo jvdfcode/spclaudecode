@@ -17,6 +17,13 @@ export type FunnelEventName =
   | 'resultado_exibido'
   | 'cta_clicado'
   | 'email_submetido'
+  // VIAB-R1-2 — landing pública
+  | 'home_view'
+  | 'home_cta_primary_click'
+  | 'home_cta_secondary_click'
+  | 'home_section_view'
+  // VIAB-R1-2.1 — tracking de exibição do email gate
+  | 'calc_email_capture_shown'
 
 export interface FunnelEventPayload {
   [key: string]: string | number | boolean | null | undefined
