@@ -1,6 +1,6 @@
 # Status do Projeto SmartPreço
 
-**Última atualização:** 2026-05-02 (quádruplo end-to-end: VIAB-R3-1 + R3-2 implementados + SWOT/Canvas/BP via @strategist + comparativo SmartPreço vs Letzee 8 personas)
+**Última atualização:** 2026-05-03 (3 ações pós-painel-Letzee: runbook apply prod + artefato decisão Nardon + EPIC-PROD-002 com 4 stories Draft)
 **Snapshot mantido por:** Orion (@aiox-master) ao final de cada sessão significativa
 
 > Este arquivo é o **ponto de entrada de continuidade**: leia primeiro para saber onde paramos sem precisar reler 6+ docs.
@@ -25,6 +25,7 @@
 | **EPIC-VIAB-R1** — Recomendações 30 dias | 🟢 InReview (4/4) ✅ | Pedro Emilio (executor: @dev) | R1-1, R1-2, R1-2.1, R1-3 InReview | Apply migration 012 prod + review preview Vercel + smoke 48h |
 | **EPIC-VIAB-R3** — Trial 14d + Headline + Concorrência | 🟢 InReview (2/3) | Pedro Emilio (executor: @dev) | R3-1 + R3-2 InReview · R3-3 Draft | Apply migration 013 + promote /precos prod + R3-3 (bloco concorrência) |
 | **EPIC-TD-001** — Debt paydown H1 | 📋 Backlog | — | — | — |
+| **EPIC-PROD-002** — Defensabilidade Institucional | 🟡 Draft (4 stories) | Pedro Emilio | PROD-002 (cert ML), PROD-003 (Chrome Ext), PROD-004 (IA pricing), CNPJ-001 | Bloqueado por gate Nardon (decisão Cenário B/B'/C até 2026-05-17) |
 
 ---
 
@@ -77,16 +78,20 @@ e57c46d docs(benchmark): pontuação mundial SmartPreço 4.2/10 vs 10 concorrent
 6. **Plantar 1 post útil em 1 grupo FB ML** ("Vendedores ML BR" 60k — canal #1 confirmado pela tripla)
 7. **Decisão de pricing definitivo R$39 vs R$49** aguarda 3+ entrevistas reais (não bloqueia VIAB-R1-3)
 
-### P0 do painel comparativo Letzee (8/8 personas votam unânime)
-5. **Aplicar Certificação App ML** (developers.mercadolivre.com.br) — 4-8 semanas, P0 não-negociável
-6. **Decisão founder full-time vs vender tese** — 90 dias gate Nardon
-7. **Plantar 1 post útil no FB "Vendedores ML BR" 60k** — esta semana, custo zero
-8. **Migrar scraping HTML → API oficial ML** após cert (VIAB-R1-3.1 backlog)
+### Para Pedro responder/executar (1-2 semanas)
+5. **Responder `docs/strategy/decisao-founder-full-time-2026-05-03.md`** até 2026-05-17 (gate Nardon — Cenário B/B'/C)
+6. **Executar runbook `docs/runbooks/apply-prod-2026-05-03.md`** — apply migrations 012+013 + promote Vercel (30-45 min)
+7. **Plantar 1 post útil no FB "Vendedores ML BR" 60k** — esta semana, custo zero, ROI alto
 
-### Sprint próxima sessão (após Pedro decisões)
-9. **VIAB-R3-3** (bloco concorrência /precos) — última story do EPIC-VIAB-R3
-10. **PROD-002** (cert ML) — criar story dedicada
-11. **PROD-003** (Chrome Extension MVP) — paridade Letzee point-of-decision
+### EPIC-PROD-002 ativo após decisão Cenário B/B' (4 stories Draft prontas)
+8. **CNPJ-001** (CNPJ + DPO — 7-15 dias com Contabilizei/Conube)
+9. **PROD-002** (Certificação App ML — 4-8 semanas, depende CNPJ)
+10. **PROD-003** (Chrome Extension MVP — após cert)
+11. **PROD-004** (IA recomendação — após 50+ pagantes)
+
+### Stories ainda em Draft (sprint futuro)
+12. **VIAB-R3-3** (bloco concorrência /precos) — última story do EPIC-VIAB-R3
+13. **VIAB-R1-3.1** (eliminar scraping ml-proxy) — depende PROD-002
 
 ### Trabalho humano (Pedro, não delegável)
 5. **Agendar 5 entrevistas ICP** (R2, ~7.5h em 14 dias) — destrava todas as decisões mercadológicas
